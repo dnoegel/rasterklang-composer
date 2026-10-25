@@ -227,8 +227,28 @@ export const LENSES = [
   'Interpretation 3 of 3: an unexpected angle. Start from the imagery or story of the prompt, choose an unusual form and textures, and let the music tell that story.',
 ];
 
-export function userPromptWithLens(prompt, constraints, lens) {
-  return `${lens}\n\n${userPrompt(prompt, constraints)}`;
+// Parallel calls cannot see each other, so code makes them differ: each
+// reading gets its own persona and its own group of intro textures.
+const INTRO_GROUPS = [
+  ['staggered', 'drum_groove', 'countin'],
+  ['riff_solo', 'cold_start', 'twin_lead'],
+  ['arp_swell', 'drone_lead', 'twin_lead', 'staggered'],
+];
+const PERSONA_SETS = [['none'], ['hubbard', 'tel', 'none'], ['galway', 'follin', 'none']];
+
+export function lensAssignments(rand) {
+  const personas = PERSONA_SETS.map((set) => set[Math.floor(rand() * set.length)]);
+  const groups = [...INTRO_GROUPS].sort(() => rand() - 0.5);
+  return LENSES.map((lens, i) => ({ lens, persona: personas[i], intros: groups[i] }));
+}
+
+export function userPromptWithLens(prompt, constraints, assignment) {
+  const a = typeof assignment === 'string' ? { lens: assignment } : assignment;
+  let text = a.lens;
+  if (a.persona) text += `\nUse persona "${a.persona}".`;
+  if (a.intros) text += `\nThe intro texture must be one of: ${a.intros.join(', ')}.`;
+  text += '\nGive the song a title that does not simply repeat words of the prompt.';
+  return `${text}\n\n${userPrompt(prompt, constraints)}`;
 }
 
 // Brief -> the model's answer format, so it can be edited and sent back.
