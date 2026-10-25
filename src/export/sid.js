@@ -14,7 +14,9 @@
 
 const LOAD = 0x1000;
 const DATA = 0x1200;
-const DATA_END = 0xa000; // PSID players map BASIC ROM at $A000
+// The replayer banks the BASIC ROM out ($01 = $36) while it reads, so data
+// may run up to the I/O area at $D000.
+const DATA_END = 0xd000;
 const END_BLOCK = 0xff;
 const STREAMS = 4;
 const streamOf = (reg) => (reg < 21 ? Math.floor(reg / 7) : 3);
@@ -40,8 +42,12 @@ function assemblePlayer(orderAddrs) {
   }
   op(0x60); //                                 RTS
 
-  // play: one frame of every stream, unrolled.
+  // play: one frame of every stream, unrolled. BASIC ROM is banked out
+  // so blocks under $A000-$BFFF are readable; $01 is restored after.
   at('play');
+  op(0xa5, 0x01); //                           LDA $01
+  abs(0x8d, 'save01'); //                      STA save01
+  op(0xa9, 0x36, 0x85, 0x01); //               LDA #$36 : STA $01
   for (let s = 0; s < STREAMS; s += 1) {
     const bp = 0xf0 + s * 2; // block pointer
     at(`play${s}`);
@@ -65,7 +71,11 @@ function assemblePlayer(orderAddrs) {
     op(0x98, 0x18, 0x65, bp, 0x85, bp); //     TYA : CLC : ADC bp : STA bp
     op(0x90, 0x02, 0xe6, bp + 1); //           BCC +2 : INC bp+1
   }
+  abs(0xad, 'save01'); //                      LDA save01
+  op(0x85, 0x01); //                           STA $01
   op(0x60); //                                 RTS
+  at('save01');
+  op(0x37);
 
   for (let s = 0; s < STREAMS; s += 1) {
     const bp = 0xf0 + s * 2;

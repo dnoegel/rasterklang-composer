@@ -5,8 +5,15 @@
 // sweeps alias into hiss in the emulator (launchpad known issue).
 
 // Pulse-width bounce: up from `start` to `hi`, down to `lo`, back to start.
+// Each value is held for two frames with twice the step: same sweep speed,
+// half the register writes (keeps .sid exports small).
 function pwBounce(start, lo, hi, step) {
-  return `ramp ${start}..${hi} step ${step} ramp ${hi}..${lo} step -${step} ramp ${lo}..${start} step ${step}`;
+  const vals = [];
+  const s2 = step * 2;
+  for (let v = start; v < hi; v += s2) vals.push(v);
+  for (let v = hi; v > lo; v -= s2) vals.push(v);
+  for (let v = lo; v < start; v += s2) vals.push(v);
+  return vals.map((v) => `${v}!2`).join(' ');
 }
 
 const DRUMS = {
@@ -20,6 +27,13 @@ const DRUMS = {
   wave noise pulse pulse noise noise noise
   arp =92 =57 =54 =86 =84 =83
   pw 2048
+  adsr 0 8 0 0
+  gate -1`,
+  // tonal rock snare: more pulse body, shorter noise tail
+  snare2: `
+  wave noise pulse pulse pulse noise noise
+  arp =90 =60 =58 =56 =82 =80
+  pw 1792
   adsr 0 8 0 0
   gate -1`,
   hat: `

@@ -7,11 +7,11 @@ import { MOODS, MOOD_WORDS, SCENES } from './moods.js';
 import { STYLES } from './styles.js';
 import { KEY_NAMES } from './theory.js';
 
-const STYLE_WORDS = {
-  metal: ['metal', 'heavy', 'thrash', 'headbang', 'riff', 'guitar', 'shred', 'rock', 'iron maiden', 'metallica', 'power metal', 'speed metal', 'gitarre', 'headbanger'],
-  synthwave: ['synthwave', 'outrun', 'retrowave', '80s', '80er', 'eighties', 'neon', 'cyberpunk', 'miami', 'vaporwave', 'synth', 'synthpop', 'italo', 'night drive', 'blade runner', 'darksynth'],
-  platformer: ['platformer', 'platform game', 'jump and run', "jump'n'run", 'jump n run', 'mario', 'sonic', 'giana', 'overworld', 'video game', 'videogame', 'game music', 'spielmusik', 'chiptune', '8-bit', '8 bit', 'arcade', 'level'],
-  jig: ['celtic', 'irish', 'jig', 'reel', 'folk', 'fiddle', 'tavern', 'pub', 'scottish', 'bagpipe', 'medieval', 'bard', 'keltisch', 'irisch', 'schottisch', 'mittelalter', 'volksmusik', 'dudelsack', 'taverne', 'kneipe'],
+const PERSONA_WORDS = {
+  hubbard: ['hubbard', 'rob hubbard', 'monty on the run', 'commando'],
+  galway: ['galway', 'martin galway', 'wizball', 'parallax'],
+  tel: ['jeroen tel', 'cybernoid', 'maniacs of noise'],
+  follin: ['follin', 'tim follin', 'ghouls'],
 };
 
 const ENERGY_UP = ['fast', 'energetic', 'high energy', 'intense', 'frantic', 'driving', 'hard', 'wild', 'action', 'speedy', 'schnell', 'energisch', 'intensiv', 'treibend', 'wild', 'hart', 'rasant'];
@@ -36,9 +36,18 @@ export function parsePrompt(prompt) {
   const matched = [];
 
   const styleScores = {};
-  for (const [id, words] of Object.entries(STYLE_WORDS)) {
-    for (const w of words) if (has(text, w)) { styleScores[id] = (styleScores[id] || 0) + (w.length > 5 ? 2 : 1); matched.push(w); }
+  const lastPos = {};
+  for (const [id, style] of Object.entries(STYLES)) {
+    for (const w of style.keywords || []) {
+      if (!has(text, w)) continue;
+      styleScores[id] = (styleScores[id] || 0) + (w.length > 5 ? 2 : 1);
+      lastPos[id] = Math.max(lastPos[id] || 0, text.lastIndexOf(w.toLowerCase()));
+      matched.push(w);
+    }
   }
+  const namedStyles = { ...styleScores }; // before scene hints: only these may blend
+  let persona = null;
+  for (const [id, words] of Object.entries(PERSONA_WORDS)) if (words.some((w) => has(text, w))) { persona = id; matched.push(...words.filter((w) => has(text, w))); }
 
   const moods = {};
   for (const [mood, words] of Object.entries(MOOD_WORDS)) {
@@ -80,12 +89,21 @@ export function parsePrompt(prompt) {
   const total = moodList.reduce((s, [, w]) => s + w, 0) || 1;
 
   let style = null;
-  const ranked = Object.entries(styleScores).sort((a, b) => b[1] - a[1]);
+  let blend = null;
+  // higher score first; near ties go to the genre word named last, the
+  // head noun in English ("Celtic metal" is metal with Celtic colour)
+  const ranked = Object.entries(styleScores).sort((a, b) => (Math.abs(b[1] - a[1]) <= 1 ? (lastPos[b[0]] || 0) - (lastPos[a[0]] || 0) : b[1] - a[1]));
   if (ranked.length) style = ranked[0][0];
+  // two styles named with similar weight: blend them ("Celtic metal")
+  if (ranked.length > 1 && namedStyles[ranked[0][0]] && namedStyles[ranked[1][0]] && ranked[1][1] >= ranked[0][1] * 0.5) {
+    blend = { style: ranked[1][0], amount: 0.35 };
+  }
 
   return {
     prompt,
     style, // null = unspecified, decided by moods later
+    blend,
+    persona,
     styleScores,
     moods: Object.fromEntries(moodList.map(([m, w]) => [m, w / total])),
     scene,
@@ -100,18 +118,14 @@ export function parsePrompt(prompt) {
 // Fill unspecified fields from moods: a style is always needed downstream.
 export function resolveStyle(intent) {
   if (intent.style) return intent.style;
-  const m = intent.moods;
-  const score = {
-    metal: (m.aggressive || 0) * 2 + (m.menacing || 0) + (m.epic || 0) * 0.6,
-    synthwave: (m.nostalgic || 0) * 2 + (m.dreamy || 0) * 1.5 + (m.melancholic || 0) + (m.mysterious || 0) * 0.8 + 0.3,
-    platformer: (m.happy || 0) * 1.5 + (m.playful || 0) * 2 + (m.triumphant || 0) * 0.8 + (m.hopeful || 0) * 0.6,
-    jig: (m.playful || 0) * 0.5 + (m.happy || 0) * 0.4,
-  };
-  return Object.entries(score).sort((a, b) => b[1] - a[1])[0][0];
+  const score = Object.entries(STYLES).map(([id, st]) => [id,
+    (st.base || 0) + Object.entries(st.moods || {}).reduce((sum, [m, w]) => sum + (intent.moods[m] || 0) * w, 0)]);
+  return score.sort((a, b) => b[1] - a[1])[0][0];
 }
 
 export function describeIntent(intent, styleId) {
-  const parts = [STYLES[styleId].name];
+  const parts = [STYLES[styleId].name + (intent.blend ? ` × ${STYLES[intent.blend.style].name}` : '')];
+  if (intent.persona) parts.push(`Persona ${intent.persona}`);
   const moods = Object.keys(intent.moods);
   if (moods.length) parts.push(moods.join(' + '));
   if (intent.scene) parts.push(`scene: ${intent.scene.replace('_', ' ')}`);
