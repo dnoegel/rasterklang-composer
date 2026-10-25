@@ -38,10 +38,10 @@ export function parsePrompt(prompt) {
   const styleScores = {};
   const lastPos = {};
   for (const [id, style] of Object.entries(STYLES)) {
-    for (const w of style.keywords || []) {
+    for (const w of [...new Set([...(style.names || []), ...(style.keywords || [])])]) {
       if (!has(text, w)) continue;
       // the style's own name counts most, longer phrases more than short words
-      styleScores[id] = (styleScores[id] || 0) + (w === style.keywords[0] ? 3 : w.length > 5 ? 2 : 1);
+      styleScores[id] = (styleScores[id] || 0) + ((style.names || []).includes(w) ? 3 : w.length > 5 ? 2 : 1);
       lastPos[id] = Math.max(lastPos[id] || 0, text.lastIndexOf(w.toLowerCase()) + w.length);
       matched.push(w);
     }
