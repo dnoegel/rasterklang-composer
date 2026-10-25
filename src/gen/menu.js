@@ -14,6 +14,7 @@ import { PROGRESSIONS } from './library/progressions.js';
 import { TEXTURES, TRANSITIONS, FILTER_SHAPES } from './library/textures.js';
 import { FORMS, SECTION_ENERGY } from './library/forms.js';
 import { LEADS, BASSES, SNARES, CUSTOM_LEAD } from './library/palettes.js';
+import { findArtist, artistSummary } from './hvsc-data.js';
 
 const SECTION_TYPES = Object.keys(SECTION_ENERGY);
 const KEYS = KEY_NAMES;
@@ -63,7 +64,7 @@ export function briefSchema() {
         items: {
           type: 'object',
           additionalProperties: false,
-          required: ['type', 'bars', 'energy', 'energy_end', 'filter', 'texture', 'transition', 'groove', 'drums_pattern', 'bass', 'bass_pattern', 'arp_pattern', 'feel', 'lead', 'chords', 'transpose'],
+          required: ['type', 'bars', 'energy', 'energy_end', 'filter', 'texture', 'transition', 'groove', 'drums_pattern', 'bass', 'bass_pattern', 'arp_pattern', 'feel', 'lead', 'chords', 'chord_bars', 'transpose'],
           properties: {
             type: en(SECTION_TYPES),
             bars: int,
@@ -80,6 +81,7 @@ export function briefSchema() {
             feel: en(feels),
             lead: en([...Object.keys(LEADS), CUSTOM_LEAD]),
             chords: { type: 'array', items: str },
+            chord_bars: int,
             transpose: int,
           },
         },
@@ -161,6 +163,7 @@ Rules:
 - Tempo inside the style's band unless the prompt asks otherwise. tempo is bpm of the felt beat (dotted quarter in 6/8 and 12/8).
 - Bars per section: 2, 4, 8, 16 (12 for blues). Total length 30 to 150 seconds. Contrast: the chorus should differ from the verse (energy, texture, groove or harmony) and come back recognisably.
 - Chords: roman numerals relative to the tonic, read against the major scale: lowercase minor (i, iv, v), b for flat (bVI, bVII, bIII, bII), suffixes 7, M7, m7 (use "ii7"), dim, sus2, sus4, 5. They should fit the mode. One chord per bar; the list repeats over the section. A section's chords list may be 2 to 16 entries.
+- chord_bars: 1 (one chord per bar) or 2 (each chord lasts two bars; slower harmonic rhythm, common in SID music).
 - transpose: 0, or 2 for a key change up a whole step on a late chorus.
 - Themes (optional but encouraged for the chorus, and the verse): "notes" is one token per step of 1 to 4 bars, space separated. Steps per bar: 4/4 = 16 (16th notes), 3/4 = 12, 6/8 = 12 (16th notes), 12/8 = 12 (8th triplets). Token: a scale degree 1-7 (8-14 for the octave above, -1 to -7 for the octave below), "_" holds the previous note, "." is a rest. Write a memorable hook: a few notes, repetition, mostly steps with one leap into a high point, ending on a stable degree (1, 3 or 5). Example 4/4 bar: "5 _ _ 3 4 _ 5 _ 6 _ 5 _ 3 _ _ _".
 - energy per section 0-1; intros, breakdowns and outros lower, choruses and solos higher.
@@ -213,6 +216,10 @@ export function drawConstraints(rand, n = 2) {
 
 export function userPrompt(prompt, constraints, errors = null, melody = null) {
   let text = `Prompt: ${prompt}\n\nCreative constraints for this song (follow them if they do not contradict the prompt):\n${constraints.map((c) => `- ${c}`).join('\n')}`;
+  const artist = findArtist(prompt);
+  if (artist) {
+    text += `\n\nMeasured facts to guide your choices (style ${artist.style}): ${artistSummary(artist)} Use the drum rows, bass rows and loops as patterns where they fit.`;
+  }
   if (melody) {
     text += `\n\nThe user brings their own melody for the ${melody.section} (note names, one token per step, "_" hold, "." rest): ${melody.notes}\nChoose a key, mode, meter and chords that fit this melody. Do not write a theme for the ${melody.section}; the user's melody will be used there.`;
   }
@@ -248,7 +255,7 @@ export function answerToBrief(answer, prompt) {
     sections: (answer.sections || []).map((x) => ({
       type: x.type, bars: x.bars, energy: x.energy, energyEnd: x.energy_end, filter: x.filter, texture: x.texture,
       transition: x.transition, groove: x.groove, bass: x.bass, feel: x.feel, lead: x.lead, chords: x.chords,
-      transpose: x.transpose, drumPattern: x.drums_pattern, bassPattern: x.bass_pattern, arpPattern: x.arp_pattern,
+      transpose: x.transpose, chordBars: x.chord_bars, drumPattern: x.drums_pattern, bassPattern: x.bass_pattern, arpPattern: x.arp_pattern,
     })),
     themes,
   };
@@ -305,7 +312,7 @@ export function briefToAnswer(brief) {
       type: s.type, bars: s.bars, energy: s.energy, energy_end: s.energyEnd ?? s.energy, filter: s.filter || 'follow',
       texture: s.texture, transition: s.transition, groove: s.groove, drums_pattern: (s.drumPattern || []).join(''),
       bass: s.bass, bass_pattern: (s.bassPattern || []).join(''), arp_pattern: (s.arpPattern || []).join(''),
-      feel: s.feel, lead: s.lead, chords: s.chords, transpose: s.transpose || 0,
+      feel: s.feel, lead: s.lead, chords: s.chords, chord_bars: s.chordBars || 1, transpose: s.transpose || 0,
     })),
     themes: Object.entries(brief.themes || {}).map(([section, t]) => ({ section, notes: t.notes })),
   };

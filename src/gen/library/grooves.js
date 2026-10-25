@@ -50,6 +50,12 @@ export const GROOVES = {
     levels: ['k.......k.......', 'k.s.k.s.k.s.k.s.', 'khshkhshkhshkhsh', 'khshkhshkhshkhss'] },
   grunge: { meter: '4/4', name: 'Schwerer Rock-Beat mit offenen Hi-Hats', tags: ['rock', 'alternative'], energy: [0.4, 1],
     levels: ['k.......s.......', 'k.o.s.o.k.o.s.o.', 'k.oks.o.kko.s.o.', 'kooksooxkkooso.o'] },
+  // common in C64 music: the
+  // most common one-voice drum lines of real SID music
+  sid_drive: { meter: '4/4', name: 'SID-Drive (Kick/Snare im Wechsel)', tags: ['sid', 'synth', 'game', 'rock'], energy: [0.3, 1], source: 'hvsc',
+    levels: ['k.......k.......', 'k...s...k...s...', 'k.s.k.s.k.s.k.s.', 'ksssksssksssksss'] },
+  sid_kss: { meter: '4/4', name: 'SID-Kick mit Snare-Hats', tags: ['sid', 'game', 'synth'], energy: [0.3, 1], source: 'hvsc',
+    levels: ['k.......k.......', 'k.s.s.s.k.s.s.s.', 'k.ssk.ssk.ssk.ss', 'ksssssssksssssss'] },
   tom_pulse: { meter: '4/4', name: 'Tom-Puls', tags: ['cinematic', 'tribal'], energy: [0.2, 1],
     levels: ['t.......t.......', 't...t...t...t...', 't.tTt...t.tTt...', 't.tTt.TTt.tTt.TT'] },
 

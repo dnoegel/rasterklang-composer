@@ -14,6 +14,7 @@ import { BASS } from './library/bass.js';
 import { TEXTURES, TRANSITIONS } from './library/textures.js';
 import { FORMS } from './library/forms.js';
 import { LEADS } from './library/palettes.js';
+import { ARTISTS } from './library/hvsc.js';
 
 const TITLE_A = {
   metal: ['Iron', 'Steel', 'Thunder', 'Blood', 'Fire', 'Black', 'Raven'],
@@ -115,6 +116,7 @@ function cues(intent, plan, brief) {
   const leads = [...new Set(plan.sections.filter((s) => s.textureDef.stages.some(([, r]) => r.includes('L'))).map((s) => s.leadInst))];
   if (leads.length) out.push(`Lead: ${leads.map((l) => LEADS[l] || l).join(', ')}`);
   if (plan.sections.some((s) => s.transpose)) out.push('Rückung: letzter Refrain einen Ganzton höher');
+  if (brief.artist && ARTISTS[brief.artist]) out.push(`Groove, Bassfigur und Akkordschleife aus ${ARTISTS[brief.artist].tunes} C64-Bearbeitungen von ${brief.artist} (HVSC)`);
   if (t.legato > 0.3) out.push('Artikulation: gebunden (legato)');
   else if (t.legato < -0.3) out.push('Artikulation: kurz (staccato)');
   if (t.tension > 0.4) out.push('Spannung: chromatische Annäherungen im Bass');

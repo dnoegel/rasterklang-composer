@@ -15,6 +15,8 @@ import { PROGRESSIONS } from './library/progressions.js';
 import { TEXTURES, KIND_OF, TRANSITIONS, FILTER_SHAPES } from './library/textures.js';
 import { FORMS, SECTION_ENERGY } from './library/forms.js';
 import { LEADS, BASSES, SNARES, CUSTOM_LEAD } from './library/palettes.js';
+import { styleHint, nudgeModes, loopToRomans } from './hvsc-data.js';
+import { ARTISTS } from './library/hvsc.js';
 
 export const GENERATOR_VERSION = 'compose-0.2.0';
 
@@ -100,7 +102,17 @@ function colourChord(symbol, sevenths, rng, power) {
 
 // Rule-based path: sample a full brief from the style's weights.
 export function sampleBrief(intent, seedKey, styleId, blend = null) {
-  const style = blendStyles(styleId, blend?.style, blend?.amount || 0);
+  const base = blendStyles(styleId, blend?.style, blend?.amount || 0);
+  // HVSC inventory: how C64 musicians arranged this genre (and, if named,
+  // this artist) nudges modes, harmonic rhythm and textures
+  const hint = styleHint(styleId);
+  const artist = intent.artist ? ARTISTS[intent.artist] : null;
+  const style = { ...base, modes: nudgeModes(base.modes, artist ? artist.minorShare : hint?.minorShare, artist ? 0.8 : 0.5) };
+  if (style.slowHarmony === undefined && (artist?.slowHarmony ?? hint?.slowHarmony) != null) style.slowHarmony = artist?.slowHarmony ?? hint.slowHarmony;
+  const drumsShare = artist?.drums ?? hint?.drums;
+  if (drumsShare != null && drumsShare < 0.3) {
+    style.textures = { ...style.textures, main: { ...style.textures.main, no_drums: (style.textures.main.no_drums || 0.5) * 2, counter_nodrums: (style.textures.main.counter_nodrums || 0.3) * 2 } };
+  }
   const rng = new Rng(seedKey, GENERATOR_VERSION, 'brief');
   const target = descriptorTarget(intent, style);
   const mode = chooseMode(style, target, intent, rng);
@@ -127,19 +139,24 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
         * (bridgeLike && PROGRESSIONS[id].role === 'bridge' ? 2 : 1) * (PROGRESSIONS[id].form === formId ? 20 : 1))
       || Object.keys(PROGRESSIONS).find((id) => PROGRESSIONS[id].tonality === tonality);
     const progression = PROGRESSIONS[progressionId].chords.map((s) => colourChord(s, target.sevenths, rng, style.palette.chords === 'power'));
-    // groove and bass: the chorus must carry the signature
+    // groove and bass: the chorus must carry the signature; common SID
+    // idioms derived from HVSC join every 4/4 style's pool with a small weight
     const grooveOk = (id) => GROOVES[id]?.meter === meter;
+    const sidGrooves = meter === '4/4' ? { sid_drive: 0.5, sid_kss: 0.35 } : {};
+    const sidBass = meter === '4/4' ? { offbeat_stab: 0.4, eighth_legato: 0.4, quarter_stab: 0.3, octave_legato: 0.3, syncopated_push: 0.3, offbeat_quarters: 0.2, octave_gallop: 0.2, pickup_whole: 0.2 } : {};
+    const groovePool = { ...sidGrooves, ...style.grooves };
+    const bassPool = { ...sidBass, ...style.bass };
     let groove = type === 'chorus' && sig.grooves
       ? pickWeighted(rng, style.grooves, (id) => grooveOk(id) && sig.grooves.includes(id), (id) => energyFit(GROOVES[id], energy))
       : null;
-    groove = groove || pickWeighted(rng, style.grooves, grooveOk, (id) => energyFit(GROOVES[id], energy));
+    groove = groove || pickWeighted(rng, groovePool, grooveOk, (id) => energyFit(GROOVES[id], energy));
     const bassOk = (id) => BASS[id]?.meter === meter;
     const want = energy - target.legato * 0.15;
     let bass = isMain && sig.bass && (type === 'verse' || !byType.verse || !sig.bass.includes(byType.verse.bass))
       ? pickWeighted(rng, style.bass, (id) => bassOk(id) && sig.bass.includes(id), (id) => energyFit(BASS[id], want))
       : null;
-    bass = bass || pickWeighted(rng, style.bass, bassOk, (id) => energyFit(BASS[id], want));
-    const feel = pickWeighted(rng, style.feels, (f) => CELLS[meter][f]) || Object.keys(CELLS[meter])[0];
+    bass = bass || pickWeighted(rng, bassPool, bassOk, (id) => energyFit(BASS[id], want));
+    const feel = pickWeighted(rng, { sid: 0.8, ...style.feels }, (f) => CELLS[meter][f]) || Object.keys(CELLS[meter])[0];
     const kind = KIND_OF[type];
     // every style may use the counter-melody and build-up textures a little
     const pool = kind === 'main'
@@ -157,12 +174,22 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
     }
     const leadPool = sig.lead ? Object.fromEntries(sig.lead.map((l) => [l, 1])) : style.palette.lead;
     const lead = pickWeighted(rng, leadPool, (l) => LEADS[l]);
-    byType[type] = { energy, progressionId, progression, groove, bass, feel, texture, lead };
+    // two bars per chord now and then (slower harmonic rhythm, typical in SID
+    // music); the progression then spans eight bars
+    const chordBars = !bridgeLike && type !== 'intro' && type !== 'outro' && rng.chance(style.slowHarmony ?? 0.3) ? 2 : 1;
+    byType[type] = { energy, progressionId, progression, groove, bass, feel, texture, lead, chordBars };
     return byType[type];
   };
 
   const sections = [];
-  const templ = FORMS[formId].sections;
+  let templ = FORMS[formId].sections;
+  // real SID songs mostly start straight away (59 % with all voices in bar 1,
+  //: drop the intro now and then, or shorten it
+  if (templ[0]?.[0] === 'intro' && intent.form !== 'loop') {
+    const r = rng.next();
+    if (r < 0.3) templ = templ.slice(1);
+    else if (r < 0.65 && templ[0][1] > 2) templ = [['intro', 2], ...templ.slice(1)];
+  }
   const seen = {};
   // energy and filter movement inside a section (research: verse stable,
   // pre-chorus and builds rise, choruses plateau, outros fall away)
@@ -194,6 +221,7 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
       feel: c.feel,
       lead: c.lead,
       chords: c.progression,
+      chordBars: c.chordBars,
     });
   });
   // Keep songs under about 2:30: drop solos, pre-choruses, breakdowns,
@@ -218,6 +246,20 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
       }
     }
   }
+  // An artist fingerprint gives verse and chorus its measured drum row,
+  // bass figure and bass-root loop
+  if (artist && meter === '4/4') {
+    const drum = artist.drumRows.length ? rng.pick(artist.drumRows.slice(0, 3)) : null;
+    const bassRow = artist.bassRows.length ? rng.pick(artist.bassRows.slice(0, 3)) : null;
+    const loop = artist.loops.length ? loopToRomans(rng.pick(artist.loops.slice(0, 2)), mode) : null;
+    for (const s of sections) {
+      if (s.type !== 'verse' && s.type !== 'chorus') continue;
+      if (drum && /[ks]/.test(drum)) s.drumPattern = drum;
+      if (bassRow) s.bassPattern = bassRow.replace(/[42]/g, 'A');
+      if (loop && loop.length >= 2 && (s.type === 'verse' || !artist.loops[1])) s.chords = loop;
+    }
+  }
+
   // A late key change up a whole step on the last chorus (pop, metal, synth).
   const choruses = sections.filter((s) => s.type === 'chorus');
   if (choruses.length >= 2 && rng.chance((style.keyChange || 0) + Math.max(0, target.energyBias) * 0.2)) choruses[choruses.length - 1].transpose = 2;
@@ -228,6 +270,7 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
     source: 'rules',
     style: styleId,
     blend: blend || null,
+    artist: intent.artist || null,
     moods: intent.moods || {},
     scene: intent.scene || null,
     energy: target.energyBias,
@@ -385,6 +428,7 @@ export function validateBrief(input) {
       s.chords = chords.slice(0, 16);
     }
     s.transpose = clamp(Math.round(Number(s.transpose) || 0), -5, 5);
+    s.chordBars = Number(s.chordBars) === 2 ? 2 : 1;
     firstOf[s.type] = firstOf[s.type] || s;
   }
   if (total > 140) errors.push(`song too long (${total} bars)`);
@@ -430,7 +474,10 @@ export function planFromBrief(brief, seedKey) {
     counts[s.type] = (counts[s.type] || 0) + 1;
     const key = (brief.keyRoot + (s.transpose || 0) + 12) % 12;
     const chords = [];
-    for (let i = 0; i < s.bars; i += 1) chords.push(chordAt(key, s.chords[i % s.chords.length]));
+    // harmonic rhythm: a chord may last two bars (common in SID music:
+    // i-i-bVI-bVI loops in
+    const per = s.chordBars === 2 ? 2 : 1;
+    for (let i = 0; i < s.bars; i += 1) chords.push(chordAt(key, s.chords[Math.floor(i / per) % s.chords.length]));
     const texture = TEXTURES[s.texture];
     sections.push({
       ...s,

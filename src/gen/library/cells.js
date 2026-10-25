@@ -10,6 +10,9 @@ export const CELLS = {
     syncopated: ['..x_x_x_x_____x_', 'x__x__x_x_______', 'x_x___x_____x___', 'x__x__x__x__x___', '..x___x_..x_x___'],
     dotted: ['x_.xx_x_x_.xx___', 'x__x__x_x_x_x___', 'x.x.x_x_x.x.x___', 'x__xx_x_x__xx___'],
     running: ['x.x.x.x.x_x_x___', 'xxxxx_x_xxxxx___', 'xxxxxxxxx_x_x___', 'x.xxx.xxx.xxx___'],
+    // common C64 lead rhythms (1-10 notes per bar,
+    sid: ['x_x_x_x_x_x_x_x_', 'x___x___x___x___', 'x_____x_____x___', '..x___x___x___x_', 'x_______x___x___', 'x___x_x_x_x_x_x_',
+      '..x_x_x_x_x_x_x_', 'x_x_x_x___x_x_x_', 'x___x___x___x_x_', 'x___x_x___x_x___', 'x__x__x_x__x__x_', 'x_x.x_x.x_x.x_x.', '....x___x___x___', 'x_______x_______'],
   },
   '3/4': {
     straight: ['x___x___x___', 'x_x_x___x___', 'x___x_x_x_x_'],
@@ -29,7 +32,7 @@ export const CELLS = {
   },
 };
 
-export const FEELS = ['straight', 'riff', 'long', 'syncopated', 'dotted', 'running', 'shuffle'];
+export const FEELS = ['straight', 'riff', 'long', 'syncopated', 'dotted', 'running', 'shuffle', 'sid'];
 
 // Chord rhythm for the arpeggio voice, by meter, from calm to busy.
 export const ARP_CELLS = {

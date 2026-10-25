@@ -182,12 +182,19 @@ export const ARP_SHAPES = {
   M7: [0, 4, 7, 11],
   m7: [0, 3, 7, 10],
   7: [0, 4, 7, 10],
+  // inversions (common in real SID music: 0-3-8, 0-5-9, 0-4-9, 0-5-8 in
+  //
+  M1: [0, 3, 8],
+  M2: [0, 5, 9],
+  m1: [0, 4, 9],
+  m2: [0, 5, 8],
 };
 
 // Instrument names must not contain '_' (the mini-notation hold token).
 const ARP_NAMES = {
   M: 'arpMaj', m: 'arpMin', dim: 'arpDim', aug: 'arpAug', 5: 'arpPow',
   sus2: 'arpSus2', sus4: 'arpSus4', M7: 'arpMaj7', m7: 'arpMin7', 7: 'arpDom7',
+  M1: 'arpMajA', M2: 'arpMajB', m1: 'arpMinA', m2: 'arpMinB',
 };
 const ARP_QUALITY = Object.fromEntries(Object.entries(ARP_NAMES).map(([q, n]) => [n, q]));
 export const arpInstrumentFor = (quality) => ARP_NAMES[quality];

@@ -5,6 +5,7 @@
 
 import { MOODS, MOOD_WORDS, SCENES } from './moods.js';
 import { STYLES } from './styles.js';
+import { findArtist } from './hvsc-data.js';
 import { KEY_NAMES } from './theory.js';
 
 const ENERGY_UP = ['fast', 'energetic', 'high energy', 'intense', 'frantic', 'driving', 'hard', 'wild', 'action', 'speedy', 'schnell', 'energisch', 'intensiv', 'treibend', 'wild', 'hart', 'rasant'];
@@ -38,6 +39,12 @@ export function parsePrompt(prompt) {
       lastPos[id] = Math.max(lastPos[id] || 0, text.lastIndexOf(w.toLowerCase()) + w.length);
       matched.push(w);
     }
+  }
+  // an artist with an HVSC fingerprint points to its genre's style
+  const artist = findArtist(prompt);
+  if (artist) {
+    matched.push(artist.match);
+    if (!Object.keys(styleScores).length) styleScores[artist.style] = 3;
   }
   const namedStyles = { ...styleScores }; // before scene hints: only these may blend
 
@@ -99,6 +106,7 @@ export function parsePrompt(prompt) {
     prompt,
     style, // null = unspecified, decided by moods later
     blend,
+    artist: artist ? artist.name : null,
     styleScores,
     moods: Object.fromEntries(moodList.map(([m, w]) => [m, w / total])),
     scene,
@@ -123,6 +131,7 @@ export function describeIntent(intent, styleId) {
   const moods = Object.keys(intent.moods);
   if (moods.length) parts.push(moods.join(' + '));
   if (intent.scene) parts.push(`scene: ${intent.scene.replace('_', ' ')}`);
+  if (intent.artist) parts.push(`wie ${intent.artist} (HVSC-Daten)`);
   if (intent.key) parts.push(`key ${KEY_NAMES[intent.key.root]}${intent.key.minor === true ? ' minor' : intent.key.minor === false ? ' major' : ''}`);
   return parts.join(', ');
 }

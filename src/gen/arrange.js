@@ -149,12 +149,32 @@ function bassBar(section, b, plan, rng, idiom, inst) {
   });
 }
 
-function arpBar(section, b, plan, cell) {
+// Chord arpeggio with voice leading: major and minor chords may use an
+// inversion, whichever keeps the arpeggio's lowest note closest to the
+// previous chord's (inversions are common in real SID arps).
+const INVERSIONS = { M: [['M', 0], ['M1', 4], ['M2', 7]], m: [['m', 0], ['m1', 3], ['m2', 7]] };
+function arpBar(section, b, plan, cell, state) {
   const chord = section.chords[b];
-  const quality = plan.palette.chords === 'power' ? '5' : chord.quality;
+  let quality = plan.palette.chords === 'power' ? '5' : chord.quality;
+  let base = chord.root;
+  const options = plan.palette.chords === 'power' ? null : INVERSIONS[quality];
+  let n;
+  if (options) {
+    let best = null;
+    for (const [q, off] of options) {
+      let cand = 48 + ((chord.root + off) % 12);
+      if (cand > 57) cand -= 12;
+      const d = state.prev === null ? Math.abs(cand - 52) : Math.abs(cand - state.prev);
+      if (!best || d < best.d) best = { q, cand, d };
+    }
+    quality = best.q;
+    n = best.cand;
+  } else {
+    n = 48 + base;
+    if (n > 55) n -= 12;
+  }
+  state.prev = n;
   const inst = arpInstrumentFor(quality);
-  let n = 48 + chord.root;
-  if (n > 55) n -= 12;
   return [...cell].map((c) => (c === 'x' ? { tok: noteName(n), inst } : c === '_' ? HOLD : REST));
 }
 
@@ -216,6 +236,7 @@ export function arrange(plan, rng, melodyRng) {
   const melodyMemory = {};
   const leadNotes = [];
   plan.grooveTags = [...new Set(plan.sections.flatMap((s) => s.grooveDef.tags))];
+  const arpState = { prev: null };
   let prevTransition = null;
 
   plan.sections.forEach((section, si) => {
@@ -239,7 +260,7 @@ export function arrange(plan, rng, melodyRng) {
       const e = energyAt(section, b);
       const cellNow = section.arpRows ? section.arpRows[b % section.arpRows.length]
         : cells[Math.min(cells.length - 1, Math.floor(e * cells.length))];
-      const arp = arpBar(section, b, plan, cellNow);
+      const arp = arpBar(section, b, plan, cellNow, arpState);
       const lead = melody
         ? melody.bars[b].tokens.map((t) => (t === '~' || t === '_' ? { tok: t, inst: null } : { tok: t, inst: leadInst }))
         : restBar(steps);

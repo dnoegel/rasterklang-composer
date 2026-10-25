@@ -28,6 +28,15 @@ export const BASS = {
   country: { meter: '4/4', name: 'Country-Bass (Grundton, Quinte im Wechsel)', tags: ['country'], energy: [0.3, 1], row: 'R.......5.......' },
   rocknroll: { meter: '4/4', name: "Rock'n'Roll-Bass", tags: ['rock', 'rockabilly', 'country'], energy: [0.4, 1], row: 'R.3.5.6.8.6.5.3.' },
   fuzz_8ths: { meter: '4/4', name: 'Fuzz-Bass in Achteln mit Oktave', tags: ['rock', 'alternative'], energy: [0.5, 1], row: 'R.R.R.R.8.R.R.5.' },
+  // common in C64 music
+  offbeat_stab: { meter: '4/4', name: 'Offbeat-Bass, kurz', tags: ['sid', 'synth', 'dance', 'game'], energy: [0.4, 1], source: 'hvsc', row: '..R_..R_..R_..R_' },
+  eighth_legato: { meter: '4/4', name: 'gebundene Achtel', tags: ['sid', 'synth', 'rock', 'game'], energy: [0.4, 1], source: 'hvsc', row: 'R_R_R_R_R_R_R_R_' },
+  quarter_stab: { meter: '4/4', name: 'kurze Viertel', tags: ['sid', 'game', 'pop'], energy: [0.3, 0.8], source: 'hvsc', row: 'R_..R_..R_..R_..' },
+  octave_legato: { meter: '4/4', name: 'gebundener Oktav-Bass', tags: ['sid', 'synth', 'dance'], energy: [0.4, 1], source: 'hvsc', row: 'R_8_R_8_R_8_R_8_' },
+  offbeat_quarters: { meter: '4/4', name: 'Bass auf 2 und 4', tags: ['sid', 'reggae', 'game'], energy: [0.2, 0.7], source: 'hvsc', row: '....R___....R___' },
+  syncopated_push: { meter: '4/4', name: 'vorgezogene Bassnoten', tags: ['sid', 'funk', 'pop', 'game'], energy: [0.4, 1], source: 'hvsc', row: '..R___R___R___R_' },
+  octave_gallop: { meter: '4/4', name: 'Oktav-Galopp auf dem Offbeat', tags: ['sid', 'dance', 'synth'], energy: [0.6, 1], source: 'hvsc', row: '.R8R.R8R.R8R.R8R' },
+  pickup_whole: { meter: '4/4', name: 'liegender Grundton mit Auftakt', tags: ['sid', 'ambient', 'synth'], energy: [0.1, 0.5], source: 'hvsc', row: 'R___________..A_' },
   riff_unison: { meter: '4/4', name: 'Riff im Unisono', tags: ['metal', 'rock'], energy: [0.5, 1], row: 'R.R5.RR.R.R5.RA.' },
 
   // ---- 3/4 ----------------------------------------------------------------
