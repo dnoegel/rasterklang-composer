@@ -217,3 +217,85 @@ export function answerToBrief(answer, prompt) {
     themes,
   };
 }
+
+// --- interpretations, refinement, critique -----------------------
+
+// Lenses for "three interpretations": the same prompt read three ways.
+export const LENSES = [
+  'Interpretation 1 of 3: the most fitting, classic reading of the prompt. A listener should recognise it at once.',
+  'Interpretation 2 of 3: a bolder reading. Choose a different style, blend or persona than the obvious one, as long as the prompt is still clearly recognisable.',
+  'Interpretation 3 of 3: an unexpected angle. Start from the imagery or story of the prompt, choose an unusual form and textures, and let the music tell that story.',
+];
+
+export function userPromptWithLens(prompt, constraints, lens) {
+  return `${lens}\n\n${userPrompt(prompt, constraints)}`;
+}
+
+// Brief -> the model's answer format, so it can be edited and sent back.
+export function briefToAnswer(brief) {
+  return {
+    reasoning: brief.reasoning || '',
+    title: brief.title || '',
+    imagery: brief.imagery || '',
+    liner_note: brief.liner || '',
+    style: brief.style,
+    blend_style: brief.blend?.style || 'none',
+    blend_amount: brief.blend?.amount || 0,
+    persona: brief.persona || 'none',
+    moods: Object.entries(brief.moods || {}).map(([mood, weight]) => ({ mood, weight: Math.round(weight * 100) / 100 })),
+    tempo: brief.tempo,
+    meter: brief.meter,
+    key: KEYS[brief.keyRoot] || 'C',
+    mode: brief.mode,
+    palette: brief.palette,
+    sections: brief.sections.map((s) => ({
+      type: s.type, bars: s.bars, energy: s.energy, texture: s.texture, transition: s.transition, groove: s.groove,
+      bass: s.bass, feel: s.feel, lead: s.lead, chords: s.chords, transpose: s.transpose || 0,
+    })),
+    themes: Object.entries(brief.themes || {}).map(([section, t]) => ({ section, notes: t.notes })),
+  };
+}
+
+export function refinePrompt(prompt, brief, description, instruction) {
+  return `The song was written for this prompt: ${prompt}
+
+Current song brief (JSON, your answer format):
+${JSON.stringify(briefToAnswer(brief))}
+
+What the rendered song actually contains (measured by code):
+${description}
+
+Change request: ${instruction}
+
+Return the complete revised brief. Change what the request needs and keep everything else, especially themes, title and the overall form, unless the request asks otherwise. Update reasoning to explain the change (German).`;
+}
+
+export function critiqueSchema() {
+  return {
+    type: 'object',
+    additionalProperties: false,
+    required: ['assessment', 'fit', 'issues', 'suggestion'],
+    properties: {
+      assessment: { type: 'string' },
+      fit: { type: 'integer' },
+      issues: { type: 'array', items: { type: 'string' } },
+      suggestion: { type: 'string' },
+    },
+  };
+}
+
+export function critiqueSystemPrompt() {
+  return `You review C64 SID songs made by a rule-based generator from a song brief. You cannot hear the song; you get a precise description of what it contains, measured by code. Judge whether a listener would recognise the prompt in it: genre identity (tempo, groove, bass idiom, scale, signature device), mood (mode brightness, tempo, register, articulation), dramaturgy (form, energy curve, contrast between verse and chorus, intro and ending), and the hook. Be concrete and short. Answer in German.
+- assessment: 2-3 sentences.
+- fit: 1-5, how well the song matches the prompt.
+- issues: up to 4 concrete problems, each one sentence.
+- suggestion: one change request, phrased as an instruction for the arranger (for example "Gib dem Refrain einen Halftime-Groove und lass die Drums im letzten Takt vor dem Refrain aussetzen."). It will be applied to the brief.
+
+Building blocks the arranger can use:
+
+${menuText()}`;
+}
+
+export function critiquePrompt(prompt, description) {
+  return `Prompt: ${prompt}\n\nThe song:\n${description}`;
+}
