@@ -1,268 +1,185 @@
-// Style specs for the pilot (docs/plan.md): heavy metal, synthwave,
-// platformer overworld, Celtic jig. Ordered by identity weight
-//: rhythm core, drums, bass,
-// lead, scale, harmony, signature. Values are research defaults ("D") to be
-// tuned by ear.
+// Styles are weights over the shared library plus a signature:
+// entries the main sections must use, so the genre stays recognisable
+// while everything else varies. Research ranks identity: tempo and groove,
+// then bass idiom, then scale and one signature device
+//. Weights are defaults to
+// tune by ear.
 //
-// Grids: one character per 16th. 4/4 bars have 16 steps, 6/8 bars 12.
-// Drum letters: k kick, s snare, h hat, o open hat, c clap, t/T toms, x crash.
-// Bass roles: R root, 5 fifth, 8 octave, 3 chord third, b7, A approach to the
-//   next chord's root, _ hold, . rest.
-// Rhythm cells: x onset, _ hold, . rest.
+// Fields: meter weights, tempo band (bpm per felt beat), modes, grooves,
+// bass, feels (melody rhythm), progressions, textures by kind, transitions,
+// forms, palette (lead, bass, snare, chords: 'power' | 'triad'), personas,
+// signature { grooves, bass, lead }, keywords (prompt words, English and
+// German), moods (affinity used when the prompt names no style), groove
+// (one line for the listening cues), sevenths, keyChange.
 
 export const STYLES = {
   metal: {
-    id: 'metal',
     name: 'Heavy Metal',
     family: 'metal',
-    meter: { beats: 4, unit: 4, steps: 16, strong: 4 },
+    meter: { '4/4': 1 },
     tempo: [112, 176],
     modes: { aeolian: 3, phrygian: 2, harmonic: 2, dorian: 1, ionian: 0.6 },
+    grooves: { rock: 2, metal_gallop: 3, double_kick: 2, thrash_skank: 1.5, halftime: 1, d_beat: 1, blast: 0.5 },
+    bass: { root_8ths: 2, gallop: 3, pedal_16ths: 2, half_note: 1, riff_unison: 2, whole_note: 0.5 },
+    feels: { riff: 3, straight: 2, running: 1, long: 1, syncopated: 0.5 },
     progressions: {
-      minor: {
-        verse: [['i', 'i', 'bVI', 'bVII'], ['i', 'bVII', 'bVI', 'bVII'], ['i', 'bII', 'i', 'bII'], ['i', 'iv', 'bVI', 'bVII']],
-        chorus: [['bVI', 'bVII', 'i', 'i'], ['i', 'bVI', 'bIII', 'bVII'], ['bVI', 'bVII', 'bIII', 'bVI']],
-        bridge: [['iv', 'bVI', 'bVII', 'bVII'], ['bII', 'bII', 'i', 'i']],
-      },
-      major: {
-        verse: [['I', 'bVII', 'IV', 'I'], ['I', 'I', 'bVI', 'bVII']],
-        chorus: [['bVI', 'bVII', 'I', 'I'], ['I', 'V', 'vi', 'IV']],
-        bridge: [['vi', 'IV', 'V', 'V']],
-      },
+      minor_rise: 3, phrygian_vamp: 2, minor_four: 2, minor_shuttle: 2, victory_minor: 3, andalusian: 2, aeolian_loop: 1,
+      minor_epic: 1, minor_bridge: 1, phrygian_bridge: 2, mixolydian_rock: 2, victory_major: 2, pop_axis: 0.5, relative_bridge: 1, major_bridge: 1,
     },
-    power: true, // chords as power chords (root, fifth, octave)
-    forms: {
-      song: [['intro', 4], ['verse', 8], ['chorus', 8], ['verse', 8], ['chorus', 8], ['solo', 8], ['breakdown', 4], ['chorus', 8], ['outro', 2]],
-      short: [['intro', 2], ['verse', 8], ['chorus', 8], ['chorus', 8], ['outro', 2]],
-      loop: [['verse', 8], ['chorus', 8]],
+    textures: {
+      intro: { riff_solo: 3, countin: 2, cold_start: 2, staggered: 1.5, drum_groove: 1, arp_swell: 0.7, twin_lead: 1 },
+      main: { full: 4, call_response: 1, groove_chords: 0.5 },
+      breakdown: { halftime_break: 3, bass_alone: 2, drop_out: 1 },
+      build: { snare_build: 1 },
+      outro: { final_hit: 3, riff_out: 2, fade_layers: 1 },
     },
-    drums: {
-      levels: [
-        'x...............',
-        'k.h.s.h.k.h.s.h.',
-        'k.hks.h.k.kks.h.',
-        'kkkkskkkkkkkskkk',
-      ],
-      gallop: 'k.kkk.kkk.kkk.kk',
-      halftime: 'k.......s.......',
-      fills: ['k.h.s.h.s.ssTTtt', 'k.h.s.h.sssTTttt', 'kkkkskkkTTTTtttt'],
-    },
-    bass: {
-      idioms: [
-        { id: 'root_8ths', row: 'R.R.R.R.R.R.R.R.', energy: [0.3, 0.7] },
-        { id: 'gallop', row: 'R.RRR.RRR.RRR.RR', energy: [0.5, 1] },
-        { id: 'pedal_16ths', row: 'RRRRRRRRRRRRRRRR', energy: [0.7, 1] },
-        { id: 'half_note', row: 'R_______R_______', energy: [0, 0.4] },
-      ],
-      inst: ['bass', 'slap'],
-      octave: 1,
-    },
-    lead: {
-      inst: { verse: ['lead', 'hubbard'], chorus: ['saw', 'hubbard'], solo: ['saw'] },
-      cells: [
-        'x_x_x_x_x___x_x_', 'x___x_x_x_x_x___', 'x_xxx_x_x_xxx___', 'x_x_x_x_x_x_x_x_',
-        'x___x___x_x_x___', 'x_______x___x_x_', 'x_xxx_xxx_xxx_x_',
-      ],
-      range: [52, 79],
-      steps: 0.55, // share of stepwise motion
-      leapMax: 12,
-    },
-    arp: { cells: ['x_______________', 'x_______x_______'], inst: 'pow' },
-    roles: {
-      intro: 'DBA', verse: 'DBL', chorus: 'DBL', solo: 'DBL', breakdown: 'DBA', bridge: 'DBA', outro: 'DBA',
-    },
-    filter: { cutoff: [500, 1600], resonance: 10 },
+    transitions: { fill: 3, stop: 1.5, dropout: 1, none: 0.5 },
+    forms: { metal: 3, verse_chorus: 1.5, verse_pre_chorus: 1 },
+    palette: { lead: { lead: 1, saw: 2, hubbard: 2, brass: 0.3 }, bass: { bass: 2, slap: 1 }, snare: { snare2: 3, snare: 1 }, chords: 'power' },
+    personas: { none: 3, hubbard: 1, tel: 1 },
+    signature: { grooves: ['metal_gallop', 'double_kick', 'thrash_skank'], bass: ['gallop', 'pedal_16ths', 'riff_unison'] },
+    keywords: ['metal', 'heavy', 'thrash', 'headbang', 'riff', 'guitar', 'shred', 'iron maiden', 'metallica', 'power metal', 'speed metal', 'doom', 'gitarre', 'headbanger'],
+    moods: { aggressive: 2, menacing: 1, epic: 0.6 },
     groove: 'Rock-Backbeat, in lauten Teilen Galopp und Doublebass',
+    filter: { cutoff: [500, 1600], resonance: 10 },
+    keyChange: 0.2,
   },
 
   synthwave: {
-    id: 'synthwave',
     name: 'Synthwave',
     family: 'synth',
-    meter: { beats: 4, unit: 4, steps: 16, strong: 4 },
+    meter: { '4/4': 1 },
     tempo: [84, 124],
     modes: { aeolian: 3, dorian: 2, ionian: 1.5, lydian: 1, mixolydian: 0.6 },
+    grooves: { synth_gated: 4, four_floor: 2, halftime: 1, disco: 1, breakbeat: 0.5 },
+    bass: { octave_8ths: 3, octave_16th: 2, driving_8ths: 2, sustained: 2, whole_note: 1, trance_offbeat: 1, pedal_16ths: 1 },
+    feels: { long: 3, syncopated: 3, straight: 1, dotted: 0.5 },
     progressions: {
-      minor: {
-        verse: [['i', 'bVI', 'bIII', 'bVII'], ['i', 'i', 'bVI', 'bVII'], ['i', 'bVII', 'bVI', 'bVII'], ['i', 'iv', 'bVI', 'bVII']],
-        chorus: [['bVI', 'bVII', 'i', 'i'], ['bVI', 'bIII', 'bVII', 'i'], ['i', 'bVI', 'bIII', 'bVII']],
-        bridge: [['iv', 'iv', 'bVI', 'bVII'], ['bVI', 'bVI', 'bVII', 'bVII']],
-      },
-      major: {
-        verse: [['I', 'V', 'vi', 'IV'], ['vi', 'IV', 'I', 'V'], ['I', 'iii', 'IV', 'V']],
-        chorus: [['IV', 'V', 'iii', 'vi'], ['vi', 'IV', 'I', 'V'], ['IV', 'I', 'V', 'vi']],
-        bridge: [['ii', 'IV', 'V', 'V']],
-      },
+      aeolian_loop: 4, minor_rise: 2, minor_shuttle: 2, minor_four: 2, victory_minor: 2, minor_epic: 2, minor_lament: 2, dorian_vamp: 1, dorian_rock: 1,
+      pop_axis: 2, sensitive: 2, royal_road: 2, ascend: 1, lydian_float: 1, minor_bridge: 1, major_bridge: 1, relative_bridge: 1,
     },
-    sevenths: 0.35, // probability of colouring chords with 7ths (raised by dreamy moods)
-    forms: {
-      song: [['intro', 4], ['verse', 8], ['chorus', 8], ['verse', 8], ['chorus', 8], ['bridge', 8], ['chorus', 8], ['outro', 4]],
-      short: [['intro', 4], ['verse', 8], ['chorus', 8], ['outro', 4]],
-      loop: [['verse', 8], ['chorus', 8]],
+    textures: {
+      intro: { arp_swell: 3, staggered: 2, drum_groove: 2, twin_lead: 1.5, cold_start: 0.7 },
+      main: { full: 2, hubbard: 3, call_response: 1.5, groove_chords: 0.5 },
+      breakdown: { arp_lead: 3, bass_alone: 2, drop_out: 1 },
+      build: { snare_build: 2 },
+      outro: { arp_out: 3, fade_layers: 2, final_hit: 1 },
     },
-    drums: {
-      levels: [
-        'k.......k.......',
-        'k...s...k...s...',
-        'k.h.s.h.k.h.s.h.',
-        'k.h.s.hhk.h.s.ho',
-      ],
-      fills: ['k.h.s.h.s.s.ssss', 'k.h.s.h.k.TTtttt'],
-    },
-    bass: {
-      idioms: [
-        { id: 'octave_8ths', row: 'R.8.R.8.R.8.R.8.', energy: [0.4, 0.8] },
-        { id: 'octave_16th', row: 'R8R8R8R8R8R8R8R8', energy: [0.6, 1] },
-        { id: 'driving_8ths', row: 'R.R.R.R.R.R.R.R.', energy: [0.4, 1] },
-        { id: 'sustained', row: 'R_______R___5___', energy: [0, 0.45] },
-      ],
-      inst: ['bass', 'sub'],
-      octave: 1,
-    },
-    lead: {
-      inst: { verse: ['lead', 'pluck'], chorus: ['saw', 'brass'], bridge: ['bell'] },
-      cells: [
-        'x_____x_x___x___', 'x___x___x_x_____', 'x_______x___x_x_', '..x_x_x_x_____x_',
-        'x_x___x_____x___', 'x___________x_x_', 'x_____x_____x___',
-      ],
-      range: [57, 81],
-      steps: 0.5,
-      leapMax: 9,
-    },
-    arp: { cells: ['x_______________', 'x_______x_______', 'x_x_x_x_x_x_x_x_'], inst: 'triad' },
-    roles: {
-      intro: 'DBA', verse: 'DBL', chorus: 'MAL', bridge: 'DBA', outro: 'DBA',
-    },
-    filter: { cutoff: [350, 1400], resonance: 12 },
+    transitions: { fill: 2, dropout: 2, stop: 0.5, none: 1 },
+    forms: { verse_chorus: 3, verse_pre_chorus: 2, edm: 1 },
+    palette: { lead: { lead: 2, pluck: 1.5, saw: 2, brass: 2, bell: 1 }, bass: { bass: 2, sub: 2 }, snare: { snare: 2, clap: 2 }, chords: 'triad' },
+    personas: { none: 3, hubbard: 1, tel: 1, galway: 0.5 },
+    signature: { grooves: ['synth_gated', 'four_floor'], bass: ['octave_8ths', 'octave_16th', 'driving_8ths'] },
+    keywords: ['synthwave', 'outrun', 'retrowave', '80s', '80er', 'eighties', 'neon', 'cyberpunk', 'miami', 'vaporwave', 'synth', 'synthpop', 'italo', 'night drive', 'blade runner', 'darksynth'],
+    moods: { nostalgic: 2, dreamy: 1.5, melancholic: 1, mysterious: 0.8 },
+    base: 0.3,
     groove: 'gleichmäßige Kick mit trockener Snare auf 2 und 4',
+    filter: { cutoff: [350, 1400], resonance: 12 },
+    sevenths: 0.35,
+    keyChange: 0.15,
   },
 
   platformer: {
-    id: 'platformer',
     name: 'Platformer',
     family: 'game',
-    meter: { beats: 4, unit: 4, steps: 16, strong: 4 },
+    meter: { '4/4': 1 },
     tempo: [116, 168],
     modes: { ionian: 3, mixolydian: 2, lydian: 1, dorian: 1, aeolian: 0.6 },
+    grooves: { platform_light: 4, rock: 1, march: 1, disco: 0.5 },
+    bass: { oom_pah: 3, bouncy: 3, walk: 2, skip: 2, motown: 1 },
+    feels: { dotted: 3, straight: 2, running: 1.5, syncopated: 1 },
     progressions: {
-      major: {
-        verse: [['I', 'IV', 'V', 'I'], ['I', 'vi', 'IV', 'V'], ['I', 'V', 'IV', 'V'], ['I', 'iii', 'IV', 'V']],
-        chorus: [['IV', 'V', 'iii', 'vi'], ['IV', 'V', 'I', 'I'], ['vi', 'IV', 'V', 'I']],
-        bridge: [['ii', 'V', 'I', 'vi'], ['IV', 'iv', 'I', 'V']],
-      },
-      minor: {
-        verse: [['i', 'bVII', 'bVI', 'V'], ['i', 'iv', 'i', 'V'], ['i', 'bVI', 'bVII', 'i']],
-        chorus: [['bVI', 'bVII', 'i', 'i'], ['iv', 'V', 'i', 'i']],
-        bridge: [['bVI', 'bVI', 'V', 'V']],
-      },
+      classic_cadence: 3, pop_axis: 2, doo_wop: 2, rock_shuttle: 2, lift: 3, ascend: 2, royal_road: 1, victory_major: 1, jazz_turn: 0.7,
+      lydian_float: 0.5, relative_bridge: 1.5, major_bridge: 1, andalusian: 1.5, harmonic_cadence: 2, minor_shuttle: 1, victory_minor: 1, minor_bridge: 1,
     },
-    forms: {
-      song: [['intro', 2], ['verse', 8], ['chorus', 8], ['verse', 8], ['bridge', 8], ['chorus', 8], ['verse', 8], ['outro', 2]],
-      short: [['intro', 2], ['verse', 8], ['chorus', 8], ['outro', 2]],
-      loop: [['verse', 8], ['chorus', 8]],
+    textures: {
+      intro: { staggered: 2, countin: 2, cold_start: 2, twin_lead: 1.5, drum_groove: 1 },
+      main: { full: 2, hubbard: 3, call_response: 1, no_drums: 0.5 },
+      breakdown: { arp_lead: 2, bass_alone: 1 },
+      build: { snare_build: 1 },
+      outro: { final_hit: 3, riff_out: 2 },
     },
-    drums: {
-      levels: [
-        'h...h...h...h...',
-        'k...s...k...s...',
-        'k.h.s.h.k.k.s.h.',
-        'k.hhs.hhk.k.s.hh',
-      ],
-      fills: ['k.h.s.h.s.TTT.tt', 'k...s...s.s.ssss'],
-    },
-    bass: {
-      idioms: [
-        { id: 'oom_pah', row: 'R...5...R...5...', energy: [0.2, 0.7] },
-        { id: 'bouncy', row: 'R.5.8.5.R.5.8.5.', energy: [0.5, 1] },
-        { id: 'walk', row: 'R...3...5...A...', energy: [0.3, 0.8] },
-        { id: 'skip', row: 'R..R..5.R..R..A.', energy: [0.5, 1] },
-      ],
-      inst: ['sub', 'bass'],
-      octave: 1,
-    },
-    lead: {
-      inst: { verse: ['lead', 'pluck'], chorus: ['brass', 'lead'], bridge: ['bell'] },
-      cells: [
-        'x_.xx_x_x_.xx___', 'x.x.x_x_x.x.x___', 'x__x__x_x_x_x___', 'x_x_x_x_x___x___',
-        'x.x.x.x.x_x_x___', 'x__x__x_x_______', 'x_x_x___x_x_x___',
-      ],
-      range: [60, 84],
-      steps: 0.5,
-      leapMax: 12,
-    },
-    arp: { cells: ['x___x___x___x___', 'x_______x_______', 'x.x.x.x.x.x.x.x.'], inst: 'triad' },
-    roles: {
-      intro: 'DBA', verse: 'DBL', chorus: 'MAL', bridge: 'DBL', outro: 'DBA',
-    },
-    filter: { cutoff: [900, 2000], resonance: 6 },
+    transitions: { fill: 3, stop: 1, dropout: 1, none: 1 },
+    forms: { game_loop: 4, short: 1, verse_chorus: 1, aaba: 1 },
+    palette: { lead: { lead: 2, pluck: 2, brass: 1.5, bell: 1 }, bass: { sub: 2, bass: 1.5 }, snare: { snare: 2, snare2: 1 }, chords: 'triad' },
+    personas: { none: 3, hubbard: 1, galway: 1 },
+    signature: { grooves: ['platform_light'], bass: ['oom_pah', 'bouncy', 'skip'] },
+    keywords: ['platformer', 'platform game', 'jump and run', "jump'n'run", 'jump n run', 'mario', 'sonic', 'giana', 'overworld', 'video game', 'videogame', 'game music', 'spielmusik', 'chiptune', '8-bit', '8 bit', 'arcade', 'level'],
+    moods: { happy: 1.5, playful: 2, triumphant: 0.8, hopeful: 0.6 },
     groove: 'leichte, hüpfende Drums, Melodie mit punktierten Sprüngen',
+    filter: { cutoff: [900, 2000], resonance: 6 },
+    keyChange: 0.1,
   },
 
   jig: {
-    id: 'jig',
     name: 'Celtic Jig',
     family: 'folk',
-    meter: { beats: 6, unit: 8, steps: 12, strong: 6 },
-    tempo: [96, 126], // dotted quarter
+    meter: { '6/8': 1 },
+    tempo: [96, 126],
     modes: { ionian: 2.5, mixolydian: 2, dorian: 2, aeolian: 1 },
+    grooves: { bodhran: 4, jig_kit: 1 },
+    bass: { drone: 2, one_four: 3, oom_pah6: 2, run6: 1 },
+    feels: { running: 4, straight: 2, long: 0.5 },
     progressions: {
-      major: {
-        verse: [['I', 'I', 'V', 'V'], ['I', 'IV', 'I', 'V'], ['I', 'bVII', 'I', 'bVII']],
-        chorus: [['IV', 'I', 'V', 'I'], ['I', 'IV', 'V', 'I'], ['vi', 'IV', 'V', 'I']],
-        bridge: [['IV', 'IV', 'I', 'V']],
-      },
-      minor: {
-        verse: [['i', 'bVII', 'i', 'bVII'], ['i', 'i', 'bVII', 'bVII'], ['i', 'IV', 'i', 'bVII']],
-        chorus: [['bIII', 'bVII', 'i', 'i'], ['bVI', 'bVII', 'i', 'i'], ['i', 'bVII', 'bIII', 'i']],
-        bridge: [['iv', 'bVII', 'i', 'i']],
-      },
+      folk_one_four: 3, classic_cadence: 2, double_tonic: 3, mixolydian_rock: 1, double_tonic_m: 3, dorian_vamp: 2, dorian_rock: 1.5,
+      harmonic_cadence: 1, lift: 1, relative_bridge: 1, minor_bridge: 1,
     },
-    forms: {
-      // A and B parts, each played twice, the whole tune twice (docs: REEL/JIG)
-      song: [['intro', 2], ['verse', 8], ['verse', 8], ['chorus', 8], ['chorus', 8], ['verse', 8], ['verse', 8], ['chorus', 8], ['chorus', 8], ['outro', 2]],
-      short: [['intro', 2], ['verse', 8], ['chorus', 8], ['outro', 2]],
-      loop: [['verse', 8], ['chorus', 8]],
+    textures: {
+      intro: { drone_lead: 3, countin: 2, riff_solo: 2, twin_lead: 1 },
+      main: { full: 3, no_drums: 2 },
+      breakdown: { arp_lead: 1, bass_alone: 1 },
+      build: { snare_build: 0.5 },
+      outro: { riff_out: 2, final_hit: 2, arp_out: 1 },
     },
-    partNames: { verse: 'A part', chorus: 'B part' },
-    drums: {
-      levels: [
-        '............',
-        't.....t.....',
-        't.T.T.t.T.T.',
-        't.TTT.t.TTT.',
-      ],
-      fills: ['t.T.T.t.TTtt', 't.T.T.TTTttt'],
-    },
-    bass: {
-      idioms: [
-        { id: 'drone', row: 'R___________', energy: [0, 0.5] },
-        { id: 'one_four', row: 'R.....5.....', energy: [0.2, 0.8] },
-        { id: 'oom_pah', row: 'R...5.R...5.', energy: [0.5, 1] },
-      ],
-      inst: ['drone', 'sub'],
-      octave: 1,
-    },
-    lead: {
-      inst: { verse: ['whistle', 'fiddle'], chorus: ['fiddle', 'whistle'] },
-      cells: [
-        'x_x_x_x_x_x_', 'x_x_x_x___x_', 'x___x_x_x_x_', 'x_xxx_x_x_x_', 'x_x_x_x_x___', 'x___x_x___x_',
-      ],
-      range: [62, 86],
-      steps: 0.62,
-      leapMax: 9,
-    },
-    arp: { cells: ['x___________', 'x.....x.....'], inst: 'triad' },
-    roles: {
-      intro: 'BAL', verse: 'DBL', chorus: 'DBL', bridge: 'BAL', outro: 'BAL',
-    },
-    filter: { cutoff: [700, 1700], resonance: 6 },
+    transitions: { fill: 2, none: 2, stop: 0.5 },
+    forms: { folk_aabb: 4, short: 1 },
+    partNames: { verse: 'A-Teil', chorus: 'B-Teil' },
+    palette: { lead: { whistle: 3, fiddle: 3 }, bass: { drone: 2, sub: 2 }, snare: { snare: 1 }, chords: 'triad' },
+    personas: { none: 3, galway: 1 },
+    signature: { grooves: ['bodhran'], bass: ['one_four', 'oom_pah6', 'drone'], lead: ['whistle', 'fiddle'] },
+    keywords: ['celtic', 'irish', 'jig', 'reel', 'folk', 'fiddle', 'tavern', 'pub', 'scottish', 'bagpipe', 'medieval', 'bard', 'keltisch', 'irisch', 'schottisch', 'mittelalter', 'volksmusik', 'dudelsack', 'taverne', 'kneipe'],
+    moods: { playful: 0.5, happy: 0.4 },
     groove: '6/8-Schwung in laufenden Achteln, Bodhrán-artige Toms',
+    filter: { cutoff: [700, 1700], resonance: 6 },
   },
 };
 
 export const STYLE_IDS = Object.keys(STYLES);
 
-// Section energy (0-1) before mood and prompt offsets.
-export const SECTION_ENERGY = {
-  intro: 0.3, verse: 0.55, chorus: 0.85, bridge: 0.45, solo: 0.9, breakdown: 0.3, outro: 0.3,
-};
+// Mix two styles: weights blend, the primary keeps meter and its groove and
+// bass signature, the secondary contributes its lead signature and colour.
+export function blendStyles(primaryId, secondaryId, amount) {
+  const a = STYLES[primaryId];
+  if (!secondaryId || !amount) return { id: primaryId, ...a };
+  const b = STYLES[secondaryId];
+  const mix = (x = {}, y = {}) => {
+    const out = {};
+    for (const k of new Set([...Object.keys(x), ...Object.keys(y)])) out[k] = (x[k] || 0) * (1 - amount) + (y[k] || 0) * amount;
+    return out;
+  };
+  const textures = {};
+  for (const kind of new Set([...Object.keys(a.textures), ...Object.keys(b.textures)])) textures[kind] = mix(a.textures[kind], b.textures[kind]);
+  return {
+    ...a,
+    id: primaryId,
+    blend: { style: secondaryId, amount },
+    name: `${a.name} × ${b.name}`,
+    tempo: [a.tempo[0] + (b.tempo[0] - a.tempo[0]) * amount * 0.5, a.tempo[1] + (b.tempo[1] - a.tempo[1]) * amount * 0.5],
+    modes: mix(a.modes, b.modes),
+    grooves: mix(a.grooves, b.grooves),
+    bass: mix(a.bass, b.bass),
+    feels: mix(a.feels, b.feels),
+    progressions: mix(a.progressions, b.progressions),
+    textures,
+    transitions: mix(a.transitions, b.transitions),
+    palette: {
+      lead: mix(a.palette.lead, b.palette.lead),
+      bass: mix(a.palette.bass, b.palette.bass),
+      snare: mix(a.palette.snare, b.palette.snare),
+      chords: a.palette.chords,
+    },
+    signature: { grooves: a.signature.grooves, bass: a.signature.bass, lead: b.signature.lead || a.signature.lead },
+    groove: `${a.groove}, mit Farben von ${b.name}`,
+    sevenths: ((a.sevenths || 0) + (b.sevenths || 0)) / 2,
+  };
+}

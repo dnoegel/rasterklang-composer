@@ -9,6 +9,11 @@
 
 import { SCALES, nearestIndex, noteName } from './theory.js';
 import { Rng } from './prng.js';
+import { CELLS } from './library/cells.js';
+import { SECTION_ENERGY } from './library/forms.js';
+
+const LEAD_RANGE = { metal: [52, 79], synth: [57, 81], game: [60, 84], folk: [62, 86] };
+const STEP_SHARE = { folk: 0.62, metal: 0.55, synth: 0.5, game: 0.5 };
 
 const TEMPLATES = {
   8: {
@@ -90,46 +95,65 @@ function pickCell(cells, density, rng, exclude) {
   return rng.weighted(weights);
 }
 
-// Build (or reuse) the motif set for one section type.
-function motifSet(section, style, target, rng, memory) {
-  const key = section.type;
-  if (memory[key]) return memory[key];
-  const steps = style.meter.steps;
-  const density = Math.max(0, Math.min(1, section.energy * 0.9 + (section.type === 'solo' ? 0.3 : 0) - target.legato * 0.15
-    - (section.type === 'chorus' ? 0.15 : 0)));
-  const cellA = pickCell(style.lead.cells, density, rng);
-  const cellB = pickCell(style.lead.cells, density, rng, cellA);
-  const cellC = pickCell(style.lead.cells, Math.min(1, density + 0.15), rng, cellA);
-  const templates = TEMPLATES[section.bars] || TEMPLATES[8];
+function themeMotif(bar) {
+  const cell = bar.map((t) => (typeof t === 'number' ? 'x' : t === '_' ? '_' : '.')).join('');
+  return { cell, degrees: bar.filter((t) => typeof t === 'number'), abs: true };
+}
+
+// Build (or reuse) the motif set for one kind of material (a section type).
+// An intro that previews the verse uses the verse's set, so the riff it
+// plays is the riff the verse will play.
+function motifSet(material, section, plan, rng, memory) {
+  if (memory[material]) return memory[material];
+  const { style, target } = plan;
+  const steps = plan.meter.steps;
+  const energy = material === section.type ? section.energy : Math.min(1, (SECTION_ENERGY[material] || 0.6) + target.energyBias * 0.7);
+  const density = Math.max(0, Math.min(1, energy * 0.9 + (material === 'solo' ? 0.3 : 0) - target.legato * 0.15 - (material === 'chorus' ? 0.15 : 0)));
+  const feelCells = CELLS[plan.meterId][section.feel] || Object.values(CELLS[plan.meterId])[0];
+  const pool = material === 'solo' ? [...feelCells, ...(CELLS[plan.meterId].running || [])] : feelCells;
+  const cellA = pickCell(pool, density, rng);
+  const cellB = pickCell(pool, density, rng, cellA);
+  const cellC = pickCell(pool, Math.min(1, density + 0.15), rng, cellA);
+  const templates = TEMPLATES[section.bars >= 8 ? 8 : section.bars >= 4 ? 4 : 2];
   const names = Object.keys(templates);
   let tplName = rng.pick(names);
-  if (style.family === 'metal' && section.type === 'verse' && templates.riff) tplName = rng.chance(0.6) ? 'riff' : tplName;
-  const motif = (cell) => ({ cell, steps: makeSteps(onsetsOf(cell).length, rng, style.lead.steps) });
+  if (style.family === 'metal' && material === 'verse' && templates.riff) tplName = rng.chance(0.6) ? 'riff' : tplName;
+  const share = style.stepShare || STEP_SHARE[style.family] || 0.55;
+  const motif = (cell) => ({ cell, steps: makeSteps(onsetsOf(cell).length, rng, share) });
   const a = motif(cellA);
   const set = {
     template: templates[tplName] || TEMPLATES[8].period,
     templateName: tplName,
     a,
-    a2: { cell: cellA, steps: [...a.steps.slice(0, -2), ...makeSteps(3, rng, style.lead.steps).slice(1).map((s) => s + a.steps[Math.max(0, a.steps.length - 3)])].slice(0, a.steps.length) },
+    a2: { cell: cellA, steps: [...a.steps.slice(0, -2), ...makeSteps(3, rng, share).slice(1).map((x) => x + a.steps[Math.max(0, a.steps.length - 3)])].slice(0, a.steps.length) },
     b: motif(cellB),
     c: motif(cellC),
-    hc: { cell: cadenceCell(cellA, steps), steps: makeSteps(onsetsOf(cadenceCell(cellA, steps)).length, rng, style.lead.steps) },
-    pac: { cell: cadenceCell(cellB, steps), steps: makeSteps(onsetsOf(cadenceCell(cellB, steps)).length, rng, style.lead.steps) },
+    hc: { cell: cadenceCell(cellA, steps), steps: makeSteps(onsetsOf(cadenceCell(cellA, steps)).length, rng, share) },
+    pac: { cell: cadenceCell(cellB, steps), steps: makeSteps(onsetsOf(cadenceCell(cellB, steps)).length, rng, share) },
     archScale: rng.float(0.7, 1.2),
-    lift: section.type === 'chorus' || section.type === 'solo' ? 3 : 0,
+    lift: material === 'chorus' || material === 'solo' ? 3 : 0,
   };
-  set.b2 = { cell: set.b.cell, steps: set.b.steps.map((s, i) => (i === set.b.steps.length - 1 ? s - 1 : s)) };
-  memory[key] = set;
+  set.b2 = { cell: set.b.cell, steps: set.b.steps.map((x, i) => (i === set.b.steps.length - 1 ? x - 1 : x)) };
+  // A theme from the brief replaces the generated main motif.
+  const theme = plan.themes?.[material];
+  if (theme) {
+    set.a = themeMotif(theme.bars[0]);
+    set.a2 = theme.bars[1] ? themeMotif(theme.bars[1]) : set.a;
+    set.themed = true;
+  }
+  memory[material] = set;
   return set;
 }
 
 // Returns per bar { tokens: [...], notes: [...] } for the lead voice.
-export function renderMelody(section, plan, rng, memory) {
-  const { style, target, keyRoot, mode } = plan;
-  const steps = style.meter.steps;
-  const strong = style.meter.strong;
-  const set = motifSet(section, style, target, rng, memory);
-  const [lo0, hi0] = style.lead.range;
+export function renderMelody(section, plan, rng, memory, material = section.type) {
+  const { style, target, mode } = plan;
+  const keyRoot = section.keyRoot ?? plan.keyRoot;
+  const steps = plan.meter.steps;
+  const strong = plan.meter.strong;
+  const set = motifSet(material, section, plan, rng, memory);
+  const leapMax = style.leapMax || 12;
+  const [lo0, hi0] = style.leadRange || LEAD_RANGE[style.family] || [57, 81];
   const shift = Math.round(target.register);
   const lo = lo0 + shift;
   const hi = hi0 + shift;
@@ -145,6 +169,9 @@ export function renderMelody(section, plan, rng, memory) {
   let prev = null;
   const basePool = poolFor(lo, hi, new Set(SCALES[mode].map((s) => (keyRoot + s) % 12)));
   const baseIdx = Math.floor(basePool.length * 0.35) + set.lift;
+  // tonic near the middle of the range, for themes written as degrees
+  let tonicIdx = basePool.findIndex((n, i) => i >= basePool.length * 0.3 && n % 12 === keyRoot);
+  if (tonicIdx < 0) tonicIdx = basePool.findIndex((n) => n % 12 === keyRoot);
 
   for (let b = 0; b < section.bars; b += 1) {
     const chord = section.chords[b];
@@ -153,7 +180,7 @@ export function renderMelody(section, plan, rng, memory) {
     let label = set.template[b % set.template.length];
     if (variation === 'answer' && b === section.bars - 2) label = 'c';
     const motif = set[label] || set.a;
-    const anchor = Math.round(ARCH[Math.floor((b / section.bars) * 8) % 8] * set.archScale);
+    const anchor = motif.abs ? 0 : Math.round(ARCH[Math.floor((b / section.bars) * 8) % 8] * set.archScale);
     const onsets = onsetsOf(motif.cell);
     const tokens = [];
     const notes = [];
@@ -161,7 +188,11 @@ export function renderMelody(section, plan, rng, memory) {
     for (let i = 0; i < steps; i += 1) {
       const c = motif.cell[i];
       if (c === 'x') {
-        const degree = baseIdx + anchor + motif.steps[k];
+        let degree;
+        if (motif.abs) {
+          const d = motif.degrees[k] ?? 1;
+          degree = tonicIdx + (d > 0 ? d - 1 : -d - 1 - 7);
+        } else degree = baseIdx + anchor + motif.steps[k];
         // map the base-pool degree into this bar's pool by pitch
         const approx = basePool[Math.max(0, Math.min(basePool.length - 1, degree))];
         let idx = nearestIndex(pool, approx);
@@ -172,7 +203,8 @@ export function renderMelody(section, plan, rng, memory) {
           let targets = chord.tones;
           if (isLast && label === 'pac' && b === section.bars - 1) targets = [keyRoot];
           else if (isLast && label === 'hc') targets = [(keyRoot + 7) % 12, (keyRoot + 2) % 12, ...chord.tones];
-          const moving = k > 0 && motif.steps[k] !== motif.steps[k - 1];
+          const seq = motif.abs ? motif.degrees : motif.steps;
+          const moving = k > 0 && seq[k] !== seq[k - 1];
           let best = idx;
           let dist = Infinity;
           pool.forEach((n, j) => {
@@ -184,7 +216,7 @@ export function renderMelody(section, plan, rng, memory) {
           idx = best;
         }
         let pitch = pool[idx];
-        if (prev !== null && Math.abs(pitch - prev) > style.lead.leapMax) pitch += pitch > prev ? -12 : 12;
+        if (prev !== null && Math.abs(pitch - prev) > leapMax) pitch += pitch > prev ? -12 : 12;
         pitch = Math.max(lo, Math.min(hi, pitch)) + octave;
         prev = pitch;
         tokens.push(noteName(pitch));
@@ -195,12 +227,12 @@ export function renderMelody(section, plan, rng, memory) {
     }
     // Articulation from the mood: legato fills short rests, staccato cuts holds.
     // Seeded per section type and bar, so a repeated section repeats exactly.
-    const art = new Rng(plan.seed, plan.version, 'articulation', section.type, b);
+    const art = new Rng(plan.seed, plan.version, 'articulation', material, section.type, b);
     for (let i = 1; i < steps; i += 1) {
       if (tokens[i] === '_' && target.legato < 0 && art.chance(-target.legato * 0.5) && tokens[i - 1] !== '~') tokens[i] = '~';
       else if (tokens[i] === '~' && target.legato > 0 && tokens[i - 1] !== '~' && art.chance(target.legato * 0.7)) tokens[i] = '_';
     }
     bars.push({ tokens, notes, label, section: section.type });
   }
-  return { bars, template: set.templateName };
+  return { bars, template: set.templateName, themed: Boolean(set.themed) };
 }

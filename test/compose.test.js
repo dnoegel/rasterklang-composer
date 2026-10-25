@@ -49,6 +49,37 @@ describe('compose', () => {
     expect(String.fromCharCode(...sid.bytes.slice(0, 4))).toBe('PSID');
   });
 
+  it('blends two named styles, the last named leads', () => {
+    const i = parsePrompt('celtic metal');
+    expect(resolveStyle(i)).toBe('metal');
+    expect(i.blend).toEqual({ style: 'jig', amount: 0.35 });
+  });
+
+  it('varies intros between seeds', () => {
+    const intros = new Set([1, 2, 3, 4, 5, 6].map((s) => compose('heavy metal', s).brief.sections[0].texture));
+    expect(intros.size).toBeGreaterThanOrEqual(3);
+  });
+
+  it('repairs a broken brief instead of failing', async () => {
+    const { composeBrief } = await import('../src/gen/compose.js');
+    const tune = composeBrief({
+      style: 'metal', tempo: 400, meter: '5/4', keyRoot: 4, mode: 'nonsense',
+      sections: [
+        { type: 'intro', bars: 3, texture: 'riff_solo', chords: ['i', 'bVII'] },
+        { type: 'verse', bars: 8, groove: 'bodhran', chords: ['i', 'xyz', 'bVI'] },
+        { type: 'chorus', bars: 8, chords: [] },
+        { type: 'outro', bars: 2 },
+      ],
+      themes: { chorus: { notes: '5 _ 4 3 _ 1 2 3 _ _ 5 _ 6 _ 5 _' } },
+    }, { prompt: 'test', seed: 1 });
+    expect(tune.repairs.length).toBeGreaterThan(3);
+    expect(tune.plan.meterId).toBe('4/4');
+    expect(tune.plan.bpm).toBeLessThan(210);
+    expect(tune.plan.themes.chorus.bars[0]).toHaveLength(16);
+    const { frames } = renderFrames(tune.dsl, tune.plan.totalBars);
+    expect(frames.length).toBeGreaterThan(100);
+  });
+
   it('honours an explicit key', () => {
     const tune = compose('happy platformer level in D major', 1);
     expect(tune.plan.keyRoot).toBe(2);
