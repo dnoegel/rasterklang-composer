@@ -3,6 +3,7 @@
 // LLM path writes it. validateBrief repairs either, planFromBrief turns it
 // into the plan the renderer reads.
 
+import { VARIATIONS } from './melody.js';
 import { Rng } from './prng.js';
 import { MOODS } from './moods.js';
 import { STYLES, blendStyles } from './styles.js';
@@ -407,6 +408,7 @@ export function validateBrief(input) {
     if (!LEADS[s.lead] && !(s.lead === CUSTOM_LEAD && b.sound)) s.lead = Object.keys(style.palette.lead)[0];
     s.energyEnd = clamp(Number(s.energyEnd ?? s.energy), 0.05, 1);
     if (!FILTER_SHAPES[s.filter]) s.filter = 'follow';
+    if (!VARIATIONS[s.variation] || s.variation === 'auto') delete s.variation;
     for (const [field, alphabet, must] of [['drumPattern', 'kshocTtx.', 'kst'], ['bassPattern', 'R583b6A_.', 'R'], ['arpPattern', 'x_.', 'x']]) {
       if (s[field] === undefined || s[field] === null || s[field] === '') { delete s[field]; continue; }
       const bars = Array.isArray(s[field]) ? s[field] : cleanPattern(s[field], steps, alphabet, must);

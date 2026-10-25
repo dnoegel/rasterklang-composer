@@ -15,6 +15,7 @@ import { TEXTURES, TRANSITIONS, FILTER_SHAPES } from './library/textures.js';
 import { FORMS, SECTION_ENERGY } from './library/forms.js';
 import { LEADS, BASSES, SNARES, CUSTOM_LEAD } from './library/palettes.js';
 import { findArtist, artistSummary } from './hvsc-data.js';
+import { VARIATIONS } from './melody.js';
 
 const SECTION_TYPES = Object.keys(SECTION_ENERGY);
 const KEYS = KEY_NAMES;
@@ -64,7 +65,7 @@ export function briefSchema() {
         items: {
           type: 'object',
           additionalProperties: false,
-          required: ['type', 'bars', 'energy', 'energy_end', 'filter', 'texture', 'transition', 'groove', 'drums_pattern', 'bass', 'bass_pattern', 'arp_pattern', 'feel', 'lead', 'chords', 'chord_bars', 'transpose'],
+          required: ['type', 'bars', 'energy', 'energy_end', 'filter', 'texture', 'transition', 'groove', 'drums_pattern', 'bass', 'bass_pattern', 'arp_pattern', 'feel', 'lead', 'chords', 'chord_bars', 'transpose', 'variation'],
           properties: {
             type: en(SECTION_TYPES),
             bars: int,
@@ -83,6 +84,7 @@ export function briefSchema() {
             chords: { type: 'array', items: str },
             chord_bars: int,
             transpose: int,
+            variation: en(Object.keys(VARIATIONS)),
           },
         },
       },
@@ -144,6 +146,9 @@ ${progs}
 ## Moods
 ${Object.keys(MOODS).join(', ')}
 
+## Variations of a repeated section (field variation; the melody of a section type comes back each time it repeats)
+${lines(VARIATIONS, (v) => v)}
+
 ## Section types and default energy
 ${Object.entries(SECTION_ENERGY).map(([k, v]) => `${k} ${v}`).join(', ')}`;
 }
@@ -165,7 +170,7 @@ Rules:
 - Chords: roman numerals relative to the tonic, read against the major scale: lowercase minor (i, iv, v), b for flat (bVI, bVII, bIII, bII), suffixes 7, M7, m7 (use "ii7"), dim, sus2, sus4, 5. They should fit the mode. One chord per bar; the list repeats over the section. A section's chords list may be 2 to 16 entries.
 - chord_bars: 1 (one chord per bar) or 2 (each chord lasts two bars; slower harmonic rhythm, common in SID music).
 - transpose: 0, or 2 for a key change up a whole step on a late chorus.
-- Themes (optional but encouraged for the chorus, and the verse): "notes" is one token per step of 1 to 4 bars, space separated. Steps per bar: 4/4 = 16 (16th notes), 3/4 = 12, 6/8 = 12 (16th notes), 12/8 = 12 (8th triplets). Token: a scale degree 1-7 (8-14 for the octave above, -1 to -7 for the octave below), "_" holds the previous note, "." is a rest. Write a memorable hook: a few notes, repetition, mostly steps with one leap into a high point, ending on a stable degree (1, 3 or 5). Example 4/4 bar: "5 _ _ 3 4 _ 5 _ 6 _ 5 _ 3 _ _ _".
+- Themes (optional but encouraged for the chorus, and the verse): "notes" is one token per step of 1 to 4 bars, space separated. Steps per bar: 4/4 = 16 (16th notes), 3/4 = 12, 6/8 = 12 (16th notes), 12/8 = 12 (8th triplets). Token: a scale degree 1-7 (8-14 for the octave above, -1 to -7 for the octave below), "_" holds the previous note, "." is a rest. Write a memorable hook: a short motif that comes back, developed rather than copied (a sequence a step higher, a changed ending, a fragment), mostly steps with one leap into a high point, ending on a stable degree (1, 3 or 5). Give each song its own rhythm; the user prompt shows one example shape, do not copy it.
 - energy per section 0-1; intros, breakdowns and outros lower, choruses and solos higher.
 - Pick textures per section: intros, breakdowns, builds and outros have their own textures; main sections use main textures. Vary them: not every song starts the same way.
 - energy is where a section starts, energy_end where it ends (0-1): let pre-choruses and builds rise, choruses plateau or lift a little, outros fall. Drums, arpeggio density and the filter follow it bar by bar. filter: follow (default), open, close, wobble, steady.
@@ -173,6 +178,7 @@ Rules:
 - Themes may be 1 to 4 bars; a 3-4 bar theme is a full phrase and is played twice in an 8-bar section.
 - sound designs the lead "custom": wave pulse, saw or triangle (or "none" for no custom lead), attack/decay/release 0-12, sustain 0-15 (SID envelope nibbles: 0 fast, 12 slow), vibrato 0-3, pwm none/slow/medium/fast (pulse only). Use lead "custom" in the sections that should have this sound.
 - Textures: the chorus does not always need "full". counter, counter_nodrums and duet add a counter-melody under the lead; build_up_band brings the band in during the section. Vary textures between repeats of a section when it helps the story.
+- variation: how a repeated section's melody changes against its first time (the head of each phrase stays, so the hook is recognised). "auto" lets code choose; use "exact" only when a literal repeat is the point (a riff, a chant). Give the second and third chorus different variations when the story builds.
 - Forms: verse/chorus is not the only option. AABA, a through-composed piece, a chorus only at the end, or a single long build are fine when they fit the prompt.
 - reasoning: 2-4 short sentences on how your choices express the prompt (in english).
 - title: short, evocative, no real song or artist names. imagery: one line of the picture the music paints (english). liner_note: 1-2 sentences for the listener (english).
@@ -205,7 +211,27 @@ export const CONSTRAINTS = [
   'Design a custom lead sound that fits the imagery and use it for the main theme.',
   'Let one section build its energy from low to high within itself.',
   'Write a theme of four bars for the chorus.',
+  'Write the chorus hook as a sequence: a short figure, then the same figure a step higher or lower.',
+  'Let the chorus theme open with a leap of a fourth or more, then fall back by steps.',
+  'Write a syncopated hook with at least two notes off the beat.',
+  'Give every repeat of the chorus a different variation, ending with the octave.',
+  'Let the verse theme be a question and the chorus theme its answer: the same rhythm, a different contour.',
 ];
+
+// Example hook shapes: one per song, chosen from the
+// constraints, so the model does not copy a single example everywhere.
+export const THEME_EXAMPLES = [
+  '5 _ _ 3 4 _ 5 _ 6 _ 5 _ 3 _ _ _',
+  '1 _ 3 _ 5 _ _ _ 6 5 4 _ 3 _ . .',
+  '. . 3 _ 2 _ 1 _ 2 _ _ _ 5 _ _ _',
+  '8 _ _ _ 7 _ 6 _ 5 _ _ 4 3 _ _ _',
+  '3 3 _ 4 5 _ 3 _ . 2 _ 1 2 _ _ _',
+  '5 _ . 5 6 _ 5 _ 8 _ _ _ 7 _ 5 _',
+  '1 _ _ 2 3 _ _ 5 _ _ 4 _ 3 _ _ _',
+  '. 6 _ 5 . 6 _ 5 3 _ _ _ 2 _ 1 _',
+];
+const hashText = (t) => [...t].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
+export const themeExampleFor = (constraints) => THEME_EXAMPLES[hashText(constraints.join('|')) % THEME_EXAMPLES.length];
 
 export function drawConstraints(rand, n = 2) {
   const pool = [...CONSTRAINTS];
@@ -216,6 +242,7 @@ export function drawConstraints(rand, n = 2) {
 
 export function userPrompt(prompt, constraints, errors = null, melody = null) {
   let text = `Prompt: ${prompt}\n\nCreative constraints for this song (follow them if they do not contradict the prompt):\n${constraints.map((c) => `- ${c}`).join('\n')}`;
+  text += `\n\nOne possible hook shape in 4/4, for orientation only (write your own): "${themeExampleFor(constraints)}"`;
   const artist = findArtist(prompt);
   if (artist) {
     text += `\n\nMeasured facts to guide your choices (style ${artist.style}): ${artistSummary(artist)} Use the drum rows, bass rows and loops as patterns where they fit.`;
@@ -255,7 +282,7 @@ export function answerToBrief(answer, prompt) {
     sections: (answer.sections || []).map((x) => ({
       type: x.type, bars: x.bars, energy: x.energy, energyEnd: x.energy_end, filter: x.filter, texture: x.texture,
       transition: x.transition, groove: x.groove, bass: x.bass, feel: x.feel, lead: x.lead, chords: x.chords,
-      transpose: x.transpose, chordBars: x.chord_bars, drumPattern: x.drums_pattern, bassPattern: x.bass_pattern, arpPattern: x.arp_pattern,
+      transpose: x.transpose, chordBars: x.chord_bars, variation: x.variation, drumPattern: x.drums_pattern, bassPattern: x.bass_pattern, arpPattern: x.arp_pattern,
     })),
     themes,
   };
@@ -312,7 +339,7 @@ export function briefToAnswer(brief) {
       type: s.type, bars: s.bars, energy: s.energy, energy_end: s.energyEnd ?? s.energy, filter: s.filter || 'follow',
       texture: s.texture, transition: s.transition, groove: s.groove, drums_pattern: (s.drumPattern || []).join(''),
       bass: s.bass, bass_pattern: (s.bassPattern || []).join(''), arp_pattern: (s.arpPattern || []).join(''),
-      feel: s.feel, lead: s.lead, chords: s.chords, chord_bars: s.chordBars || 1, transpose: s.transpose || 0,
+      feel: s.feel, lead: s.lead, chords: s.chords, chord_bars: s.chordBars || 1, transpose: s.transpose || 0, variation: s.variation || 'auto',
     })),
     themes: Object.entries(brief.themes || {}).map(([section, t]) => ({ section, notes: t.notes })),
   };

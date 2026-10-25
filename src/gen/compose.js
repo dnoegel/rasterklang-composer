@@ -7,6 +7,7 @@ import { sampleBrief, validateBrief, planFromBrief, GENERATOR_VERSION } from './
 import { arrange } from './arrange.js';
 import { emitDsl } from './emit.js';
 import { measureLead } from './measure.js';
+import { measureVariety, varietyPenalty } from './variety.js';
 import { Rng } from './prng.js';
 import { KEY_NAMES } from './theory.js';
 import { GROOVES } from './library/grooves.js';
@@ -58,7 +59,7 @@ export function briefFromPrompt(prompt, seed = 1) {
 }
 
 // Render any brief (rule-based or LLM) into a tune.
-export function composeBrief(rawBrief, { prompt = '', seed = 1, intent = null, candidates = 8 } = {}) {
+export function composeBrief(rawBrief, { prompt = '', seed = 1, intent = null, candidates = 8, withLead = false, varietyWeight = 1 } = {}) {
   const { brief, repairs, errors } = validateBrief(rawBrief);
   const seedKey = `${seedKeyOf(prompt, seed)}|${brief.source || 'rules'}`;
   const plan = planFromBrief(brief, seedKey);
@@ -69,8 +70,9 @@ export function composeBrief(rawBrief, { prompt = '', seed = 1, intent = null, c
     const melodyRng = new Rng(seedKey, GENERATOR_VERSION, 'melody', k);
     const arrangement = arrange(plan, rng, melodyRng);
     const m = measureLead(arrangement.leadNotes);
-    const score = (m.ok ? 1 : 0) + m.score;
-    if (!best || score > best.score) best = { arrangement, measure: m, score, candidate: k };
+    const v = measureVariety(plan, arrangement.leadNotes);
+    const score = (m.ok ? 1 : 0) + m.score - varietyPenalty(v) * varietyWeight;
+    if (!best || score > best.score) best = { arrangement, measure: m, variety: v, score, candidate: k };
   }
   const tr = new Rng(seedKey, GENERATOR_VERSION, 'title');
   const fam = TITLE_KEY[brief.style] || plan.style.family;
@@ -88,7 +90,9 @@ export function composeBrief(rawBrief, { prompt = '', seed = 1, intent = null, c
     plan,
     dsl,
     measure: best.measure,
+    variety: best.variety,
     candidate: best.candidate,
+    ...(withLead ? { leadNotes: best.arrangement.leadNotes } : {}),
     summary: summarize(intent, plan, brief),
   };
 }
@@ -143,10 +147,11 @@ export function describeTune(tune) {
     ...plan.sections.map((s) => `- ${s.type} ${s.bars} bars, energy ${s.energy.toFixed(2)} to ${(s.energyEnd ?? s.energy).toFixed(2)}, filter ${s.filter || 'follow'}, texture ${s.texture} (${s.textureDef.name}), `
       + `groove ${s.drumPattern ? `own pattern ${s.drumPattern.join('|')}` : s.groove}, bass ${s.bassPattern ? `own pattern ${s.bassPattern.join('|')}` : s.bass}`
       + `${s.arpPattern ? `, arp rhythm ${s.arpPattern.join('|')}` : ''}, lead ${s.leadInst} (${s.feel}), chords ${s.chords.slice(0, Math.min(4, s.chords.length)).map((c) => c.symbol).join(' ')}`
-      + `${s.transpose ? `, transposed +${s.transpose}` : ''}, then ${s.transition}`),
+      + `${s.transpose ? `, transposed +${s.transpose}` : ''}${s.variation ? `, melody variation ${s.variation}` : ''}, then ${s.transition}`),
     `Lead melody: ${measure.notes || 0} notes, ${Math.round((measure.chordTone || 0) * 100)} % chord tones on strong beats, widest range in 8 bars ${measure.range} semitones, `
       + `${Math.round((measure.share?.step || 0) * 100)} % steps, ${Math.round((measure.share?.leap || 0) * 100)} % leaps, ${Math.round((measure.share?.rep || 0) * 100)} % repeats.`,
     `Themes given: ${Object.keys(plan.themes || {}).join(', ') || 'none (motifs generated)'}.`,
+    ...(tune.variety ? [`Melody variety: ${Math.round(tune.variety.withinRepeat * 100)} % of lead bars repeat an earlier bar of their section exactly${tune.variety.repeatSame === null ? '' : `, repeated sections keep ${Math.round(tune.variety.repeatSame * 100)} % of their bars`}.`] : []),
   ];
   return lines.join('\n');
 }
