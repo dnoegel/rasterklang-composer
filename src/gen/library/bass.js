@@ -34,6 +34,8 @@ export const BASS = {
   drone: { meter: '6/8', name: 'Bordun (liegender Grundton)', tags: ['folk', 'celtic', 'medieval'], energy: [0, 0.5], row: 'R___________' },
   one_four: { meter: '6/8', name: 'Grundton auf 1 und 4', tags: ['folk', 'celtic'], energy: [0.2, 0.8], row: 'R.....5.....' },
   oom_pah6: { meter: '6/8', name: 'Umpa-Bass im 6/8', tags: ['folk', 'celtic'], energy: [0.5, 1], row: 'R...5.R...5.' },
+  gallop68: { meter: '6/8', name: 'Galopp-Bass im 6/8', tags: ['metal', 'folk'], energy: [0.5, 1], row: 'R.RRR.R.RRR.' },
+  pedal68: { meter: '6/8', name: 'Orgelpunkt im 6/8', tags: ['metal'], energy: [0.6, 1], row: 'RRRRRRRRRRRR' },
   run6: { meter: '6/8', name: 'laufender Bass im 6/8', tags: ['folk', 'rock'], energy: [0.5, 1], row: 'R.3.5.R.3.5.' },
 
   // ---- 12/8 ---------------------------------------------------------------

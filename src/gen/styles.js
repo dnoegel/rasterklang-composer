@@ -19,8 +19,8 @@ export const STYLES = {
     meter: { '4/4': 1 },
     tempo: [112, 176],
     modes: { aeolian: 3, phrygian: 2, harmonic: 2, dorian: 1, ionian: 0.6 },
-    grooves: { rock: 2, metal_gallop: 3, double_kick: 2, thrash_skank: 1.5, halftime: 1, d_beat: 1, blast: 0.5 },
-    bass: { root_8ths: 2, gallop: 3, pedal_16ths: 2, half_note: 1, riff_unison: 2, whole_note: 0.5 },
+    grooves: { rock: 2, metal_gallop: 3, double_kick: 2, thrash_skank: 1.5, halftime: 1, d_beat: 1, blast: 0.5, metal_68: 3 },
+    bass: { root_8ths: 2, gallop: 3, pedal_16ths: 2, half_note: 1, riff_unison: 2, whole_note: 0.5, gallop68: 3, pedal68: 2 },
     feels: { riff: 3, straight: 2, running: 1, long: 1, syncopated: 0.5 },
     progressions: {
       minor_rise: 3, phrygian_vamp: 2, minor_four: 2, minor_shuttle: 2, victory_minor: 3, andalusian: 2, aeolian_loop: 1,
