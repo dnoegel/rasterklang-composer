@@ -55,6 +55,14 @@ describe('compose', () => {
     expect(i.blend).toEqual({ style: 'jig', amount: 0.35 });
   });
 
+  it('a jig led blend with metal uses 6/8 metal blocks', () => {
+    const i = parsePrompt('metal jig');
+    expect(resolveStyle(i)).toBe('jig');
+    expect(i.blend?.style).toBe('metal');
+    const grooves = new Set([1, 2, 3, 4].flatMap((s) => compose('metal jig', s).brief.sections.map((x) => x.groove)));
+    expect(grooves.has('metal_68')).toBe(true);
+  });
+
   it('varies intros between seeds', () => {
     const intros = new Set([1, 2, 3, 4, 5, 6].map((s) => compose('heavy metal', s).brief.sections[0].texture));
     expect(intros.size).toBeGreaterThanOrEqual(3);

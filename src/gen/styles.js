@@ -9,12 +9,13 @@
 // bass, feels (melody rhythm), progressions, textures by kind, transitions,
 // forms, palette (lead, bass, snare, chords: 'power' | 'triad'), personas,
 // signature { grooves, bass, lead }, keywords (prompt words, English and
-// German), moods (affinity used when the prompt names no style), groove
+// German; `names` are the genre's own names and count most), moods (affinity used when the prompt names no style), groove
 // (one line for the listening cues), sevenths, keyChange.
 
 export const STYLES = {
   metal: {
     name: 'Heavy Metal',
+    names: ['metal', 'heavy metal'],
     family: 'metal',
     meter: { '4/4': 1 },
     tempo: [112, 176],
@@ -47,6 +48,7 @@ export const STYLES = {
 
   synthwave: {
     name: 'Synthwave',
+    names: ['synthwave', 'outrun', 'retrowave'],
     family: 'synth',
     meter: { '4/4': 1 },
     tempo: [84, 124],
@@ -81,6 +83,7 @@ export const STYLES = {
 
   platformer: {
     name: 'Platformer',
+    names: ['platformer', 'jump and run'],
     family: 'game',
     meter: { '4/4': 1 },
     tempo: [116, 168],
@@ -113,6 +116,7 @@ export const STYLES = {
 
   jig: {
     name: 'Celtic Jig',
+    names: ['jig', 'celtic', 'irish', 'reel'],
     family: 'folk',
     meter: { '6/8': 1 },
     tempo: [96, 126],
@@ -144,6 +148,7 @@ export const STYLES = {
   },
   doom: {
     name: 'Doom Metal',
+    names: ['doom', 'doom metal'],
     family: 'metal',
     meter: { '4/4': 1 },
     tempo: [56, 84],
@@ -172,6 +177,7 @@ export const STYLES = {
 
   blues: {
     name: 'Blues & Boogie',
+    names: ['blues', 'boogie'],
     family: 'blues',
     meter: { '12/8': 1 },
     tempo: [68, 132],
@@ -201,6 +207,7 @@ export const STYLES = {
 
   jazz: {
     name: 'Jazz & Lounge',
+    names: ['jazz', 'swing'],
     family: 'jazz',
     meter: { '12/8': 1 },
     tempo: [72, 150],
@@ -230,6 +237,7 @@ export const STYLES = {
 
   bossa: {
     name: 'Bossa Nova',
+    names: ['bossa', 'bossa nova'],
     family: 'latin',
     meter: { '4/4': 1 },
     tempo: [110, 140],
@@ -259,6 +267,7 @@ export const STYLES = {
 
   dance: {
     name: 'Eurodance & House',
+    names: ['house', 'techno', 'trance', 'eurodance'],
     family: 'dance',
     meter: { '4/4': 1 },
     tempo: [120, 142],
@@ -287,6 +296,7 @@ export const STYLES = {
 
   dnb: {
     name: 'Drum & Bass',
+    names: ['drum and bass', 'dnb', 'jungle'],
     family: 'dance',
     meter: { '4/4': 1 },
     tempo: [160, 176],
@@ -315,6 +325,7 @@ export const STYLES = {
 
   funk: {
     name: 'Funk & Disco',
+    names: ['funk', 'disco'],
     family: 'funk',
     meter: { '4/4': 1 },
     tempo: [98, 124],
@@ -344,6 +355,7 @@ export const STYLES = {
 
   reggae: {
     name: 'Reggae & Ska',
+    names: ['reggae', 'ska'],
     family: 'reggae',
     meter: { '4/4': 1 },
     tempo: [68, 150],
@@ -372,6 +384,7 @@ export const STYLES = {
 
   waltz: {
     name: 'Walzer & Spieluhr',
+    names: ['waltz', 'walzer'],
     family: 'classical',
     meter: { '3/4': 1 },
     tempo: [84, 168],
@@ -400,6 +413,7 @@ export const STYLES = {
 
   cinematic: {
     name: 'Cinematic & Epic',
+    names: ['cinematic', 'epic'],
     family: 'cinematic',
     meter: { '4/4': 1 },
     tempo: [72, 132],
@@ -429,6 +443,7 @@ export const STYLES = {
 
   ambient: {
     name: 'Ambient & Space',
+    names: ['ambient'],
     family: 'ambient',
     meter: { '4/4': 1 },
     tempo: [60, 96],
@@ -458,6 +473,7 @@ export const STYLES = {
 
   punk: {
     name: 'Punk',
+    names: ['punk'],
     family: 'metal',
     meter: { '4/4': 1 },
     tempo: [160, 200],
@@ -486,6 +502,7 @@ export const STYLES = {
 
   lofi: {
     name: 'Lo-fi Hip-Hop',
+    names: ['lofi', 'lo-fi'],
     family: 'hiphop',
     meter: { '4/4': 1 },
     tempo: [70, 92],
@@ -515,6 +532,7 @@ export const STYLES = {
 
   demoscene: {
     name: 'C64 Demoszene',
+    names: ['demoscene', 'cracktro'],
     family: 'synth',
     meter: { '4/4': 1 },
     tempo: [118, 160],
