@@ -1,11 +1,11 @@
 // Sound choices per role (instrument names from instruments.js).
 
 export const LEADS = {
-  lead: 'Pulse-Lead mit Pulsbreiten-Modulation', saw: 'Sägezahn-Lead', brass: 'weiches Brass', bell: 'Glocke',
-  pluck: 'gezupfter Pulse', octave: 'Pulse-Lead mit Oktav-Anschlag', whistle: 'Flöte (Dreieck)', fiddle: 'Fiddle (Sägezahn mit Vibrato)',
-  fuzz: 'Fuzz-Lead (verzerrte Gitarre)',
+  lead: 'pulse lead with pulse-width modulation', saw: 'sawtooth lead', brass: 'soft brass', bell: 'bell',
+  pluck: 'plucked pulse', octave: 'pulse lead with octave attack', whistle: 'flute (triangle)', fiddle: 'fiddle (sawtooth with vibrato)',
+  fuzz: 'fuzz lead (distorted guitar)',
 };
 // 'custom' is the lead designed in the brief's `sound` (LLM path only).
 export const CUSTOM_LEAD = 'custom';
-export const BASSES = { bass: 'Pulse-Bass mit Klick', sub: 'runder Sub-Bass', slap: 'Slap-Bass', acid: 'Acid-Sägezahn', drone: 'Bordun-Sägezahn' };
-export const SNARES = { snare: 'Rausch-Snare', snare2: 'tonale Rock-Snare', clap: 'Clap' };
+export const BASSES = { bass: 'pulse bass with click', sub: 'round sub bass', slap: 'slap bass', acid: 'acid sawtooth', drone: 'drone sawtooth' };
+export const SNARES = { snare: 'noise snare', snare2: 'tonal rock snare', clap: 'clap' };

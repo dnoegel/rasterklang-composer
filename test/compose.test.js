@@ -15,7 +15,7 @@ const PROMPTS = [
 
 describe('intent', () => {
   it.each([
-    ['fröhliche irische Kneipenmusik', 'jig'],
+    ['cheerful Irish pub music', 'jig'],
     ['aggressive thrash metal', 'metal'],
     ['dreamy 80s night drive', 'synthwave'],
     ['levels of a jump and run', 'platformer'],

@@ -92,34 +92,34 @@ export function compose(prompt, seed = 1, opts = {}) {
   return composeBrief(brief, { prompt, seed, intent, ...opts });
 }
 
-const MODE_DE = {
-  phrygian: 'phrygisch: sehr dunkel, mit kleiner Sekunde', harmonic: 'harmonisch Moll: dunkel und spannungsreich',
-  aeolian: 'natürliches Moll', dorian: 'dorisch: Moll mit hellem Einschlag', mixolydian: 'mixolydisch: Dur mit erdigem Einschlag',
-  ionian: 'Dur: hell', lydian: 'lydisch: schwebend hell',
+const MODE_TEXT = {
+  phrygian: 'Phrygian: very dark, with a minor second', harmonic: 'harmonic minor: dark and tense',
+  aeolian: 'natural minor', dorian: 'Dorian: minor with a bright touch', mixolydian: 'Mixolydian: major with an earthy touch',
+  ionian: 'major: bright', lydian: 'Lydian: floating and bright',
 };
 
 function cues(intent, plan, brief) {
   const t = plan.target;
   const [lo, hi] = plan.style.tempo.map(Math.round);
   const pos = (plan.bpm - lo) / (hi - lo);
-  const where = pos < 0.33 ? 'unteren' : pos > 0.66 ? 'oberen' : 'mittleren';
+  const where = pos < 0.33 ? 'lower' : pos > 0.66 ? 'upper' : 'middle';
   const moods = Object.keys(brief.moods || {});
-  const why = moods.length ? ` (wegen ${moods.join(' + ')})` : '';
+  const why = moods.length ? ` (because of ${moods.join(' + ')})` : '';
   const main = plan.sections.find((s) => s.type === 'chorus') || plan.sections.find((s) => s.type === 'verse') || plan.sections[0];
   const out = [
     `Groove: ${GROOVES[main.groove].name}${plan.style.groove ? `; ${plan.style.groove}` : ''}`,
     `Bass: ${BASS[main.bass].name}`,
-    `Tonart ${KEY_NAMES[plan.keyRoot]}, ${MODE_DE[plan.mode]}${why}`,
-    `Tempo ${Math.round(plan.bpm)} bpm im ${plan.meter.id}, im ${where} Bereich des Stils (${lo} bis ${hi})`,
+    `Key ${KEY_NAMES[plan.keyRoot]}, ${MODE_TEXT[plan.mode]}${why}`,
+    `Tempo ${Math.round(plan.bpm)} bpm in ${plan.meter.id}, in the ${where} range of the style (${lo} to ${hi})`,
     `Intro: ${plan.sections[0].textureDef.name}`,
   ];
   const leads = [...new Set(plan.sections.filter((s) => s.textureDef.stages.some(([, r]) => r.includes('L'))).map((s) => s.leadInst))];
   if (leads.length) out.push(`Lead: ${leads.map((l) => LEADS[l] || l).join(', ')}`);
-  if (plan.sections.some((s) => s.transpose)) out.push('Rückung: letzter Refrain einen Ganzton höher');
-  if (brief.artist && ARTISTS[brief.artist]) out.push(`Groove, Bassfigur und Akkordschleife aus ${ARTISTS[brief.artist].tunes} C64-Bearbeitungen von ${brief.artist} (HVSC)`);
-  if (t.legato > 0.3) out.push('Artikulation: gebunden (legato)');
-  else if (t.legato < -0.3) out.push('Artikulation: kurz (staccato)');
-  if (t.tension > 0.4) out.push('Spannung: chromatische Annäherungen im Bass');
+  if (plan.sections.some((s) => s.transpose)) out.push('Key change: last chorus a whole tone higher');
+  if (brief.artist && ARTISTS[brief.artist]) out.push(`Groove, bass figure and chord loop from ${ARTISTS[brief.artist].tunes} C64 arrangements of ${brief.artist} (HVSC)`);
+  if (t.legato > 0.3) out.push('Articulation: smooth (legato)');
+  else if (t.legato < -0.3) out.push('Articulation: short (staccato)');
+  if (t.tension > 0.4) out.push('Tension: chromatic approach notes in the bass');
   return out;
 }
 
@@ -153,7 +153,7 @@ function summarize(intent, plan, brief) {
     key: `${KEY_NAMES[plan.keyRoot]} ${plan.mode}`,
     bpm: Math.round(plan.bpm),
     meter: plan.meter.id,
-    form: `${FORMS[brief.form]?.name || 'frei'}: ${plan.sections.map((s) => s.label).join(' · ')}`,
+    form: `${FORMS[brief.form]?.name || 'free'}: ${plan.sections.map((s) => s.label).join(' · ')}`,
     signature: cues(intent, plan, brief),
     target: plan.target,
     sections: plan.sections.map((s) => ({
@@ -162,8 +162,8 @@ function summarize(intent, plan, brief) {
       energy: s.energy,
       energyEnd: s.energyEnd ?? s.energy,
       texture: s.textureDef.name,
-      groove: s.drumPattern ? `eigenes Muster (${GROOVES[s.groove].name})` : GROOVES[s.groove].name,
-      bass: s.bassPattern ? 'eigene Bass-Figur' : BASS[s.bass].name,
+      groove: s.drumPattern ? `own pattern (${GROOVES[s.groove].name})` : GROOVES[s.groove].name,
+      bass: s.bassPattern ? 'own bass figure' : BASS[s.bass].name,
       chords: s.chords.slice(0, Math.min(s.chords.length, (brief.sections.find((x) => x.type === s.type)?.chords || []).length || 4)).map((c) => c.symbol).join(' '),
       transition: TRANSITIONS[s.transition]?.name,
       lead: s.leadInst,

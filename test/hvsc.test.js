@@ -28,11 +28,11 @@ describe('HVSC inventory data', () => {
   });
 
   it('finds artists by name, also without "the"', () => {
-    expect(findArtist('ein Song wie Depeche Mode')?.name).toBe('Depeche Mode');
+    expect(findArtist('a song like Depeche Mode')?.name).toBe('Depeche Mode');
     expect(parsePrompt('Beatles style tune').artist).toBe('The Beatles');
   });
 
-  it.each(['ein Song wie Depeche Mode', 'something like Madonna', 'like Jean-Michel Jarre'])('%s uses the artist fingerprint', (prompt) => {
+  it.each(['a song like Depeche Mode', 'something like Madonna', 'like Jean-Michel Jarre'])('%s uses the artist fingerprint', (prompt) => {
     const t = compose(prompt, 1);
     expect(t.brief.artist).toBeTruthy();
     expect(t.plan.styleId).toBe(ARTISTS[t.brief.artist].style);

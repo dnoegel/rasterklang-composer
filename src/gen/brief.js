@@ -21,7 +21,7 @@ import { ARTISTS } from './library/hvsc.js';
 export const GENERATOR_VERSION = 'compose-0.2.0';
 
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
-const LABELS = { intro: 'Intro', verse: 'Strophe', pre: 'Pre-Chorus', chorus: 'Refrain', bridge: 'Bridge', solo: 'Solo', breakdown: 'Breakdown', build: 'Aufbau', outro: 'Outro' };
+const LABELS = { intro: 'Intro', verse: 'Verse', pre: 'Pre-Chorus', chorus: 'Chorus', bridge: 'Bridge', solo: 'Solo', breakdown: 'Breakdown', build: 'Build-up', outro: 'Outro' };
 
 export function moodVector(moods) {
   const v = { brightness: 0, tempo: 1, energy: 0, register: 0, legato: 0, tension: 0, sevenths: 0 };

@@ -329,7 +329,7 @@ ${description}
 
 Change request: ${instruction}
 
-Return the complete revised brief. Change what the request needs and keep everything else, especially themes, title and the overall form, unless the request asks otherwise. Update reasoning to explain the change (German).`;
+Return the complete revised brief. Change what the request needs and keep everything else, especially themes, title and the overall form, unless the request asks otherwise. Update reasoning to explain the change (in English).`;
 }
 
 export function critiqueSchema() {
@@ -348,10 +348,10 @@ export function critiqueSchema() {
 
 export function critiqueSystemPrompt() {
   return `You review C64 SID songs made by a rule-based generator from a song brief. You cannot hear the song; you get a precise description of what it contains, measured by code. Judge whether a listener would recognise the prompt in it: genre identity (tempo, groove, bass idiom, scale, signature device), mood (mode brightness, tempo, register, articulation), dramaturgy (form, energy curve, contrast between verse and chorus, intro and ending), and the hook. Be concrete and short. Answer in German.
-- assessment: 2-3 sentences.
+- assessment: 2-3 sentences, in English.
 - fit: 1-5, how well the song matches the prompt.
 - issues: up to 4 concrete problems, each one sentence.
-- suggestion: one change request, phrased as an instruction for the arranger (for example "Gib dem Refrain einen Halftime-Groove und lass die Drums im letzten Takt vor dem Refrain aussetzen."). It will be applied to the brief.
+- suggestion: one change request, phrased as an instruction for the arranger (for example "Give the chorus a halftime groove and let the drums drop out in the last bar before the chorus."). It will be applied to the brief.
 
 Building blocks the arranger can use:
 

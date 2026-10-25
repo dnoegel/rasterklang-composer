@@ -5,10 +5,10 @@ import { renderFrames } from '../src/gen/frames.js';
 
 // What a model answer looks like (shape of briefSchema()).
 const ANSWER = {
-  reasoning: 'Dorisches Moll und ein langsamer Aufbau zeichnen den zögerlichen Sonnenaufgang.',
+  reasoning: 'Dorian minor and a slow build-up paint the hesitant sunrise.',
   title: 'Pixel Dawn',
-  imagery: 'Erstes Licht auf Pixel-Dächern',
-  liner_note: 'Erst tastend, dann hell.',
+  imagery: 'First light on pixel rooftops',
+  liner_note: 'Tentative at first, then bright.',
   style: 'synthwave',
   blend_style: 'none',
   blend_amount: 0,
@@ -57,8 +57,8 @@ describe('llm path', () => {
     const again = composeBrief(answerToBrief(briefToAnswer(tune.brief), 'celtic metal'), { prompt: 'celtic metal', seed: 2 });
     expect(again.brief.sections.map((s) => s.texture)).toEqual(tune.brief.sections.map((s) => s.texture));
     expect(again.plan.keyRoot).toBe(tune.plan.keyRoot);
-    const text = refinePrompt('celtic metal', tune.brief, describeTune(tune), 'Refrain düsterer');
-    expect(text).toContain('Refrain düsterer');
+    const text = refinePrompt('celtic metal', tune.brief, describeTune(tune), 'darker chorus');
+    expect(text).toContain('darker chorus');
     expect(text).toContain('"sections"');
     expect(critiqueSystemPrompt()).toContain('suggestion');
   });
