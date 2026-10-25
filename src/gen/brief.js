@@ -285,7 +285,9 @@ export function validateBrief(input) {
     s.bars = bars;
     total += bars;
     s.energy = clamp(Number(s.energy ?? SECTION_ENERGY[s.type]), 0.05, 1);
-    if (!TEXTURES[s.texture] || (TEXTURES[s.texture].kind !== kind && !(kind !== 'main' && TEXTURES[s.texture].kind === 'main'))) {
+    const tk = TEXTURES[s.texture]?.kind;
+    const fits = tk === kind || (kind !== 'main' && tk === 'main') || (s.type === 'pre' && tk === 'build');
+    if (!fits) {
       const fallback = firstOf[s.type]?.texture || Object.keys(style.textures[kind] || style.textures.main)[0] || 'full';
       if (s.texture) repairs.push(`texture ${s.texture} -> ${fallback}`);
       s.texture = fallback;

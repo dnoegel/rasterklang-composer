@@ -161,8 +161,9 @@ export function renderMelody(section, plan, rng, memory, material = section.type
   const leapMax = style.leapMax || 12;
   const [lo0, hi0] = style.leadRange || LEAD_RANGE[style.family] || [57, 81];
   const shift = Math.round(target.register);
-  const lo = lo0 + shift;
-  const hi = hi0 + shift;
+  // given themes may span wider than generated lines: give them room
+  const lo = lo0 + shift - (set.themed ? 5 : 0);
+  const hi = hi0 + shift + (set.themed ? 7 : 0);
   // Variation per repeat: 2nd time a new answer bar, 3rd time an octave up
   // (if it fits) or a different lead colour.
   // (a late repeat goes back to the original, the last of 3+ goes up)
