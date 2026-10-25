@@ -569,7 +569,7 @@ export const STYLES = {
 
   indie: {
     name: 'Indie & Post-Punk',
-    names: ['indie', 'indie pop', 'post-punk', 'postpunk'],
+    names: ['indie', 'indie pop', 'post-punk', 'post punk', 'postpunk'],
     family: 'rock',
     meter: { '4/4': 1 },
     tempo: [112, 156],

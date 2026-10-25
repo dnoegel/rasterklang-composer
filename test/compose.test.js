@@ -55,6 +55,10 @@ describe('compose', () => {
     expect(i.blend).toEqual({ style: 'jig', amount: 0.35 });
   });
 
+  it('a genre named outright beats one hinted at by a keyword', () => {
+    expect(resolveStyle(parsePrompt('ragtime saloon'))).toBe('ragtime');
+  });
+
   it('a jig led blend with metal uses 6/8 metal blocks', () => {
     const i = parsePrompt('metal jig');
     expect(resolveStyle(i)).toBe('jig');

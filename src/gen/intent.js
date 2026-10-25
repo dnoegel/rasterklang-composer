@@ -30,12 +30,14 @@ export function parsePrompt(prompt) {
 
   const styleScores = {};
   const lastPos = {};
+  const byName = {}; // styles whose own genre name is in the prompt
   for (const [id, style] of Object.entries(STYLES)) {
     for (const w of [...new Set([...(style.names || []), ...(style.keywords || [])])]) {
       if (!has(text, w)) continue;
       // the style's own name counts most, longer phrases more than short words
       styleScores[id] = (styleScores[id] || 0) + ((style.names || []).includes(w) ? 3 : w.length > 5 ? 2 : 1);
       lastPos[id] = Math.max(lastPos[id] || 0, text.lastIndexOf(w.toLowerCase()) + w.length);
+      if ((style.names || []).includes(w)) byName[id] = true;
       matched.push(w);
     }
   }
@@ -88,9 +90,12 @@ export function parsePrompt(prompt) {
 
   let style = null;
   let blend = null;
-  // higher score first; near ties go to the genre word named last, the
-  // head noun in English ("Celtic metal" is metal with Celtic colour)
+  // higher score first; a genre named outright beats one only hinted at by
+  // a keyword ("ragtime saloon" is ragtime); near ties between named genres
+  // go to the one named last, the head noun in English ("Celtic metal" is
+  // metal with Celtic colour)
   const ranked = Object.entries(styleScores).sort((a, b) => {
+    if (!byName[a[0]] !== !byName[b[0]]) return byName[a[0]] ? -1 : 1;
     const near = Math.abs(b[1] - a[1]) <= 1;
     const dPos = (lastPos[b[0]] || 0) - (lastPos[a[0]] || 0);
     return near && dPos ? dPos : b[1] - a[1];
