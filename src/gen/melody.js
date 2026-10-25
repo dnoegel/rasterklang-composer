@@ -140,6 +140,12 @@ function motifSet(material, section, plan, rng, memory) {
     set.a = themeMotif(theme.bars[0]);
     set.a2 = theme.bars[1] ? themeMotif(theme.bars[1]) : set.a;
     set.themed = true;
+    // a two-bar theme runs as a unit
+    if (theme.bars[1]) {
+      const n = section.bars >= 8 ? 8 : section.bars >= 4 ? 4 : 2;
+      set.template = { 8: ['a', 'a2', 'b', 'hc', 'a', 'a2', 'c', 'pac'], 4: ['a', 'a2', 'a', 'pac'], 2: ['a', 'a2'] }[n];
+      set.templateName = 'theme';
+    }
   }
   memory[material] = set;
   return set;
@@ -172,6 +178,21 @@ export function renderMelody(section, plan, rng, memory, material = section.type
   // tonic near the middle of the range, for themes written as degrees
   let tonicIdx = basePool.findIndex((n, i) => i >= basePool.length * 0.3 && n % 12 === keyRoot);
   if (tonicIdx < 0) tonicIdx = basePool.findIndex((n) => n % 12 === keyRoot);
+  if (set.themed) {
+    // place the tonic so the theme's span sits in the middle of the range
+    const offs = [...set.a.degrees, ...set.a2.degrees].map((d) => (d > 0 ? d - 1 : -d - 1 - 7));
+    const span = [Math.min(...offs), Math.max(...offs)];
+    let best = tonicIdx;
+    let bestScore = -Infinity;
+    basePool.forEach((n, i) => {
+      if (n % 12 !== keyRoot) return;
+      const lowRoom = i + span[0];
+      const highRoom = basePool.length - 1 - (i + span[1]);
+      const score = Math.min(lowRoom, highRoom) * 10 - Math.abs(lowRoom - highRoom);
+      if (score > bestScore) { bestScore = score; best = i; }
+    });
+    tonicIdx = best;
+  }
 
   for (let b = 0; b < section.bars; b += 1) {
     const chord = section.chords[b];
@@ -198,7 +219,11 @@ export function renderMelody(section, plan, rng, memory, material = section.type
         let idx = nearestIndex(pool, approx);
         const isStrong = i % strong === 0;
         const isLast = k === onsets.length - 1;
-        if (isStrong || (isLast && (label === 'pac' || label === 'hc'))) {
+        // given themes keep their notes unless they clash: snap on the
+        // downbeat or when a semitone rubs against a chord tone
+        const clash = (n) => chord.tones.some((t) => [1, 11].includes(((n % 12) - t + 12) % 12));
+        const mustSnap = motif.abs ? (i === 0 && !chord.tones.includes(pool[idx] % 12) && clash(pool[idx])) || (isStrong && clash(pool[idx])) : isStrong;
+        if (mustSnap || (isLast && (label === 'pac' || label === 'hc'))) {
           // snap to the nearest chord tone (cadence: tonic or fifth/second)
           let targets = chord.tones;
           if (isLast && label === 'pac' && b === section.bars - 1) targets = [keyRoot];
