@@ -12,8 +12,8 @@ import { Rng } from './prng.js';
 import { CELLS } from './library/cells.js';
 import { SECTION_ENERGY } from './library/forms.js';
 
-const LEAD_RANGE = { metal: [52, 79], synth: [57, 81], game: [60, 84], folk: [62, 86] };
-const STEP_SHARE = { folk: 0.62, metal: 0.55, synth: 0.5, game: 0.5 };
+const LEAD_RANGE = { metal: [52, 79], synth: [57, 81], game: [60, 84], folk: [62, 86], classical: [62, 86], ambient: [60, 86], jazz: [57, 81], blues: [55, 79] };
+const STEP_SHARE = { folk: 0.62, metal: 0.55, synth: 0.5, game: 0.5, jazz: 0.55, classical: 0.6, ambient: 0.5, blues: 0.5 };
 
 const TEMPLATES = {
   8: {
@@ -161,8 +161,9 @@ export function renderMelody(section, plan, rng, memory, material = section.type
   const leapMax = style.leapMax || 12;
   const [lo0, hi0] = style.leadRange || LEAD_RANGE[style.family] || [57, 81];
   const shift = Math.round(target.register);
-  const lo = lo0 + shift;
-  const hi = hi0 + shift;
+  // given themes may span wider than generated lines: give them room
+  const lo = lo0 + shift - (set.themed ? 5 : 0);
+  const hi = hi0 + shift + (set.themed ? 7 : 0);
   // Variation per repeat: 2nd time a new answer bar, 3rd time an octave up
   // (if it fits) or a different lead colour.
   // (a late repeat goes back to the original, the last of 3+ goes up)

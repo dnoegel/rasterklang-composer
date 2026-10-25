@@ -80,6 +80,21 @@ describe('compose', () => {
     expect(frames.length).toBeGreaterThan(100);
   });
 
+  it.each([
+    ['dark doom metal', 'doom'], ['slow blues in a smoky bar', 'blues'], ['jazzy hotel lobby', 'jazz'],
+    ['lazy sunday bossa nova', 'bossa'], ['90s eurodance rave', 'dance'], ['liquid drum and bass', 'dnb'],
+    ['funky space station cantina', 'funk'], ['chill reggae on the beach', 'reggae'], ['music box waltz', 'waltz'],
+    ['epic trailer battle hymn', 'cinematic'], ['calm ambient space', 'ambient'], ['fast punk', 'punk'],
+    ['lofi hip hop beats to study', 'lofi'], ['1988 cracktro music', 'demoscene'],
+  ])('genre %s -> %s renders with a lead and fits a .sid', (prompt, style) => {
+    const tune = compose(prompt, 1);
+    expect(tune.plan.styleId).toBe(style);
+    expect(tune.measure.ok).toBe(true);
+    const { frames, barStarts } = renderFrames(tune.dsl, tune.plan.totalBars);
+    expect(frames.length / 50).toBeLessThanOrEqual(152);
+    expect(buildSid(frames, barStarts).complete).toBe(true);
+  });
+
   it('honours an explicit key', () => {
     const tune = compose('happy platformer level in D major', 1);
     expect(tune.plan.keyRoot).toBe(2);

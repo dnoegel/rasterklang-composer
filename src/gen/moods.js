@@ -47,15 +47,15 @@ export const MOOD_WORDS = {
 
 // Scenes are cue bundles: mood weights, energy, a style hint and a form hint.
 export const SCENES = {
-  boss: { words: ['boss', 'final battle', 'endgegner', 'bossfight', 'boss fight'], moods: { menacing: 1, tense: 0.6 }, energy: 0.3, styleHint: { metal: 1.5, synthwave: 0.6 } },
-  battle: { words: ['battle', 'fight', 'combat', 'kampf', 'schlacht'], moods: { tense: 0.8, epic: 0.5 }, energy: 0.25, styleHint: { metal: 1, synthwave: 0.5 } },
-  dungeon: { words: ['dungeon', 'cave', 'crypt', 'labyrinth', 'höhle', 'gruft', 'verlies'], moods: { mysterious: 1, menacing: 0.5 }, energy: -0.2, styleHint: { platformer: 0.8, synthwave: 0.6 } },
+  boss: { words: ['boss', 'final battle', 'endgegner', 'bossfight', 'boss fight'], moods: { menacing: 1, tense: 0.6 }, energy: 0.3, styleHint: { metal: 1.5, cinematic: 0.8, synthwave: 0.6 } },
+  battle: { words: ['battle', 'fight', 'combat', 'kampf', 'schlacht'], moods: { tense: 0.8, epic: 0.5 }, energy: 0.25, styleHint: { cinematic: 1.2, metal: 1 } },
+  dungeon: { words: ['dungeon', 'cave', 'crypt', 'labyrinth', 'höhle', 'gruft', 'verlies'], moods: { mysterious: 1, menacing: 0.5 }, energy: -0.2, styleHint: { platformer: 0.8, ambient: 0.5, cinematic: 0.5 } },
   overworld: { words: ['overworld', 'level', 'adventure', 'world map', 'abenteuer', 'oberwelt'], moods: { happy: 0.6, playful: 0.4 }, energy: 0.05, styleHint: { platformer: 1.5 } },
-  title: { words: ['title screen', 'title', 'intro screen', 'titelbild', 'titelmusik'], moods: { triumphant: 0.7, epic: 0.4 }, energy: 0.1, styleHint: {} },
+  title: { words: ['title screen', 'title', 'intro screen', 'titelbild', 'titelmusik'], moods: { triumphant: 0.7, epic: 0.4 }, energy: 0.1, styleHint: { cinematic: 0.8, demoscene: 0.5 } },
   victory: { words: ['victory', 'win', 'level complete', 'gewonnen', 'geschafft'], moods: { triumphant: 1, happy: 0.5 }, energy: 0.15, form: 'short', styleHint: { platformer: 0.8 } },
-  credits: { words: ['credits', 'ending', 'farewell', 'abspann', 'ende', 'abschied'], moods: { nostalgic: 0.8, hopeful: 0.5 }, energy: -0.15, styleHint: {} },
+  credits: { words: ['credits', 'ending', 'farewell', 'abspann', 'ende', 'abschied'], moods: { nostalgic: 0.8, hopeful: 0.5 }, energy: -0.15, styleHint: { synthwave: 0.6, ambient: 0.4 } },
   tavern: { words: ['tavern', 'pub', 'inn', 'village', 'taverne', 'kneipe', 'wirtshaus', 'dorf'], moods: { happy: 0.7, playful: 0.5 }, energy: 0.1, styleHint: { jig: 2 } },
   night_drive: { words: ['night drive', 'driving at night', 'highway', 'nachtfahrt', 'autobahn'], moods: { nostalgic: 0.6, dreamy: 0.4 }, energy: 0, styleHint: { synthwave: 2 } },
-  racing: { words: ['racing', 'race', 'speed', 'rennen', 'rennspiel'], moods: { tense: 0.4, happy: 0.3 }, energy: 0.3, styleHint: { synthwave: 1, metal: 0.6 } },
-  menu: { words: ['menu', 'shop', 'store', 'menü', 'laden'], moods: { calm: 0.6, playful: 0.4 }, energy: -0.25, form: 'loop', styleHint: { platformer: 0.8 } },
+  racing: { words: ['racing', 'race', 'speed', 'rennen', 'rennspiel'], moods: { tense: 0.4, happy: 0.3 }, energy: 0.3, styleHint: { dnb: 1, synthwave: 1, metal: 0.6 } },
+  menu: { words: ['menu', 'shop', 'store', 'menü', 'laden'], moods: { calm: 0.6, playful: 0.4 }, energy: -0.25, form: 'loop', styleHint: { platformer: 0.8, bossa: 0.5, lofi: 0.5 } },
 };

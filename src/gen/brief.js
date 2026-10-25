@@ -83,6 +83,8 @@ function chooseMode(style, target, intent, rng) {
 
 const KEY_POOLS = {
   metal: [4, 9, 2, 7, 0], synth: [9, 4, 2, 0, 5, 7, 11], game: [0, 7, 2, 5, 9, 4], folk: [2, 7, 9, 4, 0],
+  blues: [4, 9, 7, 2, 0], jazz: [5, 10, 3, 0, 7], latin: [2, 9, 4, 7], dance: [9, 4, 0, 5, 7], funk: [4, 9, 2, 7],
+  reggae: [7, 2, 9, 0], classical: [0, 7, 2, 5, 9], cinematic: [2, 9, 4, 0, 5], ambient: [2, 7, 9, 4], hiphop: [5, 9, 2, 7],
 };
 
 function colourChord(symbol, sevenths, rng, power) {
@@ -120,9 +122,10 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
     const used = Object.values(byType).map((c) => c.progressionId);
     const bridgeLike = type === 'bridge' || type === 'breakdown' || type === 'pre';
     const progressionId = pickWeighted(rng, style.progressions,
-      (id) => PROGRESSIONS[id] && PROGRESSIONS[id].tonality === tonality && !PROGRESSIONS[id].form
+      (id) => PROGRESSIONS[id] && PROGRESSIONS[id].tonality === tonality && (!PROGRESSIONS[id].form || PROGRESSIONS[id].form === formId)
         && (bridgeLike || PROGRESSIONS[id].role !== 'bridge'),
-      (id) => moodWeight(PROGRESSIONS[id]) * (used.includes(id) ? 0.15 : 1) * (bridgeLike && PROGRESSIONS[id].role === 'bridge' ? 2 : 1))
+      (id) => moodWeight(PROGRESSIONS[id]) * (used.includes(id) && !PROGRESSIONS[id].form ? 0.15 : 1)
+        * (bridgeLike && PROGRESSIONS[id].role === 'bridge' ? 2 : 1) * (PROGRESSIONS[id].form === formId ? 20 : 1))
       || Object.keys(PROGRESSIONS).find((id) => PROGRESSIONS[id].tonality === tonality);
     const progression = PROGRESSIONS[progressionId].chords.map((s) => colourChord(s, target.sevenths, rng, style.palette.chords === 'power'));
     // groove and bass: the chorus must carry the signature
@@ -139,13 +142,17 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
     bass = bass || pickWeighted(rng, style.bass, bassOk, (id) => energyFit(BASS[id], want));
     const feel = pickWeighted(rng, style.feels, (f) => CELLS[meter][f]) || Object.keys(CELLS[meter])[0];
     const kind = KIND_OF[type];
-    const texture = pickWeighted(rng, style.textures[kind] || style.textures.main, (id) => TEXTURES[id], (id) => {
+    let texture = pickWeighted(rng, style.textures[kind] || style.textures.main, (id) => TEXTURES[id], (id) => {
       let w = P.textures[id] || 1;
       if (id === 'cold_start') w *= 1 + Math.max(0, target.energyBias) * 4;
       if (id === 'arp_swell' || id === 'drone_lead' || id === 'twin_lead') w *= 1 + Math.max(0, -target.energyBias) * 3;
       if (P.drums !== undefined && /D|M/.test(TEXTURES[id].stages.map((s) => s[1]).join(''))) w *= P.drums;
       return w;
     }) || (kind === 'main' ? 'full' : Object.keys(TEXTURES).find((id) => TEXTURES[id].kind === kind));
+    // the chorus carries the hook: it must have a lead
+    if (type === 'chorus' && !TEXTURES[texture].stages.some(([, r]) => r.includes('L'))) {
+      texture = pickWeighted(rng, style.textures.main, (id) => TEXTURES[id]?.stages.some(([, r]) => r.includes('L'))) || 'full';
+    }
     const leadPool = sig.lead ? Object.fromEntries(sig.lead.map((l) => [l, 1])) : style.palette.lead;
     const lead = pickWeighted(rng, leadPool, (l) => LEADS[l], (l) => P.leads[l] || 1);
     byType[type] = { energy, progressionId, progression, groove, bass, feel, texture, lead };
@@ -179,7 +186,9 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
     while (seconds() > 150) {
       const firstIdx = sections.findIndex((x) => x.type === type);
       const lastChorus = sections.map((x) => x.type).lastIndexOf('chorus');
-      const idx = sections.findIndex((x, i) => x.type === type && i !== firstIdx && i !== lastChorus);
+      // the first verse and the last chorus always stay
+      const keepFirst = type === 'verse' || type === 'chorus';
+      const idx = sections.findIndex((x, i) => x.type === type && (!keepFirst || i !== firstIdx) && i !== lastChorus);
       if (idx < 0) break;
       sections.splice(idx, 1);
       // a dropped verse takes its pre-chorus and chorus with it
@@ -285,7 +294,9 @@ export function validateBrief(input) {
     s.bars = bars;
     total += bars;
     s.energy = clamp(Number(s.energy ?? SECTION_ENERGY[s.type]), 0.05, 1);
-    if (!TEXTURES[s.texture] || (TEXTURES[s.texture].kind !== kind && !(kind !== 'main' && TEXTURES[s.texture].kind === 'main'))) {
+    const tk = TEXTURES[s.texture]?.kind;
+    const fits = tk === kind || (kind !== 'main' && tk === 'main') || (s.type === 'pre' && tk === 'build');
+    if (!fits) {
       const fallback = firstOf[s.type]?.texture || Object.keys(style.textures[kind] || style.textures.main)[0] || 'full';
       if (s.texture) repairs.push(`texture ${s.texture} -> ${fallback}`);
       s.texture = fallback;

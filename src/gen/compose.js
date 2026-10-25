@@ -20,12 +20,22 @@ const TITLE_A = {
   synth: ['Neon', 'Midnight', 'Chrome', 'Laser', 'Electric', 'Velvet', 'Sunset'],
   game: ['Sky', 'Coin', 'Mushroom', 'Pixel', 'Cloud', 'Lucky', 'Jumping'],
   folk: ['Green', 'Silver', 'Merry', 'Old', 'Wandering', 'Highland', 'Copper'],
+  blues: ['Crossroad', 'Muddy', 'Rusty', 'Midnight', 'Whiskey'], jazz: ['Velvet', 'Blue', 'Smoky', 'Golden', 'Late'],
+  latin: ['Sunny', 'Ocean', 'Coral', 'Lazy', 'Sandy'], dance: ['Hyper', 'Strobe', 'Pulse', 'Euphoric', 'Infinite'],
+  funk: ['Funky', 'Soul', 'Groove', 'Mirror', 'Disco'], reggae: ['Island', 'Easy', 'Sunshine', 'Dub', 'Palm'],
+  classical: ['Porcelain', 'Silver', 'Royal', 'Clockwork', 'Winter'], cinematic: ['Last', 'Fallen', 'Rising', 'Eternal', 'Iron'],
+  ambient: ['Distant', 'Quiet', 'Floating', 'Polar', 'Deep'], hiphop: ['Rainy', 'Late Night', 'Paper', 'Coffee', 'Window'],
 };
 const TITLE_B = {
   metal: ['Crusade', 'Legion', 'Gallows', 'Forge', 'Storm', 'Throne', 'March'],
   synth: ['Drive', 'Skyline', 'Horizon', 'Boulevard', 'Mirage', 'Runner', 'Dreams'],
   game: ['Kingdom', 'Hills', 'Run', 'Quest', 'Island', 'Castle', 'Bounce'],
   folk: ['Fiddler', 'Piper', 'Tavern', 'Road', 'Lass', 'Harbour', 'Ramble'],
+  blues: ['Blues', 'Boogie', 'Shuffle', 'Train', 'Highway'], jazz: ['Lounge', 'Avenue', 'Hour', 'Martini', 'Corner'],
+  latin: ['Breeze', 'Promenade', 'Afternoon', 'Bay', 'Samba'], dance: ['Nation', 'Rush', 'Signal', 'Heights', 'Motion'],
+  funk: ['Machine', 'Fever', 'Strut', 'Ball', 'Express'], reggae: ['Riddim', 'Vibes', 'Shore', 'Rock', 'Breeze'],
+  classical: ['Waltz', 'Carousel', 'Minuet', 'Ballroom', 'Music Box'], cinematic: ['Stand', 'Kingdoms', 'Oath', 'Dawn', 'Legion'],
+  ambient: ['Signals', 'Orbit', 'Tides', 'Horizon', 'Drift'], hiphop: ['Tapes', 'Notes', 'Thoughts', 'Loops', 'Streets'],
 };
 
 const seedKeyOf = (prompt, seed) => `${seed}|${prompt.trim().toLowerCase().replace(/\s+/g, ' ')}`;

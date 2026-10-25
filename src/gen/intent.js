@@ -40,8 +40,9 @@ export function parsePrompt(prompt) {
   for (const [id, style] of Object.entries(STYLES)) {
     for (const w of style.keywords || []) {
       if (!has(text, w)) continue;
-      styleScores[id] = (styleScores[id] || 0) + (w.length > 5 ? 2 : 1);
-      lastPos[id] = Math.max(lastPos[id] || 0, text.lastIndexOf(w.toLowerCase()));
+      // the style's own name counts most, longer phrases more than short words
+      styleScores[id] = (styleScores[id] || 0) + (w === style.keywords[0] ? 3 : w.length > 5 ? 2 : 1);
+      lastPos[id] = Math.max(lastPos[id] || 0, text.lastIndexOf(w.toLowerCase()) + w.length);
       matched.push(w);
     }
   }
@@ -92,7 +93,11 @@ export function parsePrompt(prompt) {
   let blend = null;
   // higher score first; near ties go to the genre word named last, the
   // head noun in English ("Celtic metal" is metal with Celtic colour)
-  const ranked = Object.entries(styleScores).sort((a, b) => (Math.abs(b[1] - a[1]) <= 1 ? (lastPos[b[0]] || 0) - (lastPos[a[0]] || 0) : b[1] - a[1]));
+  const ranked = Object.entries(styleScores).sort((a, b) => {
+    const near = Math.abs(b[1] - a[1]) <= 1;
+    const dPos = (lastPos[b[0]] || 0) - (lastPos[a[0]] || 0);
+    return near && dPos ? dPos : b[1] - a[1];
+  });
   if (ranked.length) style = ranked[0][0];
   // two styles named with similar weight: blend them ("Celtic metal")
   if (ranked.length > 1 && namedStyles[ranked[0][0]] && namedStyles[ranked[1][0]] && ranked[1][1] >= ranked[0][1] * 0.5) {
