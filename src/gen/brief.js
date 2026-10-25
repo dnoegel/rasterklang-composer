@@ -85,6 +85,7 @@ const KEY_POOLS = {
   metal: [4, 9, 2, 7, 0], synth: [9, 4, 2, 0, 5, 7, 11], game: [0, 7, 2, 5, 9, 4], folk: [2, 7, 9, 4, 0],
   blues: [4, 9, 7, 2, 0], jazz: [5, 10, 3, 0, 7], latin: [2, 9, 4, 7], dance: [9, 4, 0, 5, 7], funk: [4, 9, 2, 7],
   reggae: [7, 2, 9, 0], classical: [0, 7, 2, 5, 9], cinematic: [2, 9, 4, 0, 5], ambient: [2, 7, 9, 4], hiphop: [5, 9, 2, 7],
+  rock: [4, 9, 2, 7, 0], pop: [0, 7, 2, 9, 5],
 };
 
 function colourChord(symbol, sevenths, rng, power) {
@@ -250,9 +251,10 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
 
 function parseTheme(theme, steps) {
   // "5 _ 4 3 . 1 2 3 ..." one token per step: degree (1-14, -7..-1 for the
-  // octave below), _ hold, . rest.
+  // octave below, optional # or b for a chromatic step), _ hold, . rest.
   if (!theme || typeof theme.notes !== 'string') return null;
-  let tokens = theme.notes.trim().split(/\s+/).map((t) => t.replace(/[^0-9_.\-]/g, '')).filter(Boolean);
+  const DEG = /^-?\d+[#b]?$/;
+  let tokens = theme.notes.trim().split(/\s+/).map((t) => (DEG.test(t) || t === '_' || t === '.' ? t : t.replace(/[^0-9_.\-#b]/g, ''))).filter(Boolean);
   if (!tokens.length) return null;
   if (tokens.length < steps) tokens = [...tokens, ...Array(steps - tokens.length).fill('_')];
   // round to whole bars: pad a nearly full bar, drop a stub
@@ -266,10 +268,12 @@ function parseTheme(theme, steps) {
     if (bar[0] === '_') bar[0] = '.';
     bars.push(bar);
   }
-  const ok = bars.length && bars.every((b) => b.some((t) => /^-?\d+$/.test(t)));
+  const ok = bars.length && bars.every((b) => b.some((t) => DEG.test(t)));
   return ok ? bars.map((b) => b.map((t) => {
-    if (/^-?\d+$/.test(t)) return clamp(Number(t), -7, 14) || 1;
-    return t === '_' ? '_' : '.';
+    if (!DEG.test(t)) return t === '_' ? '_' : '.';
+    const alt = t.endsWith('#') ? '#' : t.endsWith('b') ? 'b' : '';
+    const d = Math.max(-7, Math.min(14, parseInt(t, 10))) || 1;
+    return alt ? `${d}${alt}` : d;
   })) : null;
 }
 
@@ -388,7 +392,7 @@ export function validateBrief(input) {
   const themes = {};
   for (const [type, theme] of Object.entries(b.themes || {})) {
     const parsed = parseTheme(theme, steps);
-    if (parsed) themes[type] = { notes: theme.notes, bars: parsed };
+    if (parsed) themes[type] = { notes: theme.notes, bars: parsed, ...(theme.user ? { user: true } : {}) };
     else repairs.push(`theme for ${type} not usable`);
   }
   b.themes = themes;

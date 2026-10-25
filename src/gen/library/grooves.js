@@ -44,6 +44,12 @@ export const GROOVES = {
     levels: ['k...s...k...s...', 'k.h.s.h.k.h.s.h.', 'kohos.hokohos.ho', 'kohoskhokohoskho'] },
   bossa: { meter: '4/4', name: 'Bossa Nova', tags: ['latin', 'jazz', 'lounge'], energy: [0.1, 0.7],
     levels: ['k.....k.k.....k.', 'k..c..k.k.c..c..', 'k.hch.k.khc.hch.', 'khhchhkhkhchhchh'] },
+  trap: { meter: '4/4', name: 'Trap (Halftime, Hi-Hat-Rolls)', tags: ['hiphop', 'trap', 'pop'], energy: [0.3, 1],
+    levels: ['k.......s.......', 'k.h.h.h.s.h.h.h.', 'k.hhh.hks.hhhhh.', 'khhhhhhkshhhhhhh'] },
+  train: { meter: '4/4', name: 'Train-Beat (Country)', tags: ['country', 'rockabilly'], energy: [0.3, 1],
+    levels: ['k.......k.......', 'k.s.k.s.k.s.k.s.', 'khshkhshkhshkhsh', 'khshkhshkhshkhss'] },
+  grunge: { meter: '4/4', name: 'Schwerer Rock-Beat mit offenen Hi-Hats', tags: ['rock', 'alternative'], energy: [0.4, 1],
+    levels: ['k.......s.......', 'k.o.s.o.k.o.s.o.', 'k.oks.o.kko.s.o.', 'kooksooxkkooso.o'] },
   tom_pulse: { meter: '4/4', name: 'Tom-Puls', tags: ['cinematic', 'tribal'], energy: [0.2, 1],
     levels: ['t.......t.......', 't...t...t...t...', 't.tTt...t.tTt...', 't.tTt.TTt.tTt.TT'] },
 
