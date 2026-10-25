@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { answerToBrief, briefSchema, systemPrompt, drawConstraints } from '../src/gen/menu.js';
-import { composeBrief } from '../src/gen/compose.js';
+import { answerToBrief, briefToAnswer, briefSchema, systemPrompt, drawConstraints, refinePrompt, critiqueSystemPrompt } from '../src/gen/menu.js';
+import { composeBrief, compose, describeTune } from '../src/gen/compose.js';
 import { renderFrames } from '../src/gen/frames.js';
 
 // What a model answer looks like (shape of briefSchema()).
@@ -51,5 +51,16 @@ describe('llm path', () => {
     expect(tune.plan.sections[3].keyRoot).toBe(4);
     const { frames } = renderFrames(tune.dsl, tune.plan.totalBars);
     expect(frames.length).toBeGreaterThan(1000);
+  });
+
+  it('round-trips a brief through the answer format for refinement', () => {
+    const tune = compose('celtic metal', 2);
+    const again = composeBrief(answerToBrief(briefToAnswer(tune.brief), 'celtic metal'), { prompt: 'celtic metal', seed: 2 });
+    expect(again.brief.sections.map((s) => s.texture)).toEqual(tune.brief.sections.map((s) => s.texture));
+    expect(again.plan.keyRoot).toBe(tune.plan.keyRoot);
+    const text = refinePrompt('celtic metal', tune.brief, describeTune(tune), 'Refrain düsterer');
+    expect(text).toContain('Refrain düsterer');
+    expect(text).toContain('"sections"');
+    expect(critiqueSystemPrompt()).toContain('suggestion');
   });
 });

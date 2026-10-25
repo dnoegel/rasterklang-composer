@@ -120,6 +120,27 @@ function cues(intent, plan, brief) {
   return out;
 }
 
+// The rendered song as text, for the critic and for refinements: what the
+// code actually built, not what was asked for.
+export function describeTune(tune) {
+  const { plan, measure, summary } = tune;
+  const seconds = Math.round(plan.totalBars * (plan.meter.unit === 8 ? plan.meter.beats / 3 : plan.meter.beats) * 60 / plan.bpm);
+  const lines = [
+    `Style ${plan.style.name}${plan.brief.blend ? ` (blend ${plan.brief.blend.style} ${plan.brief.blend.amount})` : ''}, persona ${plan.persona || 'none'}.`,
+    `Key ${summary.key}, ${summary.bpm} bpm, meter ${summary.meter}, ${plan.totalBars} bars, about ${seconds} s.`,
+    `Moods: ${Object.entries(plan.brief.moods || {}).map(([m, w]) => `${m} ${w.toFixed(2)}`).join(', ') || 'none'}.`,
+    `Sounds: bass ${plan.palette.bass}, snare ${plan.palette.snare}, chords ${plan.palette.chords}.`,
+    'Sections:',
+    ...plan.sections.map((s) => `- ${s.type} ${s.bars} bars, energy ${s.energy.toFixed(2)}, texture ${s.texture} (${s.textureDef.name}), `
+      + `groove ${s.groove}, bass ${s.bass}, lead ${s.leadInst} (${s.feel}), chords ${s.chords.slice(0, Math.min(4, s.chords.length)).map((c) => c.symbol).join(' ')}`
+      + `${s.transpose ? `, transposed +${s.transpose}` : ''}, then ${s.transition}`),
+    `Lead melody: ${measure.notes || 0} notes, ${Math.round((measure.chordTone || 0) * 100)} % chord tones on strong beats, widest range in 8 bars ${measure.range} semitones, `
+      + `${Math.round((measure.share?.step || 0) * 100)} % steps, ${Math.round((measure.share?.leap || 0) * 100)} % leaps, ${Math.round((measure.share?.rep || 0) * 100)} % repeats.`,
+    `Themes given: ${Object.keys(plan.themes || {}).join(', ') || 'none (motifs generated)'}.`,
+  ];
+  return lines.join('\n');
+}
+
 function summarize(intent, plan, brief) {
   return {
     interpretation: intent ? describeIntent(intent, plan.styleId) : plan.style.name,
