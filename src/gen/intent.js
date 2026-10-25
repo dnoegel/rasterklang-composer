@@ -1,5 +1,5 @@
 // Prompt -> intent. puts a language model here; this first slice
-// uses keyword matching (English and German) so the pipeline runs without
+// uses keyword matching so the pipeline runs without
 // an API key. The intent shape is the contract either way: discrete fields,
 // each may be unspecified (null).
 
@@ -7,21 +7,20 @@ import { MOODS, MOOD_WORDS, SCENES } from './moods.js';
 import { STYLES } from './styles.js';
 import { KEY_NAMES } from './theory.js';
 
-const ENERGY_UP = ['fast', 'energetic', 'high energy', 'intense', 'frantic', 'driving', 'hard', 'wild', 'action', 'speedy', 'schnell', 'energisch', 'intensiv', 'treibend', 'wild', 'hart', 'rasant'];
-const ENERGY_DOWN = ['slow', 'calm', 'chill', 'soft', 'quiet', 'minimal', 'laid back', 'lazy', 'gentle', 'langsam', 'leise', 'ruhig', 'gemächlich', 'sanft'];
+const ENERGY_UP = ['fast', 'energetic', 'high energy', 'intense', 'frantic', 'driving', 'hard', 'wild', 'action', 'speedy'];
+const ENERGY_DOWN = ['slow', 'calm', 'chill', 'soft', 'quiet', 'minimal', 'laid back', 'lazy', 'gentle'];
 const FORM_WORDS = {
-  loop: ['loop', 'looping', 'background', 'schleife', 'hintergrund'],
-  short: ['short', 'jingle', 'quick', 'kurz', 'kurzes'],
-  song: ['song', 'full song', 'long', 'epic length', 'lang', 'ganzer song'],
+  loop: ['loop', 'looping', 'background'],
+  short: ['short', 'jingle', 'quick'],
+  song: ['song', 'full song', 'long', 'epic length'],
 };
 
-// Word match that works for umlauts. Words of 5+ letters also match as the
-// start of a longer word, so German inflections and compounds count
-// ("irische", "Kneipenmusik", "fröhliche").
+// Word match. Words of 5+ letters also match as the start of a longer
+// word, so inflections and compounds count ("rainy", "jazzy", "spookiest").
 function has(text, word) {
   const w = word.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const tail = word.length >= 5 ? '' : '($|[^a-zäöüß0-9])';
-  return new RegExp(`(^|[^a-zäöüß0-9])${w}${tail}`, 'i').test(text);
+  const tail = word.length >= 5 ? '' : '($|[^a-z0-9])';
+  return new RegExp(`(^|[^a-z0-9])${w}${tail}`, 'i').test(text);
 }
 
 export function parsePrompt(prompt) {
@@ -67,13 +66,13 @@ export function parsePrompt(prompt) {
 
   // Explicit constraints.
   const bpm = /(\d{2,3})\s*bpm/.exec(text);
-  const keyMatch = /\b(?:in|key of)\s+([a-g])\s*(#|b|sharp|flat|is|es)?\s*(minor|major|moll|dur|m)?\b/i.exec(prompt);
+  const keyMatch = /\b(?:in|key of)\s+([a-g])\s*(#|b|sharp|flat)?\s*(minor|major|m)?\b/i.exec(prompt);
   let key = null;
   if (keyMatch) {
     const base = { c: 0, d: 2, e: 4, f: 5, g: 7, a: 9, b: 11 }[keyMatch[1].toLowerCase()];
-    const acc = keyMatch[2] ? (/#|sharp|is/.test(keyMatch[2]) ? 1 : -1) : 0;
+    const acc = keyMatch[2] ? (/#|sharp/.test(keyMatch[2]) ? 1 : -1) : 0;
     const q = (keyMatch[3] || '').toLowerCase();
-    key = { root: (base + acc + 12) % 12, minor: q === 'minor' || q === 'moll' || q === 'm' ? true : q ? false : null };
+    key = { root: (base + acc + 12) % 12, minor: q === 'minor' || q === 'm' ? true : q ? false : null };
   }
 
   // Normalise mood weights, keep the strongest three.
