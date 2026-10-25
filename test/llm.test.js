@@ -12,7 +12,6 @@ const ANSWER = {
   style: 'synthwave',
   blend_style: 'none',
   blend_amount: 0,
-  persona: 'galway',
   moods: [{ mood: 'hopeful', weight: 0.6 }, { mood: 'dreamy', weight: 0.4 }],
   tempo: 100,
   meter: '4/4',
@@ -22,7 +21,7 @@ const ANSWER = {
   sections: [
     { type: 'intro', bars: 8, energy: 0.2, texture: 'arp_swell', transition: 'none', groove: 'synth_gated', bass: 'whole_note', feel: 'long', lead: 'bell', chords: ['i', 'IV'], transpose: 0 },
     { type: 'verse', bars: 8, energy: 0.45, texture: 'call_response', transition: 'fill', groove: 'synth_gated', bass: 'octave_8ths', feel: 'syncopated', lead: 'pluck', chords: ['i', 'IV', 'bVII', 'i'], transpose: 0 },
-    { type: 'chorus', bars: 8, energy: 0.85, texture: 'hubbard', transition: 'stop', groove: 'four_floor', bass: 'octave_16th', feel: 'long', lead: 'saw', chords: ['bIII', 'bVII', 'IV', 'i'], transpose: 0 },
+    { type: 'chorus', bars: 8, energy: 0.85, texture: 'multiplex', transition: 'stop', groove: 'four_floor', bass: 'octave_16th', feel: 'long', lead: 'saw', chords: ['bIII', 'bVII', 'IV', 'i'], transpose: 0 },
     { type: 'chorus', bars: 8, energy: 0.9, texture: 'full', transition: 'none', groove: 'four_floor', bass: 'octave_16th', feel: 'long', lead: 'saw', chords: ['bIII', 'bVII', 'IV', 'i'], transpose: 2 },
     { type: 'outro', bars: 4, energy: 0.3, texture: 'fade_layers', transition: 'none', groove: 'bodhran', bass: 'drone', feel: 'running', lead: 'saw', chords: ['i'], transpose: 0 },
   ],

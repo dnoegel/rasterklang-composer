@@ -13,7 +13,7 @@ import { GROOVES } from './library/grooves.js';
 import { BASS } from './library/bass.js';
 import { TEXTURES, TRANSITIONS } from './library/textures.js';
 import { FORMS } from './library/forms.js';
-import { LEADS, PERSONAS } from './library/palettes.js';
+import { LEADS } from './library/palettes.js';
 
 const TITLE_A = {
   metal: ['Iron', 'Steel', 'Thunder', 'Blood', 'Fire', 'Black', 'Raven'],
@@ -114,7 +114,6 @@ function cues(intent, plan, brief) {
   ];
   const leads = [...new Set(plan.sections.filter((s) => s.textureDef.stages.some(([, r]) => r.includes('L'))).map((s) => s.leadInst))];
   if (leads.length) out.push(`Lead: ${leads.map((l) => LEADS[l] || l).join(', ')}`);
-  if (plan.persona && plan.persona !== 'none') out.push(`Arbeitsweise wie ${PERSONAS[plan.persona].name}`);
   if (plan.sections.some((s) => s.transpose)) out.push('Rückung: letzter Refrain einen Ganzton höher');
   if (t.legato > 0.3) out.push('Artikulation: gebunden (legato)');
   else if (t.legato < -0.3) out.push('Artikulation: kurz (staccato)');
@@ -128,7 +127,7 @@ export function describeTune(tune) {
   const { plan, measure, summary } = tune;
   const seconds = Math.round(plan.totalBars * (plan.meter.unit === 8 ? plan.meter.beats / 3 : plan.meter.beats) * 60 / plan.bpm);
   const lines = [
-    `Style ${plan.style.name}${plan.brief.blend ? ` (blend ${plan.brief.blend.style} ${plan.brief.blend.amount})` : ''}, persona ${plan.persona || 'none'}.`,
+    `Style ${plan.style.name}${plan.brief.blend ? ` (blend ${plan.brief.blend.style} ${plan.brief.blend.amount})` : ''}.`,
     `Key ${summary.key}, ${summary.bpm} bpm, meter ${summary.meter}, ${plan.totalBars} bars, about ${seconds} s.`,
     `Moods: ${Object.entries(plan.brief.moods || {}).map(([m, w]) => `${m} ${w.toFixed(2)}`).join(', ') || 'none'}.`,
     `Sounds: bass ${plan.palette.bass}, snare ${plan.palette.snare}, chords ${plan.palette.chords}${plan.sound ? `, custom lead ${JSON.stringify(plan.sound)}` : ''}.`,

@@ -133,7 +133,8 @@ const MELODIC = {
   loop pw 0
   adsr 0 7 3 0
   gate -2`,
-  hubbard: `
+  // bright pulse lead that starts each note an octave up
+  octave: `
   wave noise pulse
   arp 24 0
   pw ${pwBounce(512, 512, 3328, 24)}

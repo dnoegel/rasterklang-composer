@@ -1,6 +1,6 @@
 // Textures: which role each of the three SID voices plays, bar by bar,
 // inside a section. Roles: D drums, B bass, L lead, A chord arpeggio,
-// M bass and drums on one voice (Rob Hubbard's trick), C counter-melody
+// M bass and drums on one voice (a classic SID trick), C counter-melody
 // (a second line under the lead, contrary motion, chord tones), - silent.
 // stages: [fromFraction, roles] in order. lead: which motifs the lead
 // uses (own section, 'verse' or 'chorus' material). drums: override for
@@ -11,7 +11,7 @@
 export const TEXTURES = {
   // ---- main sections ---------------------------------------------------
   full: { kind: 'main', name: 'volle Band: Drums, Bass, Lead', stages: [[0, 'DBL']] },
-  hubbard: { kind: 'main', name: 'Bass+Drums auf einer Stimme, Akkord-Arps, Lead', stages: [[0, 'MAL']] },
+  multiplex: { kind: 'main', name: 'Bass+Drums auf einer Stimme, Akkord-Arps, Lead', stages: [[0, 'MAL']] },
   no_drums: { kind: 'main', name: 'Bass, Akkord-Arps, Lead, ohne Drums', stages: [[0, 'BAL']] },
   groove_chords: { kind: 'main', name: 'Drums, Bass, Akkord-Arps (instrumental)', stages: [[0, 'DBA']] },
   call_response: { kind: 'main', name: 'Lead und Arps wechseln sich ab', stages: [[0, 'DBL'], [0.5, 'DBA']] },

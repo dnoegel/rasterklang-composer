@@ -7,13 +7,6 @@ import { MOODS, MOOD_WORDS, SCENES } from './moods.js';
 import { STYLES } from './styles.js';
 import { KEY_NAMES } from './theory.js';
 
-const PERSONA_WORDS = {
-  hubbard: ['hubbard', 'rob hubbard', 'monty on the run', 'commando'],
-  galway: ['galway', 'martin galway', 'wizball', 'parallax'],
-  tel: ['jeroen tel', 'cybernoid', 'maniacs of noise'],
-  follin: ['follin', 'tim follin', 'ghouls'],
-};
-
 const ENERGY_UP = ['fast', 'energetic', 'high energy', 'intense', 'frantic', 'driving', 'hard', 'wild', 'action', 'speedy', 'schnell', 'energisch', 'intensiv', 'treibend', 'wild', 'hart', 'rasant'];
 const ENERGY_DOWN = ['slow', 'calm', 'chill', 'soft', 'quiet', 'minimal', 'laid back', 'lazy', 'gentle', 'langsam', 'leise', 'ruhig', 'gemächlich', 'sanft'];
 const FORM_WORDS = {
@@ -47,8 +40,6 @@ export function parsePrompt(prompt) {
     }
   }
   const namedStyles = { ...styleScores }; // before scene hints: only these may blend
-  let persona = null;
-  for (const [id, words] of Object.entries(PERSONA_WORDS)) if (words.some((w) => has(text, w))) { persona = id; matched.push(...words.filter((w) => has(text, w))); }
 
   const moods = {};
   for (const [mood, words] of Object.entries(MOOD_WORDS)) {
@@ -108,7 +99,6 @@ export function parsePrompt(prompt) {
     prompt,
     style, // null = unspecified, decided by moods later
     blend,
-    persona,
     styleScores,
     moods: Object.fromEntries(moodList.map(([m, w]) => [m, w / total])),
     scene,
@@ -130,7 +120,6 @@ export function resolveStyle(intent) {
 
 export function describeIntent(intent, styleId) {
   const parts = [STYLES[styleId].name + (intent.blend ? ` × ${STYLES[intent.blend.style].name}` : '')];
-  if (intent.persona) parts.push(`Persona ${intent.persona}`);
   const moods = Object.keys(intent.moods);
   if (moods.length) parts.push(moods.join(' + '));
   if (intent.scene) parts.push(`scene: ${intent.scene.replace('_', ' ')}`);

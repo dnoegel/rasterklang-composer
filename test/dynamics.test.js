@@ -49,7 +49,7 @@ describe('dynamics and written patterns', () => {
 
   it('round-trips the new fields through the model answer format', () => {
     const b = answerToBrief({
-      style: 'funk', blend_style: 'none', blend_amount: 0, persona: 'none', moods: [], tempo: 110, meter: '4/4', key: 'E', mode: 'dorian',
+      style: 'funk', blend_style: 'none', blend_amount: 0, moods: [], tempo: 110, meter: '4/4', key: 'E', mode: 'dorian',
       palette: { bass: 'slap', snare: 'snare', chords: 'triad' }, sound: { wave: 'none', attack: 0, decay: 0, sustain: 0, release: 0, vibrato: 0, pwm: 'none' },
       sections: [{ type: 'verse', bars: 8, energy: 0.5, energy_end: 0.7, filter: 'follow', texture: 'full', transition: 'fill', groove: 'funk',
         drums_pattern: 'k.h.s.hkh.k.s.h.', bass: 'funk_16ths', bass_pattern: '', arp_pattern: '', feel: 'syncopated', lead: 'brass', chords: ['i7', 'IV7'], transpose: 0 }],
