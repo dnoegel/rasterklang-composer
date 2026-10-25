@@ -24,6 +24,10 @@ export const BASS = {
   reggae: { meter: '4/4', name: 'Reggae-Bass mit Pause auf der Eins', tags: ['reggae', 'dub'], energy: [0.2, 0.7], row: '....R..5..R.8...' },
   boogie8: { meter: '4/4', name: 'Boogie-Bass', tags: ['boogie', 'rock', 'blues'], energy: [0.4, 1], row: 'R.3.5.6.b.6.5.3.' },
   bossa_bass: { meter: '4/4', name: 'Bossa-Bass (Grundton, Quinte)', tags: ['latin', 'jazz', 'lounge'], energy: [0.1, 0.7], row: 'R__5R__5R__5R__5' },
+  trap808: { meter: '4/4', name: '808-Bass mit langen Tönen', tags: ['hiphop', 'trap'], energy: [0.2, 1], row: 'R_______..R_R___' },
+  country: { meter: '4/4', name: 'Country-Bass (Grundton, Quinte im Wechsel)', tags: ['country'], energy: [0.3, 1], row: 'R.......5.......' },
+  rocknroll: { meter: '4/4', name: "Rock'n'Roll-Bass", tags: ['rock', 'rockabilly', 'country'], energy: [0.4, 1], row: 'R.3.5.6.8.6.5.3.' },
+  fuzz_8ths: { meter: '4/4', name: 'Fuzz-Bass in Achteln mit Oktave', tags: ['rock', 'alternative'], energy: [0.5, 1], row: 'R.R.R.R.8.R.R.5.' },
   riff_unison: { meter: '4/4', name: 'Riff im Unisono', tags: ['metal', 'rock'], energy: [0.5, 1], row: 'R.R5.RR.R.R5.RA.' },
 
   // ---- 3/4 ----------------------------------------------------------------

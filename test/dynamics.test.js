@@ -69,3 +69,24 @@ describe('dynamics and written patterns', () => {
     expect(drumBars.size).toBeGreaterThan(8);
   });
 });
+
+describe('own melody', () => {
+  it('plays the user melody note for note, chromatic notes included', async () => {
+    const { melodyToTheme } = await import('../src/gen/menu.js');
+    const { SCALES } = await import('../src/gen/theory.js');
+    const notes = melodyToTheme('c5 _ d5 e5 f#5 _ g5 _ e5 _ c5 _ . . . .', 0, 'ionian', SCALES);
+    expect(notes).toBe('1 _ 2 3 4# _ 5 _ 3 _ 1 _ . . . .');
+    const brief = { ...base, style: 'poprock', keyRoot: 0, mode: 'ionian', themes: { chorus: { notes, user: true } } };
+    const t = composeBrief(brief, { prompt: 'x', seed: 1 });
+    const lines = t.dsl.split('\n');
+    const v2 = lines[lines.findIndex((l) => l.startsWith('voice 2')) + 1];
+    const order = [...v2.matchAll(/\[\$(v2n\d+)\]/g)].map((m) => m[1]);
+    const chorusBar = t.plan.sections.find((s) => s.type === 'chorus').startBar;
+    const bar = lines.find((l) => l.startsWith(`pattern ${order[chorusBar]} `));
+    const pitches = bar.split('"')[1].split(' ').filter((x) => /\d/.test(x));
+    // same intervals as written: c d e f# g e c
+    const midi = (n) => { const m = /^([a-g])(#?)(\d)$/.exec(n); return (Number(m[3]) + 1) * 12 + { c: 0, d: 2, e: 4, f: 5, g: 7, a: 9, b: 11 }[m[1]] + (m[2] ? 1 : 0); };
+    const iv = pitches.map(midi).map((p, i, a) => (i ? p - a[i - 1] : 0));
+    expect(iv).toEqual([0, 2, 2, 2, 1, -3, -4]);
+  });
+});

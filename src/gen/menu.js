@@ -149,9 +149,13 @@ ${Object.entries(SECTION_ENERGY).map(([k, v]) => `${k} ${v}`).join(', ')}`;
 }
 
 export function systemPrompt() {
-  return `You are the composer and arranger of a C64 SID music generator. The SID chip has three voices; drums, bass, chords (as fast arpeggios) and lead share them. You do not write the notes of the whole song. You write a song brief: you choose from a menu of tested building blocks, decide the form, the energy curve, the textures, the harmony, and you may invent short themes. Code then composes and renders the song from your brief with music-theory rules (motif development, chord tones on strong beats, cadences, voice leading), so keep to the menu.
+  return `You are the composer and arranger of a generator that plays music of any genre on the SID sound chip of the Commodore 64. The SID has three voices; drums, bass, chords (as fast arpeggios) and lead share them. You do not write every note of the song. You write a song brief: you choose from a menu of tested building blocks, write your own patterns and themes, decide the form, the energy curve, the textures and the harmony. Code then composes and renders the song from your brief with music-theory rules (motif development, chord tones on strong beats, cadences), so keep to the formats below.
 
 Goal: the listener must recognise the prompt in the music. Genre is recognised mostly by tempo, groove and bass idiom, then by scale and one signature device; mood mostly by mode (major/minor brightness), then tempo, then register and articulation. Generated music tends to sound emotionally neutral, so make your choices clearly characteristic. Be creative inside the rules: an unexpected but fitting texture, a strong hook, a surprising but musical form are welcome. Avoid cliches you would pick every time.
+
+The SID is only the instrument. A rock, pop, hip-hop or folk prompt gets that genre, played on the SID: do not turn it into retro, synthwave, chiptune, demoscene or game music. Choose those styles only when the prompt is about games, the 80s, retro or the C64 scene. Personas are famous C64 composers; use one only when the prompt asks for a C64 or demoscene character, otherwise "none".
+
+Reference songs: when the prompt names an existing song or artist, recreate its musical fingerprint as closely as you can: tempo, key and mode, meter, form with section lengths, the dynamics between sections (for example a quiet verse and an explosive chorus), the groove (write drums_pattern), the bass behaviour (bass_pattern), the chord progression, the arrangement and the timbres (pick sounds or design a custom sound that imitates the original instrument), and signature devices (stops, riffs, shouts as short staccato bursts). Write the hook as a new melody with the rhythm, register and energy of the original hook; do not transcribe the original melody from memory. Say in reasoning which features you took from the reference.
 
 Rules:
 - Use the style whose signature grooves and bass fit the prompt; use blend_style (amount 0.2-0.5) only when the prompt names two genres, else "none".
@@ -171,7 +175,6 @@ Rules:
 - Forms: verse/chorus is not the only option. AABA, a through-composed piece, a chorus only at the end, or a single long build are fine when they fit the prompt.
 - reasoning: 2-4 short sentences on how your choices express the prompt (in German).
 - title: short, evocative, no real song or artist names. imagery: one line of the picture the music paints (German). liner_note: 1-2 sentences for the listener (German).
-- Never copy melodies of existing songs; prompts naming an artist map to a style description.
 
 Menu:
 
@@ -192,7 +195,7 @@ export const CONSTRAINTS = [
   'End the song with layers dropping out one by one.',
   'Use a key change up a whole step on the last chorus.',
   'Keep the verse sparse and let the chorus explode in energy.',
-  'Choose a persona whose habits suit the prompt and let it shape the textures.',
+
   'Write the verse theme so it starts on an offbeat.',
   'Use a pre-chorus that builds tension before every chorus.',
   'Write your own drums_pattern and bass_pattern for the chorus.',
@@ -210,8 +213,11 @@ export function drawConstraints(rand, n = 2) {
   return out;
 }
 
-export function userPrompt(prompt, constraints, errors = null) {
+export function userPrompt(prompt, constraints, errors = null, melody = null) {
   let text = `Prompt: ${prompt}\n\nCreative constraints for this song (follow them if they do not contradict the prompt):\n${constraints.map((c) => `- ${c}`).join('\n')}`;
+  if (melody) {
+    text += `\n\nThe user brings their own melody for the ${melody.section} (note names, one token per step, "_" hold, "." rest): ${melody.notes}\nChoose a key, mode, meter and chords that fit this melody. Do not write a theme for the ${melody.section}; the user's melody will be used there.`;
+  }
   if (errors?.length) text += `\n\nYour previous brief had these problems, fix them:\n${errors.map((e) => `- ${e}`).join('\n')}`;
   return text;
 }
@@ -267,7 +273,7 @@ const INTRO_GROUPS = [
   ['riff_solo', 'cold_start', 'twin_lead'],
   ['arp_swell', 'drone_lead', 'twin_lead', 'staggered'],
 ];
-const PERSONA_SETS = [['none'], ['hubbard', 'tel', 'none'], ['galway', 'follin', 'none']];
+const PERSONA_SETS = [['none'], ['none', 'none', 'hubbard', 'tel'], ['none', 'none', 'galway', 'follin']];
 
 export function lensAssignments(rand) {
   const personas = PERSONA_SETS.map((set) => set[Math.floor(rand() * set.length)]);
@@ -275,13 +281,13 @@ export function lensAssignments(rand) {
   return LENSES.map((lens, i) => ({ lens, persona: personas[i], intros: groups[i] }));
 }
 
-export function userPromptWithLens(prompt, constraints, assignment) {
+export function userPromptWithLens(prompt, constraints, assignment, melody = null) {
   const a = typeof assignment === 'string' ? { lens: assignment } : assignment;
   let text = a.lens;
-  if (a.persona) text += `\nUse persona "${a.persona}".`;
+  if (a.persona && a.persona !== 'none') text += `\nIf the prompt allows a C64 character, use persona "${a.persona}"; otherwise "none".`;
   if (a.intros) text += `\nThe intro texture must be one of: ${a.intros.join(', ')}.`;
   text += '\nGive the song a title that does not simply repeat words of the prompt.';
-  return `${text}\n\n${userPrompt(prompt, constraints)}`;
+  return `${text}\n\n${userPrompt(prompt, constraints, null, melody)}`;
 }
 
 // Brief -> the model's answer format, so it can be edited and sent back.
@@ -354,4 +360,39 @@ ${menuText()}`;
 
 export function critiquePrompt(prompt, description) {
   return `Prompt: ${prompt}\n\nThe song:\n${description}`;
+}
+
+// A melody the user typed as note names ("e4 _ g4 a4 . .") -> theme tokens
+// (scale degrees) in the brief's key and mode. Notes outside the scale
+// become the degree below plus a sharp ("4#"), so nothing is lost.
+export function melodyToTheme(notes, keyRoot, mode, scales) {
+  const NAMES = { c: 0, d: 2, e: 4, f: 5, g: 7, a: 9, b: 11 };
+  const toks = String(notes).trim().split(/\s+/).filter(Boolean);
+  const midi = (t) => {
+    const m = /^([a-gA-G])([#sb]?)(-?\d)$/.exec(t);
+    if (!m) return null;
+    return (Number(m[3]) + 1) * 12 + NAMES[m[1].toLowerCase()] + (m[2] === '#' || m[2] === 's' ? 1 : m[2] === 'b' ? -1 : 0);
+  };
+  const pitches = toks.map(midi).filter((n) => n !== null);
+  if (!pitches.length) return null;
+  const low = Math.min(...pitches);
+  let tonic = low - ((((low - keyRoot) % 12) + 12) % 12);
+  const scale = scales[mode] || scales.ionian;
+  const out = toks.map((t) => {
+    if (t === '_' || t === '.' || t === '~' || t === '-') return t === '_' ? '_' : '.';
+    const n = midi(t);
+    if (n === null) return '.';
+    const rel = n - tonic;
+    const oct = Math.floor(rel / 12);
+    const pc = ((rel % 12) + 12) % 12;
+    // exact scale degree, or the degree below raised by a semitone ("4#")
+    let idx = scale.indexOf(pc);
+    let alt = '';
+    if (idx < 0) {
+      idx = scale.reduce((best, v, i) => (v < pc ? i : best), 0);
+      alt = '#';
+    }
+    return `${oct * 7 + idx + 1}${alt}`;
+  });
+  return out.join(' ');
 }

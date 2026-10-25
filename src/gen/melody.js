@@ -12,7 +12,7 @@ import { Rng } from './prng.js';
 import { CELLS } from './library/cells.js';
 import { SECTION_ENERGY } from './library/forms.js';
 
-const LEAD_RANGE = { metal: [52, 79], synth: [57, 81], game: [60, 84], folk: [62, 86], classical: [62, 86], ambient: [60, 86], jazz: [57, 81], blues: [55, 79] };
+const LEAD_RANGE = { metal: [52, 79], synth: [57, 81], game: [60, 84], folk: [62, 86], classical: [62, 86], ambient: [60, 86], jazz: [57, 81], blues: [55, 79], rock: [55, 81], pop: [60, 84], hiphop: [57, 81] };
 const STEP_SHARE = { folk: 0.62, metal: 0.55, synth: 0.5, game: 0.5, jazz: 0.55, classical: 0.6, ambient: 0.5, blues: 0.5 };
 
 const TEMPLATES = {
@@ -95,9 +95,17 @@ function pickCell(cells, density, rng, exclude) {
   return rng.weighted(weights);
 }
 
-function themeMotif(bar) {
-  const cell = bar.map((t) => (typeof t === 'number' ? 'x' : t === '_' ? '_' : '.')).join('');
-  return { cell, degrees: bar.filter((t) => typeof t === 'number'), abs: true };
+const isNote = (t) => typeof t === 'number' || /^-?\d+[#b]$/.test(t);
+function themeMotif(bar, user = false) {
+  const cell = bar.map((t) => (isNote(t) ? 'x' : t === '_' ? '_' : '.')).join('');
+  const notes = bar.filter(isNote);
+  return {
+    cell,
+    degrees: notes.map((t) => (typeof t === 'number' ? t : parseInt(t, 10))),
+    alts: notes.map((t) => (typeof t === 'number' ? 0 : t.endsWith('#') ? 1 : -1)),
+    abs: true,
+    user,
+  };
 }
 
 // Build (or reuse) the motif set for one kind of material (a section type).
@@ -137,10 +145,11 @@ function motifSet(material, section, plan, rng, memory) {
   // A theme from the brief replaces the generated main motif.
   const theme = plan.themes?.[material];
   if (theme) {
-    set.a = themeMotif(theme.bars[0]);
-    set.a2 = theme.bars[1] ? themeMotif(theme.bars[1]) : set.a;
-    set.a3 = theme.bars[2] ? themeMotif(theme.bars[2]) : null;
-    set.a4 = theme.bars[3] ? themeMotif(theme.bars[3]) : null;
+    const u = Boolean(theme.user);
+    set.a = themeMotif(theme.bars[0], u);
+    set.a2 = theme.bars[1] ? themeMotif(theme.bars[1], u) : set.a;
+    set.a3 = theme.bars[2] ? themeMotif(theme.bars[2], u) : null;
+    set.a4 = theme.bars[3] ? themeMotif(theme.bars[3], u) : null;
     set.themed = true;
     const n = section.bars >= 8 ? 8 : section.bars >= 4 ? 4 : 2;
     if (set.a3) {
@@ -229,8 +238,8 @@ export function renderMelody(section, plan, rng, memory, material = section.type
         // given themes keep their notes unless they clash: snap on the
         // downbeat or when a semitone rubs against a chord tone
         const clash = (n) => chord.tones.some((t) => [1, 11].includes(((n % 12) - t + 12) % 12));
-        const mustSnap = motif.abs ? (i === 0 && !chord.tones.includes(pool[idx] % 12) && clash(pool[idx])) || (isStrong && clash(pool[idx])) : isStrong;
-        if (mustSnap || (isLast && (label === 'pac' || label === 'hc'))) {
+        const mustSnap = motif.user ? false : motif.abs ? (i === 0 && !chord.tones.includes(pool[idx] % 12) && clash(pool[idx])) || (isStrong && clash(pool[idx])) : isStrong;
+        if (mustSnap || (!motif.user && isLast && (label === 'pac' || label === 'hc'))) {
           // snap to the nearest chord tone (cadence: tonic or fifth/second)
           let targets = chord.tones;
           if (isLast && label === 'pac' && b === section.bars - 1) targets = [keyRoot];
@@ -248,8 +257,14 @@ export function renderMelody(section, plan, rng, memory, material = section.type
           idx = best;
         }
         let pitch = pool[idx];
-        if (prev !== null && Math.abs(pitch - prev) > leapMax) pitch += pitch > prev ? -12 : 12;
-        pitch = Math.max(lo, Math.min(hi, pitch)) + octave;
+        if (motif.user) {
+          // the user's own melody plays exactly as written
+          pitch = basePool[Math.max(0, Math.min(basePool.length - 1, degree))] + (motif.alts[k] || 0);
+        } else {
+          if (prev !== null && Math.abs(pitch - prev) > leapMax) pitch += pitch > prev ? -12 : 12;
+          pitch = Math.max(lo, Math.min(hi, pitch));
+        }
+        pitch += octave;
         prev = pitch;
         tokens.push(noteName(pitch));
         notes.push({ step: i, pitch, strong: isStrong, chord });

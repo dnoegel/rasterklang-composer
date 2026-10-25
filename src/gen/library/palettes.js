@@ -7,6 +7,7 @@
 export const LEADS = {
   lead: 'Pulse-Lead mit Pulsbreiten-Modulation', saw: 'Sägezahn-Lead', brass: 'weiches Brass', bell: 'Glocke',
   pluck: 'gezupfter Pulse', hubbard: 'Hubbard-Lead', whistle: 'Flöte (Dreieck)', fiddle: 'Fiddle (Sägezahn mit Vibrato)',
+  fuzz: 'Fuzz-Lead (verzerrte Gitarre)',
 };
 // 'custom' is the lead designed in the brief's `sound` (LLM path only).
 export const CUSTOM_LEAD = 'custom';

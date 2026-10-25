@@ -94,6 +94,9 @@ describe('compose', () => {
     ['funky space station cantina', 'funk'], ['chill reggae on the beach', 'reggae'], ['music box waltz', 'waltz'],
     ['epic trailer battle hymn', 'cinematic'], ['calm ambient space', 'ambient'], ['fast punk', 'punk'],
     ['lofi hip hop beats to study', 'lofi'], ['1988 cracktro music', 'demoscene'],
+    ['Song 2 von Blur als C64 Song', 'alt'], ['indie rock', 'indie'], ['rock song', 'poprock'],
+    ['hard rock riffs like ac/dc', 'hardrock'], ['a pop hit with a big chorus', 'pop'], ['trap banger', 'hiphop'],
+    ['country saloon', 'country'], ['new wave like depeche mode', 'newwave'],
   ])('genre %s -> %s renders with a lead and fits a .sid', (prompt, style) => {
     const tune = compose(prompt, 1);
     expect(tune.plan.styleId).toBe(style);

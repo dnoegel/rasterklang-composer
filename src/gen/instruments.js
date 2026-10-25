@@ -141,6 +141,15 @@ const MELODIC = {
   adsr 0 10 10 8
   vibTri 2 s3 12
   gate -2`,
+  // buzzy narrow pulse for guitar-like rock leads
+  fuzz: `
+  wave noise pulse
+  arp 12 0
+  pw ${pwBounce(640, 640, 1408, 40)}
+  loop wave 1 arp 1 pw 0
+  adsr 0 9 12 5
+  vibTri 2 s4 18
+  gate -2`,
   // soft second voice for counter-melodies
   counter: `
   wave triangle

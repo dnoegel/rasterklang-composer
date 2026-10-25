@@ -25,6 +25,7 @@ const TITLE_A = {
   funk: ['Funky', 'Soul', 'Groove', 'Mirror', 'Disco'], reggae: ['Island', 'Easy', 'Sunshine', 'Dub', 'Palm'],
   classical: ['Porcelain', 'Silver', 'Royal', 'Clockwork', 'Winter'], cinematic: ['Last', 'Fallen', 'Rising', 'Eternal', 'Iron'],
   ambient: ['Distant', 'Quiet', 'Floating', 'Polar', 'Deep'], hiphop: ['Rainy', 'Late Night', 'Paper', 'Coffee', 'Window'],
+  rock: ['Loud', 'Broken', 'Electric', 'Wild', 'Static'], pop: ['Golden', 'Summer', 'Sugar', 'Bright', 'Neon'],
 };
 const TITLE_B = {
   metal: ['Crusade', 'Legion', 'Gallows', 'Forge', 'Storm', 'Throne', 'March'],
@@ -36,6 +37,7 @@ const TITLE_B = {
   funk: ['Machine', 'Fever', 'Strut', 'Ball', 'Express'], reggae: ['Riddim', 'Vibes', 'Shore', 'Rock', 'Breeze'],
   classical: ['Waltz', 'Carousel', 'Minuet', 'Ballroom', 'Music Box'], cinematic: ['Stand', 'Kingdoms', 'Oath', 'Dawn', 'Legion'],
   ambient: ['Signals', 'Orbit', 'Tides', 'Horizon', 'Drift'], hiphop: ['Tapes', 'Notes', 'Thoughts', 'Loops', 'Streets'],
+  rock: ['Amplifier', 'Garage', 'Static', 'Riot', 'Feedback'], pop: ['Heartbeat', 'Satellite', 'Holiday', 'Glow', 'Radio'],
 };
 
 const seedKeyOf = (prompt, seed) => `${seed}|${prompt.trim().toLowerCase().replace(/\s+/g, ' ')}`;
