@@ -12,8 +12,8 @@ import { Rng } from './prng.js';
 import { CELLS } from './library/cells.js';
 import { SECTION_ENERGY } from './library/forms.js';
 
-const LEAD_RANGE = { metal: [52, 79], synth: [57, 81], game: [60, 84], folk: [62, 86] };
-const STEP_SHARE = { folk: 0.62, metal: 0.55, synth: 0.5, game: 0.5 };
+const LEAD_RANGE = { metal: [52, 79], synth: [57, 81], game: [60, 84], folk: [62, 86], classical: [62, 86], ambient: [60, 86], jazz: [57, 81], blues: [55, 79] };
+const STEP_SHARE = { folk: 0.62, metal: 0.55, synth: 0.5, game: 0.5, jazz: 0.55, classical: 0.6, ambient: 0.5, blues: 0.5 };
 
 const TEMPLATES = {
   8: {
