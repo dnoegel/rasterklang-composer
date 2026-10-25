@@ -83,3 +83,19 @@ export function nearestIndex(list, value) {
   for (let i = 1; i < list.length; i += 1) if (Math.abs(list[i] - value) < Math.abs(list[best] - value)) best = i;
   return best;
 }
+
+// Chord name ("Am7", "F#", "Bbmaj7", "Gsus4", "E5", "Bdim") -> roman
+// numeral against the key, for briefs that write names instead of degrees.
+const ROMAN_UP = ['I', 'bII', 'II', 'bIII', 'III', 'IV', 'bV', 'V', 'bVI', 'VI', 'bVII', 'VII'];
+export function chordNameToRoman(name, keyRoot) {
+  const m = /^([A-Ga-g])([#b]?)(maj7|M7|m7|min7|m|min|dim|o|aug|\+|sus2|sus4|5|7)?$/.exec(String(name).trim());
+  if (!m) return null;
+  const base = { c: 0, d: 2, e: 4, f: 5, g: 7, a: 9, b: 11 }[m[1].toLowerCase()];
+  const pc = (base + (m[2] === '#' ? 1 : m[2] === 'b' ? -1 : 0) + 12) % 12;
+  const q = m[3] || '';
+  let roman = ROMAN_UP[(pc - keyRoot + 12) % 12];
+  const minor = ['m', 'min', 'm7', 'min7', 'dim', 'o'].includes(q);
+  if (minor) roman = roman.replace(/[IV]+/, (r) => r.toLowerCase());
+  const suffix = { maj7: 'M7', M7: 'M7', m7: '7', min7: '7', 7: '7', dim: 'dim', o: 'dim', aug: '+', '+': '+', sus2: 'sus2', sus4: 'sus4', 5: '5' }[q] || '';
+  return roman + suffix;
+}

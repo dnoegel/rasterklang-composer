@@ -6,7 +6,7 @@
 import { Rng } from './prng.js';
 import { MOODS } from './moods.js';
 import { STYLES, blendStyles } from './styles.js';
-import { MODE_BRIGHTNESS, MINOR_MODES, SCALES, chordAt, parseRoman } from './theory.js';
+import { MODE_BRIGHTNESS, MINOR_MODES, SCALES, chordAt, parseRoman, chordNameToRoman } from './theory.js';
 import { METERS, framesPerBeat, bpmFor } from './library/meters.js';
 import { GROOVES } from './library/grooves.js';
 import { BASS } from './library/bass.js';
@@ -365,7 +365,13 @@ export function validateBrief(input) {
       if (bars && bars.every((r) => typeof r === 'string' && r.length === steps)) s[field] = bars;
       else { repairs.push(`${s.type}: ${field} not usable, library entry used`); delete s[field]; }
     }
-    const chords = Array.isArray(s.chords) ? s.chords.filter((c) => { try { parseRoman(String(c)); return true; } catch { return false; } }) : [];
+    // roman numerals, or chord names converted against the key
+    const chords = (Array.isArray(s.chords) ? s.chords : []).map((c) => {
+      try { parseRoman(String(c)); return String(c); } catch { /* not roman */ }
+      const r = chordNameToRoman(c, b.keyRoot);
+      if (r) { repairs.push(`${s.type}: chord ${c} -> ${r}`); return r; }
+      return null;
+    }).filter(Boolean);
     if (!chords.length) {
       s.chords = firstOf[s.type]?.chords || PROGRESSIONS[Object.keys(style.progressions).find((id) => PROGRESSIONS[id]?.tonality === (MINOR_MODES.has(b.mode) ? 'minor' : 'major'))].chords;
       repairs.push(`${s.type}: no valid chords, used a style default`);
