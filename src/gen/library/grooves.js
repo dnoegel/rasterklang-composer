@@ -54,6 +54,8 @@ export const GROOVES = {
   // ---- 6/8 ---------------------------------------------------------------
   bodhran: { meter: '6/8', name: 'Bodhrán', tags: ['folk', 'celtic'], energy: [0.1, 1],
     levels: ['t.....t.....', 't.....t.....', 't.T.T.t.T.T.', 't.TTT.t.TTT.'] },
+  metal_68: { meter: '6/8', name: 'Metal im 6/8 (Doublebass)', tags: ['metal', 'folk'], energy: [0.5, 1],
+    levels: ['k.....k.....', 'k.kks.k.kks.', 'kkkkskkkkks.', 'kkkkskkkkksk'] },
   jig_kit: { meter: '6/8', name: '6/8-Schlagzeug', tags: ['folk', 'rock'], energy: [0.3, 1],
     levels: ['k.....k.....', 'k.....s.....', 'k.h.h.s.h.h.', 'k.hhh.s.hhh.'] },
 
