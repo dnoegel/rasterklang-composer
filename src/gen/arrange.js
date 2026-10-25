@@ -19,6 +19,48 @@ const HOLD = { tok: '_', inst: null };
 // Per-bar decisions seeded by section type and bar, so repeats match.
 const barRng = (plan, section, b, what) => new Rng(plan.seed, plan.version, what, section.type, section.texture, b);
 
+// Energy inside a section, bar by bar, from start to end value.
+function energyAt(section, b) {
+  const end = section.energyEnd ?? section.energy;
+  return section.energy + (end - section.energy) * (section.bars > 1 ? b / (section.bars - 1) : 0);
+}
+
+// Small per-bar changes so a groove breathes instead of looping: ghost
+// hats, an open hat before the next bar, a kick pickup. Anchors (beat 1,
+// backbeats) stay. Seeded per section type and bar, so repeats match.
+function varyDrums(row, rng, energy, strong) {
+  const cells = [...row];
+  const n = cells.length;
+  if (rng.chance(0.25 + energy * 0.3)) {
+    const i = 1 + 2 * rng.int(0, n / 2 - 1);
+    if (cells[i] === '.') cells[i] = 'h';
+  }
+  if (energy > 0.45 && rng.chance(0.3)) {
+    const i = n - 2;
+    if (cells[i] === 'h' || cells[i] === '.') cells[i] = 'o';
+  }
+  if (energy > 0.55 && rng.chance(0.25)) {
+    const i = strong * 2 - 1;
+    if (i < n && cells[i] === '.' && cells[i + 1] !== 'k') cells[i] = 'k';
+  }
+  if (energy < 0.35 && rng.chance(0.3)) {
+    const i = 2 * rng.int(1, n / 2 - 1);
+    if (cells[i] === 'h') cells[i] = '.';
+  }
+  return cells.join('');
+}
+
+// Bass: an octave jump, a fifth instead of a root, or a pickup before
+// the next bar, now and then.
+function varyBass(row, rng, energy) {
+  const cells = [...row];
+  const onsets = cells.map((c, i) => (c === 'R' ? i : -1)).filter((i) => i > 0);
+  if (onsets.length && rng.chance(0.2 + energy * 0.25)) cells[rng.pick(onsets)] = rng.chance(0.6) ? '8' : '5';
+  const last = cells.length - 1;
+  if (rng.chance(0.15 + energy * 0.15) && (cells[last] === '.' || cells[last] === '_') && cells[last - 1] !== '_') cells[last] = 'A';
+  return cells.join('');
+}
+
 function drumLevel(energy, persona) {
   let level = energy < 0.22 ? 0 : energy < 0.5 ? 1 : energy < 0.78 ? 2 : 3;
   if (persona.drums !== undefined && persona.drums < 0.5) level = Math.max(0, level - 1);
@@ -49,16 +91,21 @@ function pickFill(plan, rng) {
 function drumBar(section, b, plan, rng, prevTransition) {
   const persona = PERSONAS[plan.persona] || PERSONAS.none;
   const groove = section.textureDef.drums === 'halftime' && GROOVES.halftime.meter === plan.meterId ? GROOVES.halftime : section.grooveDef;
-  let level = drumLevel(section.energy, persona);
+  const energy = energyAt(section, b);
+  let level = drumLevel(energy, persona);
   if (section.textureDef.drums === 'build') level = Math.min(3, Math.floor((b / section.bars) * 4));
   let row = groove.levels[Math.min(level, groove.levels.length - 1)];
+  // a written two-bar pattern alternates on its main levels
+  if (groove.custom && groove.rows.length > 1 && (level === 1 || level === 2)) row = groove.rows[b % 2];
+  const varied = !groove.custom || level !== 1;
+  if (varied) row = varyDrums(row, rng, energy, plan.meter.strong);
   const last = b === section.bars - 1;
   const fillsMul = persona.fills || 1;
   // count-in: the drum-only stage ends in a fill
   if (section.textureDef.drums === 'fill' && b + 1 < section.bars && stageAt(section, b + 1) !== stageAt(section, b)) row = pickFill(plan, rng) || row;
   else if (section.textureDef.drums === 'build' && last) row = pickFill(plan, rng) || row;
   else if (last && section.transition === 'fill' && rng.chance(0.9)) row = pickFill(plan, rng) || row;
-  else if (!last && (b + 1) % 4 === 0 && section.energy > 0.35 && rng.chance(0.22 * fillsMul)) row = pickFill(plan, rng) || row;
+  else if (!last && (b + 1) % 4 === 0 && energy > 0.35 && rng.chance(0.22 * fillsMul)) row = pickFill(plan, rng) || row;
   const cells = [...row].map((c) => drumCell(c, plan));
   const crash = b === 0 && (prevTransition === 'fill' || prevTransition === 'stop' || (section.energy > 0.6 && section.type !== 'verse'));
   if (crash) cells[0] = { tok: 'c4', inst: 'crash' };
@@ -84,7 +131,8 @@ function bassBar(section, b, plan, rng, idiom, inst) {
   const next = section.chords[b + 1] || chord;
   const root = bassRoot(chord.root);
   const third = chord.tones[1] !== undefined ? ((chord.tones[1] - chord.root + 12) % 12) : 4;
-  const row = idiom.row;
+  let row = idiom.rows ? idiom.rows[b % idiom.rows.length] : idiom.row;
+  if (!idiom.custom && !/^R_+$/.test(row)) row = varyBass(row, rng, energyAt(section, b));
   const lastOnset = Math.max(row.lastIndexOf('R'), row.lastIndexOf('5'), row.lastIndexOf('8'));
   return [...row].map((c, i) => {
     let pitch = null;
@@ -115,6 +163,43 @@ function arpBar(section, b, plan, cell) {
   return [...cell].map((c) => (c === 'x' ? { tok: noteName(n), inst } : c === '_' ? HOLD : REST));
 }
 
+// Counter-melody: a slower second line under the lead, chord tones a third
+// or sixth below the lead note sounding at that moment, preferring contrary
+// motion and small steps (textbook two-voice writing).
+function counterBar(section, b, plan, leadNotes, prev, energy) {
+  const steps = plan.meter.steps;
+  const chord = section.chords[b];
+  const every = energy > 0.6 ? plan.meter.strong : plan.meter.strong * 2;
+  const tones = [];
+  for (let n = 50; n <= 69; n += 1) if (chord.tones.includes(n % 12)) tones.push(n);
+  const cells = [];
+  let last = prev.pitch;
+  let lastLead = prev.lead;
+  for (let i = 0; i < steps; i += 1) {
+    if (i % every !== 0) { cells.push(HOLD); continue; }
+    const lead = [...leadNotes].reverse().find((x) => x.step <= i)?.pitch ?? lastLead ?? 72;
+    let best = tones[0];
+    let bestScore = -Infinity;
+    for (const t of tones) {
+      const below = lead - t;
+      let score = [3, 4, 8, 9].includes(below) ? 3 : [5, 7].includes(below) ? 1 : below <= 0 || below === 12 ? -5 : 0;
+      if (last !== null && lastLead !== null) {
+        const dl = Math.sign(lead - lastLead);
+        const dc = Math.sign(t - last);
+        if (dl !== 0 && dc === -dl) score += 1.5;
+        score -= Math.abs(t - last) / 4;
+      }
+      if (score > bestScore) { bestScore = score; best = t; }
+    }
+    cells.push({ tok: noteName(best), inst: 'counter' });
+    last = best;
+    lastLead = lead;
+  }
+  prev.pitch = last;
+  prev.lead = lastLead;
+  return cells;
+}
+
 // Bass and drums on one voice: snares/claps/toms interrupt the bass, kicks
 // fall on bass notes (the bass instrument's noise click is the kick).
 function multiplex(drums, bass) {
@@ -143,7 +228,8 @@ export function arrange(plan, rng, melodyRng) {
     const idiom = bassIdiom(section, plan);
     const cells = ARP_CELLS[plan.meterId];
     const arpCell = persona.arpBusy ? cells[cells.length - 1] : cells[Math.min(cells.length - 1, Math.floor(section.energy * cells.length))];
-    const needsLead = section.textureDef.stages.some(([, r]) => r.includes('L'));
+    const needsLead = section.textureDef.stages.some(([, r]) => r.includes('L') || r.includes('C'));
+    const counterState = { pitch: null, lead: null };
     const material = section.textureDef.lead || section.type;
     const melody = needsLead ? renderMelody(section, plan, melodyRng, melodyMemory, material) : null;
     let leadInst = section.leadInst;
@@ -157,7 +243,10 @@ export function arrange(plan, rng, melodyRng) {
       const roles = stageAt(section, b);
       const drums = drumBar(section, b, plan, barRng(plan, section, b, 'drums'), b === 0 ? prevTransition : null);
       const bass = bassBar(section, b, plan, barRng(plan, section, b, 'bass'), idiom, plan.palette.bass);
-      const arp = arpBar(section, b, plan, arpCell);
+      const e = energyAt(section, b);
+      const cellNow = section.arpRows ? section.arpRows[b % section.arpRows.length]
+        : persona.arpBusy ? arpCell : cells[Math.min(cells.length - 1, Math.floor(e * cells.length))];
+      const arp = arpBar(section, b, plan, cellNow);
       const lead = melody
         ? melody.bars[b].tokens.map((t) => (t === '~' || t === '_' ? { tok: t, inst: null } : { tok: t, inst: leadInst }))
         : restBar(steps);
@@ -170,6 +259,7 @@ export function arrange(plan, rng, melodyRng) {
         if (r === 'L') return lead;
         if (r === 'A') return arp;
         if (r === 'M') return multiplex(drums, bass);
+        if (r === 'C') return melody ? counterBar(section, b, plan, melody.bars[b].notes, counterState, e) : restBar(steps);
         return restBar(steps);
       });
 
@@ -205,7 +295,7 @@ export function arrange(plan, rng, melodyRng) {
       // silent voice (routing it is harmless), never the lead or drums alone
       const pick = (set) => [...roles].map((r, v) => (set.includes(r) ? v : -1)).filter((v) => v >= 0);
       let route = pick(['B', 'M']);
-      if (!route.length) route = pick(['A']);
+      if (!route.length) route = pick(['A', 'C']);
       if (!route.length) route = pick(['-']).slice(0, 1);
       routes.push(route);
     }

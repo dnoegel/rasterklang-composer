@@ -141,6 +141,12 @@ const MELODIC = {
   adsr 0 10 10 8
   vibTri 2 s3 12
   gate -2`,
+  // soft second voice for counter-melodies
+  counter: `
+  wave triangle
+  adsr 3 9 10 7
+  vibTri 3 s4 24
+  gate -2`,
   whistle: `
   wave triangle
   adsr 2 9 11 5
@@ -186,10 +192,27 @@ function arpInstrument(quality, shape) {
   gate -2`;
 }
 
-export function instrumentBlocks(names) {
+// A lead sound designed in the brief: waveform, envelope,
+// vibrato depth and pulse-width movement, all clamped to safe ranges.
+export function customLeadBody(sound) {
+  const wave = ['pulse', 'saw', 'triangle'].includes(sound.wave) ? sound.wave : 'pulse';
+  const n = (v, lo, hi, d) => Math.max(lo, Math.min(hi, Math.round(Number.isFinite(Number(v)) ? Number(v) : d)));
+  const adsr = [n(sound.attack, 0, 12, 1), n(sound.decay, 0, 12, 9), n(sound.sustain, 0, 15, 10), n(sound.release, 0, 12, 6)];
+  const lines = [`  wave ${wave}`];
+  const pwmStep = { slow: 6, medium: 14, fast: 22 }[sound.pwm];
+  if (wave === 'pulse') lines.push(pwmStep ? `  pw ${pwBounce(1024, 768, 3072, pwmStep)}\n  loop pw 0` : '  pw 2048');
+  lines.push(`  adsr ${adsr.join(' ')}`);
+  const vib = Math.max(0, Math.min(3, Number(sound.vibrato) || 0));
+  if (vib > 0) lines.push(`  vibTri ${vib >= 2 ? 3 : 2} s${vib >= 2.5 ? 2 : vib >= 1.5 ? 3 : 4} 14`);
+  lines.push('  gate -2');
+  return `\n${lines.join('\n')}`;
+}
+
+export function instrumentBlocks(names, sound = null) {
   const out = [];
   for (const name of names) {
     let body = DRUMS[name] || MELODIC[name];
+    if (!body && name === 'custom' && sound) body = customLeadBody(sound);
     if (!body && ARP_QUALITY[name]) body = arpInstrument(ARP_QUALITY[name], ARP_SHAPES[ARP_QUALITY[name]]);
     if (!body) throw new Error(`unknown instrument ${name}`);
     out.push(`instrument ${name}${body}\nend`);

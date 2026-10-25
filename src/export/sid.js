@@ -7,13 +7,14 @@
 // several minutes fit into C64 memory. Playback writes exactly the
 // original register values in the original frames.
 //
-// Block: per frame one count byte N, then N (register, value) pairs;
-//        $FF ends the block.
+// Block: per frame one count byte N (0-127), then N (register, value)
+//        pairs; a byte $80+N (N = 1..126) stands for N frames without
+//        writes; $FF ends the block.
 // Orderlist: 2-byte block addresses, $0000 = loop to the first entry.
 // Timing: one play call per PAL video frame (50 Hz).
 
 const LOAD = 0x1000;
-const DATA = 0x1200;
+const DATA = 0x1400;
 // The replayer banks the BASIC ROM out ($01 = $36) while it reads, so data
 // may run up to the I/O area at $D000.
 const DATA_END = 0xd000;
@@ -37,6 +38,8 @@ function assemblePlayer(orderAddrs) {
   op(0x9d, 0x00, 0xd4, 0xca); //               STA $D400,X : DEX
   rel(0x10, 'clear'); //                       BPL clear
   for (let s = 0; s < STREAMS; s += 1) {
+    op(0xa9, 0x00); //                         LDA #0
+    abs(0x8d, `skip${s}`); //                  STA skip_s
     abs(0x20, `rewind${s}`); //                JSR rewind_s
     abs(0x20, `next${s}`); //                  JSR next_s
   }
@@ -51,11 +54,24 @@ function assemblePlayer(orderAddrs) {
   for (let s = 0; s < STREAMS; s += 1) {
     const bp = 0xf0 + s * 2; // block pointer
     at(`play${s}`);
+    abs(0xad, `skip${s}`); //                  LDA skip_s   (inside a run of empty frames?)
+    rel(0xf0, `read${s}`); //                  BEQ read
+    abs(0xce, `skip${s}`); //                  DEC skip_s
+    abs(0x4c, `end${s}`); //                   JMP end_s
+    at(`read${s}`);
     op(0xa0, 0x00, 0xb1, bp); //               LDY #0 : LDA (bp),Y
     op(0xc9, END_BLOCK); //                    CMP #$FF
-    rel(0xd0, `frame${s}`); //                 BNE frame
+    rel(0xd0, `notend${s}`); //                BNE notend
     abs(0x20, `next${s}`); //                  JSR next
-    abs(0x4c, `play${s}`); //                  JMP play_s
+    abs(0x4c, `read${s}`); //                  JMP read_s
+    at(`notend${s}`);
+    op(0xc9, 0x80); //                         CMP #$80
+    rel(0x90, `frame${s}`); //                 BCC frame    (a write count)
+    op(0x38, 0xe9, 0x81); //                   SEC : SBC #$81  (N-1 more empty frames)
+    abs(0x8d, `skip${s}`); //                  STA skip_s
+    op(0xe6, bp); //                           INC bp
+    op(0xd0, 0x02, 0xe6, bp + 1); //           BNE +2 : INC bp+1
+    abs(0x4c, `end${s}`); //                   JMP end_s
     at(`frame${s}`);
     op(0xaa, 0xc8, 0xe0, 0x00); //             TAX : INY : CPX #0
     rel(0xf0, `done${s}`); //                  BEQ done
@@ -70,12 +86,14 @@ function assemblePlayer(orderAddrs) {
     at(`done${s}`);
     op(0x98, 0x18, 0x65, bp, 0x85, bp); //     TYA : CLC : ADC bp : STA bp
     op(0x90, 0x02, 0xe6, bp + 1); //           BCC +2 : INC bp+1
+    at(`end${s}`);
   }
   abs(0xad, 'save01'); //                      LDA save01
   op(0x85, 0x01); //                           STA $01
   op(0x60); //                                 RTS
   at('save01');
   op(0x37);
+  for (let s = 0; s < STREAMS; s += 1) { at(`skip${s}`); op(0x00); }
 
   for (let s = 0; s < STREAMS; s += 1) {
     const bp = 0xf0 + s * 2;
@@ -155,6 +173,13 @@ function encodeBlock(frames, from, to, stream, state) {
       if (CONTROL_REGS.has(reg)) ctrl.push(reg, f[j + 1]);
       w.push(reg, f[j + 1]);
     }
+    if (i !== from && !w.length) {
+      // extend a run of empty frames, or start one
+      const lastIdx = out.length - 1;
+      if (lastIdx >= 0 && out[lastIdx] >= 0x81 && out[lastIdx] < 0xfe && out.runMarker === lastIdx) out[lastIdx] += 1;
+      else { out.push(0x81); out.runMarker = out.length - 1; }
+      continue;
+    }
     if (i === from) {
       const key = [];
       for (const reg of regs) if (!CONTROL_REGS.has(reg)) key.push(reg, state[reg]);
@@ -166,7 +191,7 @@ function encodeBlock(frames, from, to, stream, state) {
     }
   }
   out.push(END_BLOCK);
-  return out;
+  return [...out];
 }
 
 function layoutFor(streams, bars) {

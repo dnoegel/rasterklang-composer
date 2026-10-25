@@ -139,10 +139,16 @@ function motifSet(material, section, plan, rng, memory) {
   if (theme) {
     set.a = themeMotif(theme.bars[0]);
     set.a2 = theme.bars[1] ? themeMotif(theme.bars[1]) : set.a;
+    set.a3 = theme.bars[2] ? themeMotif(theme.bars[2]) : null;
+    set.a4 = theme.bars[3] ? themeMotif(theme.bars[3]) : null;
     set.themed = true;
-    // a two-bar theme runs as a unit
-    if (theme.bars[1]) {
-      const n = section.bars >= 8 ? 8 : section.bars >= 4 ? 4 : 2;
+    const n = section.bars >= 8 ? 8 : section.bars >= 4 ? 4 : 2;
+    if (set.a3) {
+      // a three- or four-bar theme is a phrase: play it twice per 8 bars
+      const t = ['a', 'a2', 'a3', set.a4 ? 'a4' : 'pac'];
+      set.template = n === 8 ? [...t, ...t] : n === 4 ? t : ['a', 'a2'];
+      set.templateName = 'theme';
+    } else if (theme.bars[1]) {
       set.template = { 8: ['a', 'a2', 'b', 'hc', 'a', 'a2', 'c', 'pac'], 4: ['a', 'a2', 'a', 'pac'], 2: ['a', 'a2'] }[n];
       set.templateName = 'theme';
     }
@@ -181,7 +187,7 @@ export function renderMelody(section, plan, rng, memory, material = section.type
   if (tonicIdx < 0) tonicIdx = basePool.findIndex((n) => n % 12 === keyRoot);
   if (set.themed) {
     // place the tonic so the theme's span sits in the middle of the range
-    const offs = [...set.a.degrees, ...set.a2.degrees].map((d) => (d > 0 ? d - 1 : -d - 1 - 7));
+    const offs = [set.a, set.a2, set.a3, set.a4].filter(Boolean).flatMap((m) => m.degrees).map((d) => (d > 0 ? d - 1 : -d - 1 - 7));
     const span = [Math.min(...offs), Math.max(...offs)];
     let best = tonicIdx;
     let bestScore = -Infinity;

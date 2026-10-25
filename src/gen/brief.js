@@ -12,9 +12,9 @@ import { GROOVES } from './library/grooves.js';
 import { BASS } from './library/bass.js';
 import { CELLS } from './library/cells.js';
 import { PROGRESSIONS } from './library/progressions.js';
-import { TEXTURES, KIND_OF, TRANSITIONS } from './library/textures.js';
+import { TEXTURES, KIND_OF, TRANSITIONS, FILTER_SHAPES } from './library/textures.js';
 import { FORMS, SECTION_ENERGY } from './library/forms.js';
-import { LEADS, BASSES, SNARES, PERSONAS } from './library/palettes.js';
+import { LEADS, BASSES, SNARES, PERSONAS, CUSTOM_LEAD } from './library/palettes.js';
 
 export const GENERATOR_VERSION = 'compose-0.2.0';
 
@@ -142,7 +142,11 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
     bass = bass || pickWeighted(rng, style.bass, bassOk, (id) => energyFit(BASS[id], want));
     const feel = pickWeighted(rng, style.feels, (f) => CELLS[meter][f]) || Object.keys(CELLS[meter])[0];
     const kind = KIND_OF[type];
-    let texture = pickWeighted(rng, style.textures[kind] || style.textures.main, (id) => TEXTURES[id], (id) => {
+    // every style may use the counter-melody and build-up textures a little
+    const pool = kind === 'main'
+      ? { counter: 0.7, counter_nodrums: 0.25, build_up_band: 0.4, ...style.textures.main }
+      : kind === 'breakdown' ? { duet: 0.6, ...(style.textures.breakdown || {}) } : (style.textures[kind] || style.textures.main);
+    let texture = pickWeighted(rng, pool, (id) => TEXTURES[id], (id) => {
       let w = P.textures[id] || 1;
       if (id === 'cold_start') w *= 1 + Math.max(0, target.energyBias) * 4;
       if (id === 'arp_swell' || id === 'drone_lead' || id === 'twin_lead') w *= 1 + Math.max(0, -target.energyBias) * 3;
@@ -161,14 +165,31 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
 
   const sections = [];
   const templ = FORMS[formId].sections;
+  const seen = {};
+  // energy and filter movement inside a section (research: verse stable,
+  // pre-chorus and builds rise, choruses plateau, outros fall away)
+  const RAMP = { intro: 0.15, verse: 0.05, pre: 0.25, chorus: 0.04, bridge: 0.08, solo: 0.06, breakdown: 0, build: 0.3, outro: -0.2 };
+  const leadTextures = Object.keys(style.textures.main || {}).filter((id) => TEXTURES[id]?.stages.some(([, r]) => r.includes('L')));
   templ.forEach(([type, bars], i) => {
     const c = choose(type);
     const last = i === templ.length - 1;
+    seen[type] = (seen[type] || 0) + 1;
+    let texture = c.texture;
+    // later choruses may change colour (not every chorus is "full band")
+    if (type === 'chorus' && seen[type] >= 2 && rng.chance(0.35)) {
+      texture = rng.pick([...leadTextures, 'counter'].filter((id) => id !== c.texture)) || texture;
+    }
+    const lastChorus = type === 'chorus' && templ.slice(i + 1).every(([t]) => t !== 'chorus');
+    const energyEnd = Math.max(0.05, Math.min(1, c.energy + (RAMP[type] || 0) + (lastChorus ? 0.06 : 0)));
+    const filter = type === 'outro' ? 'close' : type === 'build' || type === 'intro' ? 'open'
+      : type === 'breakdown' && ['dance', 'synth'].includes(style.family) && rng.chance(0.4) ? 'wobble' : 'follow';
     sections.push({
       type,
       bars,
       energy: Math.round(c.energy * 100) / 100,
-      texture: c.texture,
+      energyEnd: Math.round(energyEnd * 100) / 100,
+      filter,
+      texture,
       transition: last ? 'none' : pickWeighted(rng, style.transitions, (t) => TRANSITIONS[t]) || 'fill',
       groove: c.groove,
       bass: c.bass,
@@ -234,9 +255,12 @@ function parseTheme(theme, steps) {
   let tokens = theme.notes.trim().split(/\s+/).map((t) => t.replace(/[^0-9_.\-]/g, '')).filter(Boolean);
   if (!tokens.length) return null;
   if (tokens.length < steps) tokens = [...tokens, ...Array(steps - tokens.length).fill('_')];
-  if (tokens.length > steps && tokens.length < steps * 2) tokens = tokens.slice(0, steps);
+  // round to whole bars: pad a nearly full bar, drop a stub
+  const rem = tokens.length % steps;
+  if (rem && rem >= steps - 3) tokens = [...tokens, ...Array(steps - rem).fill('_')];
+  else if (rem && tokens.length > steps) tokens = tokens.slice(0, tokens.length - rem);
   const bars = [];
-  for (let i = 0; i < tokens.length && bars.length < 2; i += steps) {
+  for (let i = 0; i < tokens.length && bars.length < 4; i += steps) {
     const bar = tokens.slice(i, i + steps);
     if (bar.length < steps) break;
     if (bar[0] === '_') bar[0] = '.';
@@ -247,6 +271,24 @@ function parseTheme(theme, steps) {
     if (/^-?\d+$/.test(t)) return clamp(Number(t), -7, 14) || 1;
     return t === '_' ? '_' : '.';
   })) : null;
+}
+
+// Patterns written in the brief (LLM path): one character per step, one or
+// two bars. Close misses are padded or cut, others dropped.
+function cleanPattern(raw, steps, alphabet, mustHave) {
+  if (typeof raw !== 'string') return null;
+  let p = raw.replace(/[\s|]/g, '');
+  if (!p) return null;
+  if ([...p].some((c) => !alphabet.includes(c))) return null;
+  for (const n of [steps, steps * 2]) {
+    if (Math.abs(p.length - n) <= 2) {
+      p = p.length < n ? p + '.'.repeat(n - p.length) : p.slice(0, n);
+      const bars = p.length === steps ? [p] : [p.slice(0, steps), p.slice(steps)];
+      if (!bars.every((b) => [...b].some((c) => mustHave.includes(c)))) return null;
+      return bars.map((b) => (b[0] === '_' ? `.${b.slice(1)}` : b));
+    }
+  }
+  return null;
 }
 
 export function validateBrief(input) {
@@ -274,6 +316,7 @@ export function validateBrief(input) {
   if (!SNARES[b.palette.snare]) b.palette.snare = Object.keys(style.palette.snare)[0];
   if (b.palette.chords !== 'power' && b.palette.chords !== 'triad') b.palette.chords = style.palette.chords;
   b.moods = Object.fromEntries(Object.entries(b.moods || {}).filter(([m, w]) => MOODS[m] && w > 0));
+  if (!b.sound || !['pulse', 'saw', 'triangle'].includes(b.sound.wave)) b.sound = null;
   const steps = METERS[b.meter].steps;
 
   if (!Array.isArray(b.sections) || !b.sections.length) {
@@ -313,7 +356,15 @@ export function validateBrief(input) {
       s.bass = fb;
     }
     if (!CELLS[b.meter][s.feel]) s.feel = Object.keys(style.feels).find((f) => CELLS[b.meter][f]) || Object.keys(CELLS[b.meter])[0];
-    if (!LEADS[s.lead]) s.lead = Object.keys(style.palette.lead)[0];
+    if (!LEADS[s.lead] && !(s.lead === CUSTOM_LEAD && b.sound)) s.lead = Object.keys(style.palette.lead)[0];
+    s.energyEnd = clamp(Number(s.energyEnd ?? s.energy), 0.05, 1);
+    if (!FILTER_SHAPES[s.filter]) s.filter = 'follow';
+    for (const [field, alphabet, must] of [['drumPattern', 'kshocTtx.', 'kst'], ['bassPattern', 'R583b6A_.', 'R'], ['arpPattern', 'x_.', 'x']]) {
+      if (s[field] === undefined || s[field] === null || s[field] === '') { delete s[field]; continue; }
+      const bars = Array.isArray(s[field]) ? s[field] : cleanPattern(s[field], steps, alphabet, must);
+      if (bars && bars.every((r) => typeof r === 'string' && r.length === steps)) s[field] = bars;
+      else { repairs.push(`${s.type}: ${field} not usable, library entry used`); delete s[field]; }
+    }
     const chords = Array.isArray(s.chords) ? s.chords.filter((c) => { try { parseRoman(String(c)); return true; } catch { return false; } }) : [];
     if (!chords.length) {
       s.chords = firstOf[s.type]?.chords || PROGRESSIONS[Object.keys(style.progressions).find((id) => PROGRESSIONS[id]?.tonality === (MINOR_MODES.has(b.mode) ? 'minor' : 'major'))].chords;
@@ -340,6 +391,22 @@ export function validateBrief(input) {
 
 // --- brief -> plan --------------------------------------------------------
 
+// A drum pattern from the brief becomes a groove: the written rows are the
+// main levels; the calm level keeps only kick, snare and toms, the busiest
+// adds hats on free 8ths.
+function customGroove(rows, base) {
+  const calm = (r) => [...r].map((c) => ('kstTx'.includes(c) ? c : '.')).join('');
+  const busy = (r) => [...r].map((c, i) => (c === '.' && i % 2 === 0 ? 'h' : c)).join('');
+  return {
+    name: 'eigenes Drum-Muster',
+    meter: base?.meter,
+    tags: base?.tags || [],
+    custom: true,
+    rows,
+    levels: [calm(rows[0]), rows[0], rows[0], busy(rows[0])],
+  };
+}
+
 export function planFromBrief(brief, seedKey) {
   const style = blendStyles(brief.style, brief.blend?.style, brief.blend?.amount || 0);
   const meter = METERS[brief.meter];
@@ -363,8 +430,9 @@ export function planFromBrief(brief, seedKey) {
       chords,
       textureDef: texture,
       energy: texture.energy ? Math.max(s.energy, texture.energy) : s.energy,
-      grooveDef: GROOVES[s.groove],
-      bassDef: BASS[s.bass],
+      grooveDef: s.drumPattern ? customGroove(s.drumPattern, GROOVES[s.groove]) : GROOVES[s.groove],
+      bassDef: s.bassPattern ? { name: 'eigene Bass-Figur', row: s.bassPattern[0], rows: s.bassPattern, custom: true } : BASS[s.bass],
+      arpRows: s.arpPattern || null,
       leadInst: s.lead,
     });
     bar += s.bars;
@@ -392,6 +460,7 @@ export function planFromBrief(brief, seedKey) {
     speed,
     bpm: bpmFor(brief.meter, speed),
     palette: brief.palette,
+    sound: brief.sound || null,
     persona: brief.persona,
     themes: brief.themes || {},
     sections,

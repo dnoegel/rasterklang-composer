@@ -45,7 +45,7 @@ describe('compose', () => {
     expect(frames.every((f) => f.length / 2 <= 127)).toBe(true);
     const sid = buildSid(frames, barStarts, { title: tune.title });
     expect(sid.complete).toBe(true);
-    expect(sid.bytes.length).toBeLessThan(0xa000);
+    expect(sid.bytes.length).toBeLessThan(0xd000 - 0x1000 + 0x7e); // data ends before I/O at $D000
     expect(String.fromCharCode(...sid.bytes.slice(0, 4))).toBe('PSID');
   });
 

@@ -27,7 +27,7 @@ describe('library', () => {
   });
 
   it('textures and forms are well formed', () => {
-    for (const [id, t] of Object.entries(TEXTURES)) for (const [, roles] of t.stages) expect(roles, id).toMatch(/^[DBLAM-]{3}$/);
+    for (const [id, t] of Object.entries(TEXTURES)) for (const [, roles] of t.stages) expect(roles, id).toMatch(/^[DBLAMC-]{3}$/);
     for (const f of Object.values(FORMS)) for (const [type] of f.sections) expect(SECTION_ENERGY[type]).toBeDefined();
   });
 
