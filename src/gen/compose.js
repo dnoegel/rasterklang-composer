@@ -14,6 +14,7 @@ import { BASS } from './library/bass.js';
 import { TEXTURES, TRANSITIONS } from './library/textures.js';
 import { FORMS } from './library/forms.js';
 import { LEADS } from './library/palettes.js';
+import { ARTISTS } from './library/hvsc.js';
 
 const TITLE_A = {
   metal: ['Iron', 'Steel', 'Thunder', 'Blood', 'Fire', 'Black', 'Raven'],
@@ -26,6 +27,9 @@ const TITLE_A = {
   classical: ['Porcelain', 'Silver', 'Royal', 'Clockwork', 'Winter'], cinematic: ['Last', 'Fallen', 'Rising', 'Eternal', 'Iron'],
   ambient: ['Distant', 'Quiet', 'Floating', 'Polar', 'Deep'], hiphop: ['Rainy', 'Late Night', 'Paper', 'Coffee', 'Window'],
   rock: ['Loud', 'Broken', 'Electric', 'Wild', 'Static'], pop: ['Golden', 'Summer', 'Sugar', 'Bright', 'Neon'],
+  // per style, where the family's words don't fit
+  classicalStyle: ['Little', 'Royal', 'Silver', 'Winter', 'Morning'], march: ['Grand', 'Royal', 'Victory', 'Brass', 'Colonel'],
+  ragtime: ['Maple', 'Peach', 'Sunflower', 'Dixie', 'Kitten'], folkStyle: ['Snowy', 'Candle', 'Evening', 'Old', 'Little'],
 };
 const TITLE_B = {
   metal: ['Crusade', 'Legion', 'Gallows', 'Forge', 'Storm', 'Throne', 'March'],
@@ -38,7 +42,10 @@ const TITLE_B = {
   classical: ['Waltz', 'Carousel', 'Minuet', 'Ballroom', 'Music Box'], cinematic: ['Stand', 'Kingdoms', 'Oath', 'Dawn', 'Legion'],
   ambient: ['Signals', 'Orbit', 'Tides', 'Horizon', 'Drift'], hiphop: ['Tapes', 'Notes', 'Thoughts', 'Loops', 'Streets'],
   rock: ['Amplifier', 'Garage', 'Static', 'Riot', 'Feedback'], pop: ['Heartbeat', 'Satellite', 'Holiday', 'Glow', 'Radio'],
+  classicalStyle: ['Sonata', 'Fugue', 'Prelude', 'Invention', 'Minuet'], march: ['March', 'Parade', 'Fanfare', 'Anthem', 'Review'],
+  ragtime: ['Rag', 'Stomp', 'Strut', 'Cakewalk', 'Two-Step'], folkStyle: ['Carol', 'Song', 'Lullaby', 'Air', 'Hymn'],
 };
+const TITLE_KEY = { classical: 'classicalStyle', march: 'march', ragtime: 'ragtime', folk: 'folkStyle' };
 
 const seedKeyOf = (prompt, seed) => `${seed}|${prompt.trim().toLowerCase().replace(/\s+/g, ' ')}`;
 
@@ -66,7 +73,7 @@ export function composeBrief(rawBrief, { prompt = '', seed = 1, intent = null, c
     if (!best || score > best.score) best = { arrangement, measure: m, score, candidate: k };
   }
   const tr = new Rng(seedKey, GENERATOR_VERSION, 'title');
-  const fam = plan.style.family;
+  const fam = TITLE_KEY[brief.style] || plan.style.family;
   const title = brief.title || `${tr.pick(TITLE_A[fam] || TITLE_A.synth)} ${tr.pick(TITLE_B[fam] || TITLE_B.synth)}`;
   const dsl = emitDsl(plan, best.arrangement, title);
   return {
@@ -115,6 +122,7 @@ function cues(intent, plan, brief) {
   const leads = [...new Set(plan.sections.filter((s) => s.textureDef.stages.some(([, r]) => r.includes('L'))).map((s) => s.leadInst))];
   if (leads.length) out.push(`Lead: ${leads.map((l) => LEADS[l] || l).join(', ')}`);
   if (plan.sections.some((s) => s.transpose)) out.push('Key change: last chorus a whole tone higher');
+  if (brief.artist && ARTISTS[brief.artist]) out.push(`Groove, bass figure and chord loop from ${ARTISTS[brief.artist].tunes} C64 arrangements of ${brief.artist} (HVSC)`);
   if (t.legato > 0.3) out.push('Articulation: smooth (legato)');
   else if (t.legato < -0.3) out.push('Articulation: short (staccato)');
   if (t.tension > 0.4) out.push('Tension: chromatic approach notes in the bass');
