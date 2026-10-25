@@ -27,7 +27,7 @@ export function emitDsl(plan, arrangement, title) {
     return null;
   });
   for (const bars of voices) for (const bar of bars) for (const c of bar) if (c.inst) used.add(c.inst);
-  lines.push(instrumentBlocks([...used]));
+  lines.push(instrumentBlocks([...used], plan.sound));
   lines.push('');
 
   const voiceLines = [];
@@ -69,15 +69,28 @@ export function emitDsl(plan, arrangement, title) {
   lines.push('');
 
   // Filter: the bass voice runs through a low-pass whose cutoff follows the
-  // section energy; textures marked 'sweep' open it over the section.
+  // section's energy curve, or opens, closes or wobbles as the brief says.
   const [cLo, cHi] = style.filter?.cutoff || [500, 1600];
   const cut = [];
   for (const s of plan.sections) {
     const end = s.startBar + s.bars;
-    const c = lerp(cLo, cHi, s.energy);
-    cut.push(s.textureDef.filter === 'sweep'
-      ? `    < ${end} : saw ${cLo}..${c} / ${s.bars}`
-      : `    < ${end} : sine ${c}..${c} / 1`);
+    const c0 = lerp(cLo, cHi, s.energy);
+    const c1 = lerp(cLo, cHi, s.energyEnd ?? s.energy);
+    const shape = s.filter || (s.textureDef.filter === 'open' ? 'open' : 'follow');
+    let expr;
+    if (shape === 'open') expr = `saw ${Math.min(c0, cLo + 80)}..${Math.max(c1, c0 + 200)} / ${s.bars}`;
+    else if (shape === 'close') expr = `saw ${Math.max(c0, c1 + 200)}..${Math.min(c1, cLo + 80)} / ${s.bars}`;
+    else if (shape === 'wobble') expr = `sine ${Math.max(cLo, c0 - 350)}..${Math.min(2047, c0 + 350)} * 1`;
+    else if (shape === 'follow' && Math.abs(c1 - c0) >= 40 && s.bars > 1) {
+      // a stepped ramp, one value per bar: audible movement, few register
+      // writes (keeps the .sid small)
+      for (let b = 0; b < s.bars; b += 1) {
+        const v = Math.round(c0 + ((c1 - c0) * b) / (s.bars - 1));
+        cut.push(`    < ${s.startBar + b + 1} : sine ${v}..${v} / 1`);
+      }
+      continue;
+    } else expr = `sine ${c0}..${c0} / 1`;
+    cut.push(`    < ${end} : ${expr}`);
   }
   // routing per bar from the arrangement, runs of equal bars merged
   const route = [];

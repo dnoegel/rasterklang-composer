@@ -11,9 +11,9 @@ import { GROOVES } from './library/grooves.js';
 import { BASS } from './library/bass.js';
 import { CELLS } from './library/cells.js';
 import { PROGRESSIONS } from './library/progressions.js';
-import { TEXTURES, TRANSITIONS } from './library/textures.js';
+import { TEXTURES, TRANSITIONS, FILTER_SHAPES } from './library/textures.js';
 import { FORMS, SECTION_ENERGY } from './library/forms.js';
-import { LEADS, BASSES, SNARES, PERSONAS } from './library/palettes.js';
+import { LEADS, BASSES, SNARES, PERSONAS, CUSTOM_LEAD } from './library/palettes.js';
 
 const SECTION_TYPES = Object.keys(SECTION_ENERGY);
 const KEYS = KEY_NAMES;
@@ -27,7 +27,7 @@ export function briefSchema() {
   return {
     type: 'object',
     additionalProperties: false,
-    required: ['reasoning', 'title', 'imagery', 'liner_note', 'style', 'blend_style', 'blend_amount', 'persona', 'moods', 'tempo', 'meter', 'key', 'mode', 'palette', 'sections', 'themes'],
+    required: ['reasoning', 'title', 'imagery', 'liner_note', 'style', 'blend_style', 'blend_amount', 'persona', 'moods', 'tempo', 'meter', 'key', 'mode', 'palette', 'sound', 'sections', 'themes'],
     properties: {
       reasoning: str,
       title: str,
@@ -51,22 +51,35 @@ export function briefSchema() {
         required: ['bass', 'snare', 'chords'],
         properties: { bass: en(Object.keys(BASSES)), snare: en(Object.keys(SNARES)), chords: en(['power', 'triad']) },
       },
+      sound: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['wave', 'attack', 'decay', 'sustain', 'release', 'vibrato', 'pwm'],
+        properties: {
+          wave: en(['none', 'pulse', 'saw', 'triangle']), attack: int, decay: int, sustain: int, release: int, vibrato: num, pwm: en(['none', 'slow', 'medium', 'fast']),
+        },
+      },
       sections: {
         type: 'array',
         items: {
           type: 'object',
           additionalProperties: false,
-          required: ['type', 'bars', 'energy', 'texture', 'transition', 'groove', 'bass', 'feel', 'lead', 'chords', 'transpose'],
+          required: ['type', 'bars', 'energy', 'energy_end', 'filter', 'texture', 'transition', 'groove', 'drums_pattern', 'bass', 'bass_pattern', 'arp_pattern', 'feel', 'lead', 'chords', 'transpose'],
           properties: {
             type: en(SECTION_TYPES),
             bars: int,
             energy: num,
+            energy_end: num,
+            filter: en(Object.keys(FILTER_SHAPES)),
+            drums_pattern: str,
+            bass_pattern: str,
+            arp_pattern: str,
             texture: en(Object.keys(TEXTURES)),
             transition: en(Object.keys(TRANSITIONS)),
             groove: en(Object.keys(GROOVES)),
             bass: en(Object.keys(BASS)),
             feel: en(feels),
-            lead: en(Object.keys(LEADS)),
+            lead: en([...Object.keys(LEADS), CUSTOM_LEAD]),
             chords: { type: 'array', items: str },
             transpose: int,
           },
@@ -113,6 +126,9 @@ ${textures}
 ## Transitions (end of a section)
 ${transitions}
 
+## Filter shapes over a section (the low-pass on the bass voice)
+${lines(FILTER_SHAPES, (v) => v)}
+
 ## Example forms (for orientation, you may write your own)
 ${forms}
 
@@ -144,9 +160,15 @@ Rules:
 - Bars per section: 2, 4, 8, 16 (12 for blues). Total length 30 to 150 seconds. Contrast: the chorus should differ from the verse (energy, texture, groove or harmony) and come back recognisably.
 - Chords: roman numerals relative to the tonic, read against the major scale: lowercase minor (i, iv, v), b for flat (bVI, bVII, bIII, bII), suffixes 7, M7, m7 (use "ii7"), dim, sus2, sus4, 5. They should fit the mode. One chord per bar; the list repeats over the section. A section's chords list may be 2 to 16 entries.
 - transpose: 0, or 2 for a key change up a whole step on a late chorus.
-- Themes (optional but encouraged for the chorus, and the verse): "notes" is one token per step of 1 or 2 bars, space separated. Steps per bar: 4/4 = 16 (16th notes), 3/4 = 12, 6/8 = 12 (16th notes), 12/8 = 12 (8th triplets). Token: a scale degree 1-7 (8-14 for the octave above, -1 to -7 for the octave below), "_" holds the previous note, "." is a rest. Write a memorable hook: a few notes, repetition, mostly steps with one leap into a high point, ending on a stable degree (1, 3 or 5). Example 4/4 bar: "5 _ _ 3 4 _ 5 _ 6 _ 5 _ 3 _ _ _".
+- Themes (optional but encouraged for the chorus, and the verse): "notes" is one token per step of 1 to 4 bars, space separated. Steps per bar: 4/4 = 16 (16th notes), 3/4 = 12, 6/8 = 12 (16th notes), 12/8 = 12 (8th triplets). Token: a scale degree 1-7 (8-14 for the octave above, -1 to -7 for the octave below), "_" holds the previous note, "." is a rest. Write a memorable hook: a few notes, repetition, mostly steps with one leap into a high point, ending on a stable degree (1, 3 or 5). Example 4/4 bar: "5 _ _ 3 4 _ 5 _ 6 _ 5 _ 3 _ _ _".
 - energy per section 0-1; intros, breakdowns and outros lower, choruses and solos higher.
 - Pick textures per section: intros, breakdowns, builds and outros have their own textures; main sections use main textures. Vary them: not every song starts the same way.
+- energy is where a section starts, energy_end where it ends (0-1): let pre-choruses and builds rise, choruses plateau or lift a little, outros fall. Drums, arpeggio density and the filter follow it bar by bar. filter: follow (default), open, close, wobble, steady.
+- Make the grooves yours: drums_pattern, bass_pattern and arp_pattern let you write the section's own pattern instead of the library id (keep the id as fallback). One character per step, 1 or 2 bars (two bars alternate), steps per bar as for themes. Drums: k kick, s snare, c clap, h closed hat, o open hat, t low tom, T high tom, x crash, . rest (one voice: one hit per step). Bass, resolved against each chord: R root, 5 fifth, 8 octave, 3 third, 6 sixth, b flat seventh, A approach note to the next chord, _ hold, . rest. Arp rhythm of the chord voice: x hit, _ hold, . rest. Write patterns for the verse and chorus at least whenever the genre needs a particular groove (a reggae one drop, a funk bass, a jig lilt); leave "" to use the library. Examples 4/4: drums "k.h.s.hkk.h.s.hh", bass "R..R..8.R.b.R.5.", arp "x.x.x_x_x.x.x___".
+- Themes may be 1 to 4 bars; a 3-4 bar theme is a full phrase and is played twice in an 8-bar section.
+- sound designs the lead "custom": wave pulse, saw or triangle (or "none" for no custom lead), attack/decay/release 0-12, sustain 0-15 (SID envelope nibbles: 0 fast, 12 slow), vibrato 0-3, pwm none/slow/medium/fast (pulse only). Use lead "custom" in the sections that should have this sound.
+- Textures: the chorus does not always need "full". counter, counter_nodrums and duet add a counter-melody under the lead; build_up_band brings the band in during the section. Vary textures between repeats of a section when it helps the story.
+- Forms: verse/chorus is not the only option. AABA, a through-composed piece, a chorus only at the end, or a single long build are fine when they fit the prompt.
 - reasoning: 2-4 short sentences on how your choices express the prompt (in German).
 - title: short, evocative, no real song or artist names. imagery: one line of the picture the music paints (German). liner_note: 1-2 sentences for the listener (German).
 - Never copy melodies of existing songs; prompts naming an artist map to a style description.
@@ -173,6 +195,12 @@ export const CONSTRAINTS = [
   'Choose a persona whose habits suit the prompt and let it shape the textures.',
   'Write the verse theme so it starts on an offbeat.',
   'Use a pre-chorus that builds tension before every chorus.',
+  'Write your own drums_pattern and bass_pattern for the chorus.',
+  'Use an AABA form instead of verse and chorus.',
+  'Give the second chorus a different texture than the first, for example a counter-melody.',
+  'Design a custom lead sound that fits the imagery and use it for the main theme.',
+  'Let one section build its energy from low to high within itself.',
+  'Write a theme of four bars for the chorus.',
 ];
 
 export function drawConstraints(rand, n = 2) {
@@ -213,7 +241,12 @@ export function answerToBrief(answer, prompt) {
     keyRoot: Math.max(0, KEYS.indexOf(answer.key)),
     mode: answer.mode,
     palette: answer.palette,
-    sections: answer.sections,
+    sound: answer.sound && answer.sound.wave && answer.sound.wave !== 'none' ? answer.sound : null,
+    sections: (answer.sections || []).map((x) => ({
+      type: x.type, bars: x.bars, energy: x.energy, energyEnd: x.energy_end, filter: x.filter, texture: x.texture,
+      transition: x.transition, groove: x.groove, bass: x.bass, feel: x.feel, lead: x.lead, chords: x.chords,
+      transpose: x.transpose, drumPattern: x.drums_pattern, bassPattern: x.bass_pattern, arpPattern: x.arp_pattern,
+    })),
     themes,
   };
 }
@@ -268,9 +301,12 @@ export function briefToAnswer(brief) {
     key: KEYS[brief.keyRoot] || 'C',
     mode: brief.mode,
     palette: brief.palette,
+    sound: brief.sound || { wave: 'none', attack: 0, decay: 9, sustain: 10, release: 6, vibrato: 0, pwm: 'none' },
     sections: brief.sections.map((s) => ({
-      type: s.type, bars: s.bars, energy: s.energy, texture: s.texture, transition: s.transition, groove: s.groove,
-      bass: s.bass, feel: s.feel, lead: s.lead, chords: s.chords, transpose: s.transpose || 0,
+      type: s.type, bars: s.bars, energy: s.energy, energy_end: s.energyEnd ?? s.energy, filter: s.filter || 'follow',
+      texture: s.texture, transition: s.transition, groove: s.groove, drums_pattern: (s.drumPattern || []).join(''),
+      bass: s.bass, bass_pattern: (s.bassPattern || []).join(''), arp_pattern: (s.arpPattern || []).join(''),
+      feel: s.feel, lead: s.lead, chords: s.chords, transpose: s.transpose || 0,
     })),
     themes: Object.entries(brief.themes || {}).map(([section, t]) => ({ section, notes: t.notes })),
   };
