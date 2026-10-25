@@ -14,7 +14,7 @@ import { CELLS } from './library/cells.js';
 import { PROGRESSIONS } from './library/progressions.js';
 import { TEXTURES, KIND_OF, TRANSITIONS, FILTER_SHAPES } from './library/textures.js';
 import { FORMS, SECTION_ENERGY } from './library/forms.js';
-import { LEADS, BASSES, SNARES, PERSONAS, CUSTOM_LEAD } from './library/palettes.js';
+import { LEADS, BASSES, SNARES, CUSTOM_LEAD } from './library/palettes.js';
 
 export const GENERATOR_VERSION = 'compose-0.2.0';
 
@@ -103,8 +103,6 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
   const style = blendStyles(styleId, blend?.style, blend?.amount || 0);
   const rng = new Rng(seedKey, GENERATOR_VERSION, 'brief');
   const target = descriptorTarget(intent, style);
-  const persona = intent.persona || pickWeighted(rng, style.personas || { none: 1 }) || 'none';
-  const P = PERSONAS[persona] || PERSONAS.none;
   const mode = chooseMode(style, target, intent, rng);
   const tonality = MINOR_MODES.has(mode) ? 'minor' : 'major';
   const meter = pickWeighted(rng, style.meter);
@@ -148,10 +146,9 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
       ? { counter: 0.7, counter_nodrums: 0.25, build_up_band: 0.4, ...style.textures.main }
       : kind === 'breakdown' ? { duet: 0.6, ...(style.textures.breakdown || {}) } : (style.textures[kind] || style.textures.main);
     let texture = pickWeighted(rng, pool, (id) => TEXTURES[id], (id) => {
-      let w = P.textures[id] || 1;
+      let w = 1;
       if (id === 'cold_start') w *= 1 + Math.max(0, target.energyBias) * 4;
       if (id === 'arp_swell' || id === 'drone_lead' || id === 'twin_lead') w *= 1 + Math.max(0, -target.energyBias) * 3;
-      if (P.drums !== undefined && /D|M/.test(TEXTURES[id].stages.map((s) => s[1]).join(''))) w *= P.drums;
       return w;
     }) || (kind === 'main' ? 'full' : Object.keys(TEXTURES).find((id) => TEXTURES[id].kind === kind));
     // the chorus carries the hook: it must have a lead
@@ -159,7 +156,7 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
       texture = pickWeighted(rng, style.textures.main, (id) => TEXTURES[id]?.stages.some(([, r]) => r.includes('L'))) || 'full';
     }
     const leadPool = sig.lead ? Object.fromEntries(sig.lead.map((l) => [l, 1])) : style.palette.lead;
-    const lead = pickWeighted(rng, leadPool, (l) => LEADS[l], (l) => P.leads[l] || 1);
+    const lead = pickWeighted(rng, leadPool, (l) => LEADS[l]);
     byType[type] = { energy, progressionId, progression, groove, bass, feel, texture, lead };
     return byType[type];
   };
@@ -231,7 +228,6 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
     source: 'rules',
     style: styleId,
     blend: blend || null,
-    persona,
     moods: intent.moods || {},
     scene: intent.scene || null,
     energy: target.energyBias,
@@ -314,7 +310,12 @@ export function validateBrief(input) {
   if (b.tempo !== Math.round(tempo)) repairs.push(`tempo ${tempo} -> ${b.tempo}`);
   b.keyRoot = ((Math.round(Number(b.keyRoot)) % 12) + 12) % 12 || 0;
   if (!SCALES[b.mode]) { repairs.push(`mode ${b.mode} -> aeolian`); b.mode = 'aeolian'; }
-  b.persona = PERSONAS[b.persona] ? b.persona : 'none';
+  // names from older briefs
+  delete b.persona;
+  for (const sec of b.sections || []) {
+    if (sec.texture === 'hubbard') sec.texture = 'multiplex';
+    if (sec.lead === 'hubbard') sec.lead = 'octave';
+  }
   b.palette = b.palette || {};
   if (!BASSES[b.palette.bass]) b.palette.bass = Object.keys(style.palette.bass)[0];
   if (!SNARES[b.palette.snare]) b.palette.snare = Object.keys(style.palette.snare)[0];
@@ -471,7 +472,6 @@ export function planFromBrief(brief, seedKey) {
     bpm: bpmFor(brief.meter, speed),
     palette: brief.palette,
     sound: brief.sound || null,
-    persona: brief.persona,
     themes: brief.themes || {},
     sections,
     totalBars: bar,

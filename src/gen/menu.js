@@ -13,7 +13,7 @@ import { CELLS } from './library/cells.js';
 import { PROGRESSIONS } from './library/progressions.js';
 import { TEXTURES, TRANSITIONS, FILTER_SHAPES } from './library/textures.js';
 import { FORMS, SECTION_ENERGY } from './library/forms.js';
-import { LEADS, BASSES, SNARES, PERSONAS, CUSTOM_LEAD } from './library/palettes.js';
+import { LEADS, BASSES, SNARES, CUSTOM_LEAD } from './library/palettes.js';
 
 const SECTION_TYPES = Object.keys(SECTION_ENERGY);
 const KEYS = KEY_NAMES;
@@ -27,7 +27,7 @@ export function briefSchema() {
   return {
     type: 'object',
     additionalProperties: false,
-    required: ['reasoning', 'title', 'imagery', 'liner_note', 'style', 'blend_style', 'blend_amount', 'persona', 'moods', 'tempo', 'meter', 'key', 'mode', 'palette', 'sound', 'sections', 'themes'],
+    required: ['reasoning', 'title', 'imagery', 'liner_note', 'style', 'blend_style', 'blend_amount', 'moods', 'tempo', 'meter', 'key', 'mode', 'palette', 'sound', 'sections', 'themes'],
     properties: {
       reasoning: str,
       title: str,
@@ -36,7 +36,6 @@ export function briefSchema() {
       style: en(Object.keys(STYLES)),
       blend_style: en(['none', ...Object.keys(STYLES)]),
       blend_amount: num,
-      persona: en(Object.keys(PERSONAS)),
       moods: {
         type: 'array',
         items: { type: 'object', additionalProperties: false, required: ['mood', 'weight'], properties: { mood: en(Object.keys(MOODS)), weight: num } },
@@ -139,7 +138,6 @@ ${progs}
 - leads: ${Object.entries(LEADS).map(([k, v]) => `${k} (${v})`).join(', ')}
 - bass sounds: ${Object.entries(BASSES).map(([k, v]) => `${k} (${v})`).join(', ')}
 - snares: ${Object.entries(SNARES).map(([k, v]) => `${k} (${v})`).join(', ')}
-- personas: ${Object.entries(PERSONAS).map(([k, v]) => `${k} (${v.name})`).join(', ')}
 
 ## Moods
 ${Object.keys(MOODS).join(', ')}
@@ -153,9 +151,9 @@ export function systemPrompt() {
 
 Goal: the listener must recognise the prompt in the music. Genre is recognised mostly by tempo, groove and bass idiom, then by scale and one signature device; mood mostly by mode (major/minor brightness), then tempo, then register and articulation. Generated music tends to sound emotionally neutral, so make your choices clearly characteristic. Be creative inside the rules: an unexpected but fitting texture, a strong hook, a surprising but musical form are welcome. Avoid cliches you would pick every time.
 
-The SID is only the instrument. A rock, pop, hip-hop or folk prompt gets that genre, played on the SID: do not turn it into retro, synthwave, chiptune, demoscene or game music. Choose those styles only when the prompt is about games, the 80s, retro or the C64 scene. Personas are famous C64 composers; use one only when the prompt asks for a C64 or demoscene character, otherwise "none".
+The SID is only the instrument. A rock, pop, hip-hop or folk prompt gets that genre, played on the SID: do not turn it into retro, synthwave, chiptune, demoscene or game music. Choose those styles only when the prompt is about games, the 80s, retro or the C64 scene.
 
-Reference songs: when the prompt names an existing song or artist, recreate its musical fingerprint as closely as you can: tempo, key and mode, meter, form with section lengths, the dynamics between sections (for example a quiet verse and an explosive chorus), the groove (write drums_pattern), the bass behaviour (bass_pattern), the chord progression, the arrangement and the timbres (pick sounds or design a custom sound that imitates the original instrument), and signature devices (stops, riffs, shouts as short staccato bursts). Write the hook as a new melody with the rhythm, register and energy of the original hook; do not transcribe the original melody from memory. Say in reasoning which features you took from the reference.
+Reference songs: when the prompt names an existing song or artist, recreate its musical fingerprint as closely as you can: tempo, key and mode, meter, form with section lengths, the dynamics between sections (for example a quiet verse and an explosive chorus), the groove (write drums_pattern), the bass behaviour (bass_pattern), the chord progression, the arrangement and the timbres (pick sounds or design a custom sound that imitates the original instrument), and signature devices (stops, riffs, shouts as short staccato bursts).  Say in reasoning which features you took from the reference.
 
 Rules:
 - Use the style whose signature grooves and bass fit the prompt; use blend_style (amount 0.2-0.5) only when the prompt names two genres, else "none".
@@ -173,8 +171,8 @@ Rules:
 - sound designs the lead "custom": wave pulse, saw or triangle (or "none" for no custom lead), attack/decay/release 0-12, sustain 0-15 (SID envelope nibbles: 0 fast, 12 slow), vibrato 0-3, pwm none/slow/medium/fast (pulse only). Use lead "custom" in the sections that should have this sound.
 - Textures: the chorus does not always need "full". counter, counter_nodrums and duet add a counter-melody under the lead; build_up_band brings the band in during the section. Vary textures between repeats of a section when it helps the story.
 - Forms: verse/chorus is not the only option. AABA, a through-composed piece, a chorus only at the end, or a single long build are fine when they fit the prompt.
-- reasoning: 2-4 short sentences on how your choices express the prompt (in German).
-- title: short, evocative, no real song or artist names. imagery: one line of the picture the music paints (German). liner_note: 1-2 sentences for the listener (German).
+- reasoning: 2-4 short sentences on how your choices express the prompt (in english).
+- title: short, evocative, no real song or artist names. imagery: one line of the picture the music paints (english). liner_note: 1-2 sentences for the listener (english).
 
 Menu:
 
@@ -240,7 +238,6 @@ export function answerToBrief(answer, prompt) {
     reasoning: answer.reasoning,
     style: answer.style,
     blend: answer.blend_style && answer.blend_style !== 'none' ? { style: answer.blend_style, amount: answer.blend_amount } : null,
-    persona: answer.persona,
     moods,
     tempo: answer.tempo,
     meter: answer.meter,
@@ -262,29 +259,26 @@ export function answerToBrief(answer, prompt) {
 // Lenses for "three interpretations": the same prompt read three ways.
 export const LENSES = [
   'Interpretation 1 of 3: the most fitting, classic reading of the prompt. A listener should recognise it at once.',
-  'Interpretation 2 of 3: a bolder reading. Choose a different style, blend or persona than the obvious one, as long as the prompt is still clearly recognisable.',
+  'Interpretation 2 of 3: a bolder reading. Choose a different style or blend than the obvious one, as long as the prompt is still clearly recognisable.',
   'Interpretation 3 of 3: an unexpected angle. Start from the imagery or story of the prompt, choose an unusual form and textures, and let the music tell that story.',
 ];
 
 // Parallel calls cannot see each other, so code makes them differ: each
-// reading gets its own persona and its own group of intro textures.
+// reading gets its own group of intro textures.
 const INTRO_GROUPS = [
   ['staggered', 'drum_groove', 'countin'],
   ['riff_solo', 'cold_start', 'twin_lead'],
   ['arp_swell', 'drone_lead', 'twin_lead', 'staggered'],
 ];
-const PERSONA_SETS = [['none'], ['none', 'none', 'hubbard', 'tel'], ['none', 'none', 'galway', 'follin']];
 
 export function lensAssignments(rand) {
-  const personas = PERSONA_SETS.map((set) => set[Math.floor(rand() * set.length)]);
   const groups = [...INTRO_GROUPS].sort(() => rand() - 0.5);
-  return LENSES.map((lens, i) => ({ lens, persona: personas[i], intros: groups[i] }));
+  return LENSES.map((lens, i) => ({ lens, intros: groups[i] }));
 }
 
 export function userPromptWithLens(prompt, constraints, assignment, melody = null) {
   const a = typeof assignment === 'string' ? { lens: assignment } : assignment;
   let text = a.lens;
-  if (a.persona && a.persona !== 'none') text += `\nIf the prompt allows a C64 character, use persona "${a.persona}"; otherwise "none".`;
   if (a.intros) text += `\nThe intro texture must be one of: ${a.intros.join(', ')}.`;
   text += '\nGive the song a title that does not simply repeat words of the prompt.';
   return `${text}\n\n${userPrompt(prompt, constraints, null, melody)}`;
@@ -300,7 +294,6 @@ export function briefToAnswer(brief) {
     style: brief.style,
     blend_style: brief.blend?.style || 'none',
     blend_amount: brief.blend?.amount || 0,
-    persona: brief.persona || 'none',
     moods: Object.entries(brief.moods || {}).map(([mood, weight]) => ({ mood, weight: Math.round(weight * 100) / 100 })),
     tempo: brief.tempo,
     meter: brief.meter,

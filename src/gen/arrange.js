@@ -1,7 +1,7 @@
 // Renders a plan (from a brief) into three SID voices, bar by bar.
 // Textures (library/textures.js) decide which role each voice plays in
 // each bar: D drums, B bass, L lead, A chord arpeggio, M bass and drums on
-// one voice (Rob Hubbard's trick), - silent. Transitions shape the last
+// one voice (a classic SID trick), - silent. Transitions shape the last
 // bar of a section (fill, stop-time, drop-out).
 
 import { DRUM_LETTERS, arpInstrumentFor } from './instruments.js';
@@ -11,7 +11,6 @@ import { Rng } from './prng.js';
 import { GROOVES, FILLS } from './library/grooves.js';
 import { BASS } from './library/bass.js';
 import { ARP_CELLS } from './library/cells.js';
-import { PERSONAS } from './library/palettes.js';
 
 const REST = { tok: '~', inst: null };
 const HOLD = { tok: '_', inst: null };
@@ -61,10 +60,8 @@ function varyBass(row, rng, energy) {
   return cells.join('');
 }
 
-function drumLevel(energy, persona) {
-  let level = energy < 0.22 ? 0 : energy < 0.5 ? 1 : energy < 0.78 ? 2 : 3;
-  if (persona.drums !== undefined && persona.drums < 0.5) level = Math.max(0, level - 1);
-  return level;
+function drumLevel(energy) {
+  return energy < 0.22 ? 0 : energy < 0.5 ? 1 : energy < 0.78 ? 2 : 3;
 }
 
 function stageAt(section, b) {
@@ -89,10 +86,9 @@ function pickFill(plan, rng) {
 }
 
 function drumBar(section, b, plan, rng, prevTransition) {
-  const persona = PERSONAS[plan.persona] || PERSONAS.none;
   const groove = section.textureDef.drums === 'halftime' && GROOVES.halftime.meter === plan.meterId ? GROOVES.halftime : section.grooveDef;
   const energy = energyAt(section, b);
-  let level = drumLevel(energy, persona);
+  let level = drumLevel(energy);
   if (section.textureDef.drums === 'build') level = Math.min(3, Math.floor((b / section.bars) * 4));
   let row = groove.levels[Math.min(level, groove.levels.length - 1)];
   // a written two-bar pattern alternates on its main levels
@@ -100,12 +96,11 @@ function drumBar(section, b, plan, rng, prevTransition) {
   const varied = !groove.custom || level !== 1;
   if (varied) row = varyDrums(row, rng, energy, plan.meter.strong);
   const last = b === section.bars - 1;
-  const fillsMul = persona.fills || 1;
   // count-in: the drum-only stage ends in a fill
   if (section.textureDef.drums === 'fill' && b + 1 < section.bars && stageAt(section, b + 1) !== stageAt(section, b)) row = pickFill(plan, rng) || row;
   else if (section.textureDef.drums === 'build' && last) row = pickFill(plan, rng) || row;
   else if (last && section.transition === 'fill' && rng.chance(0.9)) row = pickFill(plan, rng) || row;
-  else if (!last && (b + 1) % 4 === 0 && energy > 0.35 && rng.chance(0.22 * fillsMul)) row = pickFill(plan, rng) || row;
+  else if (!last && (b + 1) % 4 === 0 && energy > 0.35 && rng.chance(0.22)) row = pickFill(plan, rng) || row;
   const cells = [...row].map((c) => drumCell(c, plan));
   const crash = b === 0 && (prevTransition === 'fill' || prevTransition === 'stop' || (section.energy > 0.6 && section.type !== 'verse'));
   if (crash) cells[0] = { tok: 'c4', inst: 'crash' };
@@ -220,14 +215,12 @@ export function arrange(plan, rng, melodyRng) {
   const routes = [];
   const melodyMemory = {};
   const leadNotes = [];
-  const persona = PERSONAS[plan.persona] || PERSONAS.none;
   plan.grooveTags = [...new Set(plan.sections.flatMap((s) => s.grooveDef.tags))];
   let prevTransition = null;
 
   plan.sections.forEach((section, si) => {
     const idiom = bassIdiom(section, plan);
     const cells = ARP_CELLS[plan.meterId];
-    const arpCell = persona.arpBusy ? cells[cells.length - 1] : cells[Math.min(cells.length - 1, Math.floor(section.energy * cells.length))];
     const needsLead = section.textureDef.stages.some(([, r]) => r.includes('L') || r.includes('C'));
     const counterState = { pitch: null, lead: null };
     const material = section.textureDef.lead || section.type;
@@ -245,7 +238,7 @@ export function arrange(plan, rng, melodyRng) {
       const bass = bassBar(section, b, plan, barRng(plan, section, b, 'bass'), idiom, plan.palette.bass);
       const e = energyAt(section, b);
       const cellNow = section.arpRows ? section.arpRows[b % section.arpRows.length]
-        : persona.arpBusy ? arpCell : cells[Math.min(cells.length - 1, Math.floor(e * cells.length))];
+        : cells[Math.min(cells.length - 1, Math.floor(e * cells.length))];
       const arp = arpBar(section, b, plan, cellNow);
       const lead = melody
         ? melody.bars[b].tokens.map((t) => (t === '~' || t === '_' ? { tok: t, inst: null } : { tok: t, inst: leadInst }))
