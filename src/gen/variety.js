@@ -46,13 +46,15 @@ export function measureVariety(plan, leadNotes) {
   const first = {};
   let compared = 0;
   let same = 0;
+  let sameShape = 0;
   for (const s of secs) {
     if (!first[s.type]) { first[s.type] = s; continue; }
-    const ref = new Map(first[s.type].bars.map((b) => [b.bar, b.exact]));
+    const ref = new Map(first[s.type].bars.map((b) => [b.bar, b]));
     for (const b of s.bars) {
       if (!ref.has(b.bar)) continue;
       compared += 1;
-      if (ref.get(b.bar) === b.exact) same += 1;
+      if (ref.get(b.bar).exact === b.exact) same += 1;
+      if (ref.get(b.bar).shape === b.shape) sameShape += 1;
     }
   }
   const n = Math.max(1, barsTotal);
@@ -65,6 +67,8 @@ export function measureVariety(plan, leadNotes) {
     rhythmVariety: rhythms.size / n,
     // share of bars of a repeated section identical to its first occurrence
     repeatSame: compared ? same / compared : null,
+    // the same, transposition-free: an octave-up last chorus keeps its hook
+    repeatShape: compared ? sameShape / compared : null,
   };
 }
 
