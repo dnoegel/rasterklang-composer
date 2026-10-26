@@ -437,7 +437,7 @@ export function critiqueSchema() {
 }
 
 export function critiqueSystemPrompt() {
-  return `You review C64 SID songs made by a rule-based generator from a song brief. You cannot hear the song; you get a precise description of what it contains, measured by code. Judge whether a listener would recognise the prompt in it: genre identity (tempo, groove, bass idiom, scale, signature device), mood (mode brightness, tempo, register, articulation), dramaturgy (form, energy curve, contrast between verse and chorus, intro and ending), and the hook. Be concrete and short. Answer in German.
+  return `You review C64 SID songs made by a rule-based generator from a song brief. You cannot hear the song; you get a precise description of what it contains, measured by code. Judge whether a listener would recognise the prompt in it: genre identity (tempo, groove, bass idiom, scale, signature device), mood (mode brightness, tempo, register, articulation), dramaturgy (form, energy curve, contrast between verse and chorus, intro and ending), and the hook. Be concrete and short. Answer in English.
 - assessment: 2-3 sentences, in English.
 - fit: 1-5, how well the song matches the prompt.
 - issues: up to 4 concrete problems, each one sentence.
