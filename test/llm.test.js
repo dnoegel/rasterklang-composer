@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { answerToBrief, briefToAnswer, briefSchema, systemPrompt, drawConstraints, refinePrompt, critiqueSystemPrompt } from '../src/gen/menu.js';
+import { answerToBrief, briefToAnswer, briefSchema, systemPrompt, drawConstraints, drawKeys, keyConstraint, refinePrompt, critiqueSystemPrompt } from '../src/gen/menu.js';
 import { composeBrief, compose, describeTune } from '../src/gen/compose.js';
 import { renderFrames } from '../src/gen/frames.js';
 
@@ -37,6 +37,15 @@ describe('llm path', () => {
     expect(schema.properties.sections.items.properties.groove.enum).toContain('metal_gallop');
     expect(systemPrompt()).toContain('arp_swell');
     expect(drawConstraints(() => 0.5, 2)).toHaveLength(2);
+  });
+
+  it('draws distinct keys from all twelve', () => {
+    let i = 0;
+    const seen = new Set();
+    for (let n = 0; n < 200; n += 1) for (const k of drawKeys(() => (i++ * 0.37) % 1, 3)) seen.add(k);
+    expect(seen.size).toBe(12);
+    expect(new Set(drawKeys(() => 0.99, 3)).size).toBe(3);
+    expect(keyConstraint('F#')).toContain('key of F#');
   });
 
   it('turns a model answer into a playable tune with its themes', () => {

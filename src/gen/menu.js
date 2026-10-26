@@ -240,6 +240,17 @@ export function drawConstraints(rand, n = 2) {
   return out;
 }
 
+// Keys drawn by code: left alone, the model put almost half of all songs
+// in D. One key per song, distinct across the three interpretations.
+export function drawKeys(rand, n = 1) {
+  const pool = [...KEYS];
+  const out = [];
+  while (out.length < n && pool.length) out.push(pool.splice(Math.floor(rand() * pool.length), 1)[0]);
+  return out;
+}
+
+export const keyConstraint = (key) => `Play in the key of ${key}, unless the prompt, a reference song or a melody clearly needs another key.`;
+
 export function userPrompt(prompt, constraints, errors = null, melody = null) {
   let text = `Prompt: ${prompt}\n\nCreative constraints for this song (follow them if they do not contradict the prompt):\n${constraints.map((c) => `- ${c}`).join('\n')}`;
   text += `\n\nOne possible hook shape in 4/4, for orientation only (write your own): "${themeExampleFor(constraints)}"`;
