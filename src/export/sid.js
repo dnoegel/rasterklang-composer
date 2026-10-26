@@ -4,8 +4,9 @@
 // volume) and each stream into one block per bar. Identical blocks are
 // stored once and a per-stream orderlist replays them in song order, so
 // drums, bass and chords that repeat cost almost nothing and songs of
-// several minutes fit into C64 memory. Playback writes exactly the
-// original register values in the original frames.
+// several minutes fit into C64 memory. Playback writes the original
+// register values in the original frames, except the low 3 bits of the
+// filter cutoff.
 //
 // Block: per frame one count byte N (0-127), then N (register, value)
 //        pairs; a byte $80+N (N = 1..126) stands for N frames without
@@ -21,6 +22,11 @@ const DATA_END = 0xd000;
 const END_BLOCK = 0xff;
 const STREAMS = 4;
 const streamOf = (reg) => (reg < 21 ? Math.floor(reg / 7) : 3);
+// Low 3 bits of the 11-bit filter cutoff: filter sweeps change them almost
+// every frame, so no filter bar repeated and long songs did not fit. The
+// high byte keeps 256 cutoff steps, finer than the ear follows; the .sid
+// leaves the low bits at 0.
+const CUTOFF_LO = 21;
 
 function assemblePlayer(orderAddrs) {
   const out = [];
@@ -168,7 +174,7 @@ function encodeBlock(frames, from, to, stream, state) {
     const ctrl = [];
     for (let j = 0; j < f.length; j += 2) {
       const reg = f[j];
-      if (reg >= 25 || streamOf(reg) !== stream) continue;
+      if (reg >= 25 || reg === CUTOFF_LO || streamOf(reg) !== stream) continue;
       state[reg] = f[j + 1];
       if (CONTROL_REGS.has(reg)) ctrl.push(reg, f[j + 1]);
       w.push(reg, f[j + 1]);
