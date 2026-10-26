@@ -225,28 +225,7 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
       chordBars: c.chordBars,
     });
   });
-  // Keep songs under about 2:30: drop solos, pre-choruses, breakdowns,
-  // bridges and repeated verses (never the first of a kind, never the last
-  // chorus) until it fits. Slow tempos would otherwise run 3+ minutes.
-  const barSeconds = (METERS[meter].unit === 8 ? METERS[meter].beats / 3 : METERS[meter].beats) * 60 / target.tempo;
-  const seconds = () => sections.reduce((sum, x) => sum + x.bars, 0) * barSeconds;
-  for (const type of ['solo', 'pre', 'breakdown', 'bridge', 'verse', 'chorus']) {
-    while (seconds() > 150) {
-      const firstIdx = sections.findIndex((x) => x.type === type);
-      const lastChorus = sections.map((x) => x.type).lastIndexOf('chorus');
-      // the first verse and the last chorus always stay
-      const keepFirst = type === 'verse' || type === 'chorus';
-      const idx = sections.findIndex((x, i) => x.type === type && (!keepFirst || i !== firstIdx) && i !== lastChorus);
-      if (idx < 0) break;
-      sections.splice(idx, 1);
-      // a dropped verse takes its pre-chorus and chorus with it
-      if (type === 'verse') {
-        if (sections[idx]?.type === 'pre') sections.splice(idx, 1);
-        const lc = sections.map((x) => x.type).lastIndexOf('chorus');
-        if (sections[idx]?.type === 'chorus' && idx !== lc) sections.splice(idx, 1);
-      }
-    }
-  }
+  trimToLength(sections, (METERS[meter].unit === 8 ? METERS[meter].beats / 3 : METERS[meter].beats) * 60 / target.tempo);
   // An artist fingerprint gives verse and chorus its measured drum row,
   // bass figure and bass-root loop
   if (artist && meter === '4/4') {
@@ -285,6 +264,33 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
     sections,
     themes: {},
   };
+}
+
+// Keep songs under about 2:30 (the .sid holds about that much): drop solos,
+// pre-choruses, breakdowns, bridges and repeated verses (never the first of
+// a kind, never the last chorus) until it fits. Slow tempos would otherwise
+// run 3+ minutes. Returns the dropped section types.
+export function trimToLength(sections, barSeconds, limit = 150) {
+  const dropped = [];
+  const seconds = () => sections.reduce((sum, x) => sum + x.bars, 0) * barSeconds;
+  for (const type of ['solo', 'pre', 'breakdown', 'bridge', 'verse', 'chorus']) {
+    while (seconds() > limit) {
+      const firstIdx = sections.findIndex((x) => x.type === type);
+      const lastChorus = sections.map((x) => x.type).lastIndexOf('chorus');
+      // the first verse and the last chorus always stay
+      const keepFirst = type === 'verse' || type === 'chorus';
+      const idx = sections.findIndex((x, i) => x.type === type && (!keepFirst || i !== firstIdx) && i !== lastChorus);
+      if (idx < 0) break;
+      dropped.push(...sections.splice(idx, 1).map((x) => x.type));
+      // a dropped verse takes its pre-chorus and chorus with it
+      if (type === 'verse') {
+        if (sections[idx]?.type === 'pre') dropped.push(...sections.splice(idx, 1).map((x) => x.type));
+        const lc = sections.map((x) => x.type).lastIndexOf('chorus');
+        if (sections[idx]?.type === 'chorus' && idx !== lc) dropped.push(...sections.splice(idx, 1).map((x) => x.type));
+      }
+    }
+  }
+  return dropped;
 }
 
 // --- validation and repair ------------------------------------------------
@@ -435,6 +441,11 @@ export function validateBrief(input) {
     firstOf[s.type] = firstOf[s.type] || s;
   }
   if (total > 140) errors.push(`song too long (${total} bars)`);
+  else {
+    const m = METERS[b.meter];
+    const dropped = trimToLength(b.sections, (m.unit === 8 ? m.beats / 3 : m.beats) * 60 / b.tempo);
+    if (dropped.length) repairs.push(`dropped ${dropped.join(', ')} to keep the song under 2:30`);
+  }
   b.sections[b.sections.length - 1].transition = 'none';
 
   const themes = {};

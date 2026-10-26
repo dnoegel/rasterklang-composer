@@ -196,13 +196,11 @@ ${menuText()}`;
 // Creative constraints drawn by code: push the model away from
 // its most likely answer. `rand` is a function returning [0, 1).
 export const CONSTRAINTS = [
-  'Start the song with a texture that is not the most typical intro for this style.',
   'Use a stop-time transition right before the last chorus.',
   'Include a breakdown where the drums drop out.',
   'Let the bridge move to a different tonal colour (relative major or minor, or a borrowed chord).',
   'Give the chorus a different groove than the verse.',
   'Write a theme for the chorus whose highest note falls on the third beat.',
-  'Begin with the chorus theme (cold start), then build down into the verse.',
   'Use call and response between lead and chords in at least one section.',
   'End the song with layers dropping out one by one.',
   'Use a key change up a whole step on the last chorus.',
@@ -211,7 +209,6 @@ export const CONSTRAINTS = [
   'Write the verse theme so it starts on an offbeat.',
   'Use a pre-chorus that builds tension before every chorus.',
   'Write your own drums_pattern and bass_pattern for the chorus.',
-  'Use an AABA form instead of verse and chorus.',
   'Give the second chorus a different texture than the first, for example a counter-melody.',
   'Design a custom lead sound that fits the imagery and use it for the main theme.',
   'Let one section build its energy from low to high within itself.',
@@ -254,10 +251,59 @@ export function drawKeys(rand, n = 1) {
   return out;
 }
 
+// Arrangement choices drawn by code. Left alone, every model
+// answered the same: six models given one prompt all opened with
+// drone_lead, kept the tempo at the bottom of the band and used the same
+// chorus groove. Abstract constraints ("an untypical intro") had a modal
+// answer too. So code draws concrete picks; the model may deviate only for
+// the prompt, a reference song or a melody.
+const INTRO_DRAW = { none: 3, staggered: 1, riff_solo: 1, countin: 1, cold_start: 1, arp_swell: 1, drone_lead: 0.5, twin_lead: 1, drum_groove: 1 };
+const TEMPO_DRAW = ['lower third', 'middle', 'upper third'];
+// "full" (drums, bass, lead) took 89 % of first choruses
+const CHORUS_DRAW = { full: 1, multiplex: 1, counter: 1, call_response: 0.7, build_up_band: 0.5 };
+const FORM_DRAW = [
+  'verse and chorus with a contrasting bridge before the last chorus',
+  'verse, pre-chorus and chorus; the pre-chorus builds tension',
+  'AABA: the A section carries the hook, B contrasts in harmony and texture',
+  'one long build: start sparse, add a layer every section, peak at the end',
+  'verse and chorus with a breakdown (drums out) before the last chorus',
+  'short and direct: no intro, verse and chorus twice, a short outro',
+  'a through-composed journey: every section new, only the chorus hook returns',
+];
+const weighted = (rand, weights) => {
+  const entries = Object.entries(weights);
+  let r = rand() * entries.reduce((a, [, w]) => a + w, 0);
+  for (const [k, w] of entries) { r -= w; if (r <= 0) return k; }
+  return entries[entries.length - 1][0];
+};
+
+// intros: restrict the intro draw (the three readings each get a group)
+export function drawArrangement(rand, { intros = null } = {}) {
+  const pool = intros ? Object.fromEntries(intros.map((t) => [t, INTRO_DRAW[t] ?? 1])) : INTRO_DRAW;
+  const intro = weighted(rand, pool);
+  const tempo = TEMPO_DRAW[Math.floor(rand() * TEMPO_DRAW.length)];
+  const form = FORM_DRAW[Math.floor(rand() * FORM_DRAW.length)];
+  const chorus = weighted(rand, CHORUS_DRAW);
+  const slow = rand() < 0.4;
+  const leads = [...Object.keys(LEADS), CUSTOM_LEAD];
+  const lead = leads[Math.floor(rand() * leads.length)];
+  return [
+    intro === 'none' ? 'Start directly with the first verse or the chorus: no intro section.' : `Open with an intro of texture ${intro}.`,
+    `Set the tempo in the ${tempo} of the chosen style's tempo band.`,
+    `Form: ${form}.`,
+    `Use the texture ${chorus} for the first chorus.`,
+    slow ? 'Let the verse chords last two bars each (chord_bars 2).' : null,
+    `Give the chorus the lead sound ${lead}${lead === CUSTOM_LEAD ? ' (design it in sound)' : ''}; other sections may use other leads.`,
+  ].filter(Boolean);
+}
+
+export const arrangementNote = 'Arrangement drawn for this song (follow it unless the prompt, a reference song or a melody clearly needs otherwise):';
+
 export const keyConstraint = (key) => `Play in the key of ${key}, unless the prompt, a reference song or a melody clearly needs another key.`;
 
-export function userPrompt(prompt, constraints, errors = null, melody = null) {
+export function userPrompt(prompt, constraints, errors = null, melody = null, arrangement = null) {
   let text = `Prompt: ${prompt}\n\nCreative constraints for this song (follow them if they do not contradict the prompt):\n${constraints.map((c) => `- ${c}`).join('\n')}`;
+  if (arrangement?.length) text += `\n\n${arrangementNote}\n${arrangement.map((c) => `- ${c}`).join('\n')}`;
   text += `\n\nOne possible hook shape in 4/4, for orientation only (write your own): "${themeExampleFor(constraints)}"`;
   const artist = findArtist(prompt);
   if (artist) {
@@ -327,12 +373,12 @@ export function lensAssignments(rand) {
   return LENSES.map((lens, i) => ({ lens, intros: groups[i] }));
 }
 
-export function userPromptWithLens(prompt, constraints, assignment, melody = null) {
+export function userPromptWithLens(prompt, constraints, assignment, melody = null, arrangement = null) {
   const a = typeof assignment === 'string' ? { lens: assignment } : assignment;
   let text = a.lens;
-  if (a.intros) text += `\nThe intro texture must be one of: ${a.intros.join(', ')}.`;
+  if (a.intros && !arrangement) text += `\nThe intro texture must be one of: ${a.intros.join(', ')}.`;
   text += '\nGive the song a title that does not simply repeat words of the prompt.';
-  return `${text}\n\n${userPrompt(prompt, constraints, null, melody)}`;
+  return `${text}\n\n${userPrompt(prompt, constraints, null, melody, arrangement)}`;
 }
 
 // Brief -> the model's answer format, so it can be edited and sent back.
@@ -391,7 +437,7 @@ export function critiqueSchema() {
 }
 
 export function critiqueSystemPrompt() {
-  return `You review C64 SID songs made by a rule-based generator from a song brief. You cannot hear the song; you get a precise description of what it contains, measured by code. Judge whether a listener would recognise the prompt in it: genre identity (tempo, groove, bass idiom, scale, signature device), mood (mode brightness, tempo, register, articulation), dramaturgy (form, energy curve, contrast between verse and chorus, intro and ending), and the hook. Be concrete and short. Answer in German.
+  return `You review C64 SID songs made by a rule-based generator from a song brief. You cannot hear the song; you get a precise description of what it contains, measured by code. Judge whether a listener would recognise the prompt in it: genre identity (tempo, groove, bass idiom, scale, signature device), mood (mode brightness, tempo, register, articulation), dramaturgy (form, energy curve, contrast between verse and chorus, intro and ending), and the hook. Be concrete and short. Answer in English.
 - assessment: 2-3 sentences, in English.
 - fit: 1-5, how well the song matches the prompt.
 - issues: up to 4 concrete problems, each one sentence.

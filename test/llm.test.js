@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { answerToBrief, briefToAnswer, briefSchema, systemPrompt, drawConstraints, drawKeys, keyConstraint, refinePrompt, critiqueSystemPrompt } from '../src/gen/menu.js';
+import { answerToBrief, briefToAnswer, briefSchema, systemPrompt, drawConstraints, drawKeys, keyConstraint, drawArrangement, userPrompt, refinePrompt, critiqueSystemPrompt } from '../src/gen/menu.js';
 import { composeBrief, compose, describeTune } from '../src/gen/compose.js';
 import { renderFrames } from '../src/gen/frames.js';
 import { buildSid } from '../src/export/sid.js';
@@ -38,6 +38,25 @@ describe('llm path', () => {
     expect(schema.properties.sections.items.properties.groove.enum).toContain('metal_gallop');
     expect(systemPrompt()).toContain('arp_swell');
     expect(drawConstraints(() => 0.5, 2)).toHaveLength(2);
+  });
+
+  it('draws concrete arrangement choices that the menu knows', () => {
+    let i = 0;
+    const rand = () => (i++ * 0.618) % 1;
+    const intros = new Set();
+    const chorus = new Set();
+    for (let n = 0; n < 200; n += 1) {
+      const a = drawArrangement(rand);
+      expect(a.length).toBeGreaterThanOrEqual(5);
+      intros.add(a[0]);
+      chorus.add(a.find((x) => x.startsWith('Use the texture')));
+    }
+    expect(intros.size).toBeGreaterThan(6);
+    expect(chorus.size).toBe(5);
+    for (const x of chorus) expect(systemPrompt()).toContain(x.split(' ')[3]);
+    // the three readings keep their intro groups
+    for (let n = 0; n < 50; n += 1) expect(drawArrangement(rand, { intros: ['riff_solo', 'cold_start'] })[0]).toMatch(/riff_solo|cold_start/);
+    expect(userPrompt('x', ['c'], null, null, drawArrangement(rand))).toContain('Arrangement drawn for this song');
   });
 
   it('draws distinct keys from all twelve', () => {
