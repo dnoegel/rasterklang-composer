@@ -123,31 +123,28 @@ export const HVSC_BASSES = {
   // triangle, noise B7, pulse C3-0 (3 frames); mid width sweep; AD 04 SR F4
   thump: { name: "bass with a drum thump on every note (kick and bass in one)", body: `
   adsr 0 4 15 4
-  wave triangle noise pulse!3
-  arp 0 =107 =48 =44 0
-  test 1 0!4
+  wave noise pulse!3
+  arp =107 =48 =44 0
   pw 2048!4 ramp 768..514 step -2 over 128
-  loop wave 4 arp 4 test 4 pw 131
+  loop wave 3 arp 3 pw 131
   gate -2
 ` },
   // triangle, noise B7, pulse; slow width sweep; AD 04 SR F4
   gtbass: { name: "tracker bass: noise click, pulse narrowing slowly", body: `
   adsr 0 4 15 4
-  wave triangle noise pulse
-  arp 0 =107 0
-  test 1 0!2
+  wave noise pulse
+  arp =107 0
   pw 768!2 ramp 766..514 step -2 over 127
-  loop wave 2 arp 2 test 2 pw 128
+  loop wave 1 arp 1 pw 128
   gate -2
 ` },
   // noise C6, pulse; fast width sweep; AD 02 SR AA
   buzz: { name: "buzzy bass: noise click, wide fast pulse sweep", body: `
   adsr 0 2 10 10
-  wave 0 noise pulse
-  arp =84!2 0
-  test 1 0!2
+  wave noise pulse
+  arp =84 0
   pw 256!2 ramp 320..2048 step 64 over 28 ramp 1984..512 step -64 over 24 ramp 576..2048 step 64 over 24
-  loop wave 2 arp 2 test 2 pw 30
+  loop wave 1 arp 1 pw 30
   gate -2
 ` },
 };
@@ -156,31 +153,28 @@ export const HVSC_LEADS = {
   // pulse; fast width sweep; vibrato after 7 frames; AD 01 SR 8D
   vibra: { name: "pulse lead with delayed vibrato and width sweep", body: `
   adsr 0 1 8 13
-  wave 0 pulse
-  test 1 0
+  wave pulse
   pw 512!2 ramp 1920..896 step -64 over 17 ramp 960..1920 step 64 over 16
-  loop wave 1 test 1 pw 3
+  loop wave 0 pw 3
   vibTri 2 96 7
   gate -2
 ` },
   // noise B7, pulse +2-0 (2 frames); fast width sweep; vibrato after 13 frames; AD 01 SR CB
   scoop: { name: "punchy pulse lead: noise click, scoop from a step above, wide sweep, late vibrato", body: `
   adsr 0 1 12 11
-  wave 0 noise pulse!2
-  arp =107!2 2 0
-  test 1 0!3
+  wave noise pulse!2
+  arp =107 2 0
   pw 1024!2 ramp 1151..3818 step 127 over 22 ramp 3691..1024 step -127 over 22
-  loop wave 3 arp 3 test 3 pw 2
+  loop wave 2 arp 2 pw 2
   vibTri 2 53 13
   gate -2
 ` },
   // pulse (2 frames); fast width sweep; AD 02 SR B2
   sharp: { name: "bright narrow pulse lead with a fast sweep and a short release", body: `
   adsr 0 2 11 2
-  wave 0 pulse!2
-  test 1 0!2
+  wave pulse!2
   pw 3744!2 ramp 3664..2784 step -80 over 12 ramp 2864..3744 step 80 over 12
-  loop wave 2 test 2 pw 2
+  loop wave 1 pw 2
   gate -2
 ` },
   // pulse (5 frames); fixed width; AD 09 SR 00
