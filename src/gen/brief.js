@@ -13,9 +13,9 @@ import { GROOVES } from './library/grooves.js';
 import { BASS } from './library/bass.js';
 import { CELLS } from './library/cells.js';
 import { PROGRESSIONS } from './library/progressions.js';
-import { TEXTURES, KIND_OF, TRANSITIONS, FILTER_SHAPES } from './library/textures.js';
+import { TEXTURES, KIND_OF, TRANSITIONS, FILTER_SHAPES, ECHO_CHANCE, ECHO_DEFAULT } from './library/textures.js';
 import { FORMS, SECTION_ENERGY } from './library/forms.js';
-import { LEADS, BASSES, SNARES, CUSTOM_LEAD } from './library/palettes.js';
+import { LEADS, BASSES, SNARES, KITS, CUSTOM_LEAD, hvscPool } from './library/palettes.js';
 import { styleHint, nudgeModes, loopToRomans } from './hvsc-data.js';
 import { ARTISTS } from './library/hvsc.js';
 
@@ -161,8 +161,8 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
     const kind = KIND_OF[type];
     // every style may use the counter-melody and build-up textures a little
     const pool = kind === 'main'
-      ? { counter: 0.7, counter_nodrums: 0.25, build_up_band: 0.4, ...style.textures.main }
-      : kind === 'breakdown' ? { duet: 0.6, ...(style.textures.breakdown || {}) } : (style.textures[kind] || style.textures.main);
+      ? { counter: 0.7, counter_nodrums: 0.25, build_up_band: 0.4, echo_lead: 0.3, ...style.textures.main }
+      : kind === 'breakdown' ? { duet: 0.6, echo_break: 0.4, ...(style.textures.breakdown || {}) } : (style.textures[kind] || style.textures.main);
     let texture = pickWeighted(rng, pool, (id) => TEXTURES[id], (id) => {
       let w = 1;
       if (id === 'cold_start') w *= 1 + Math.max(0, target.energyBias) * 4;
@@ -173,7 +173,8 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
     if (type === 'chorus' && !TEXTURES[texture].stages.some(([, r]) => r.includes('L'))) {
       texture = pickWeighted(rng, style.textures.main, (id) => TEXTURES[id]?.stages.some(([, r]) => r.includes('L'))) || 'full';
     }
-    const leadPool = sig.lead ? Object.fromEntries(sig.lead.map((l) => [l, 1])) : style.palette.lead;
+    // sounds derived from HVSC join the style's own palette
+    const leadPool = sig.lead ? Object.fromEntries(sig.lead.map((l) => [l, 1])) : { ...hvscPool(style, 'lead'), ...style.palette.lead };
     const lead = pickWeighted(rng, leadPool, (l) => LEADS[l]);
     // two bars per chord now and then (slower harmonic rhythm, typical in SID
     // music); the progression then spans eight bars
@@ -259,7 +260,12 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
     meter,
     keyRoot,
     mode,
-    palette: { bass: pickWeighted(rng, style.palette.bass) || 'bass', snare: pickWeighted(rng, style.palette.snare) || 'snare', chords: style.palette.chords },
+    palette: {
+      bass: pickWeighted(rng, { ...hvscPool(style, 'bass'), ...style.palette.bass }) || 'bass',
+      snare: pickWeighted(rng, style.palette.snare) || 'snare',
+      chords: style.palette.chords,
+      kit: pickWeighted(rng, { std: 1, ...hvscPool(style, 'kit') }) || 'std',
+    },
     form: formId,
     sections,
     themes: {},
@@ -369,6 +375,7 @@ export function validateBrief(input) {
   b.palette = b.palette || {};
   if (!BASSES[b.palette.bass]) b.palette.bass = Object.keys(style.palette.bass)[0];
   if (!SNARES[b.palette.snare]) b.palette.snare = Object.keys(style.palette.snare)[0];
+  if (!KITS[b.palette.kit]) b.palette.kit = 'std';
   if (b.palette.chords !== 'power' && b.palette.chords !== 'triad') b.palette.chords = style.palette.chords;
   b.moods = Object.fromEntries(Object.entries(b.moods || {}).filter(([m, w]) => MOODS[m] && w > 0));
   if (!b.sound || !['pulse', 'saw', 'triangle'].includes(b.sound.wave)) b.sound = null;
@@ -511,6 +518,13 @@ export function planFromBrief(brief, seedKey) {
     bar += s.bars;
   }
   for (const s of sections) s.lastOccurrence = s.occurrence === counts[s.type];
+  // Echo: the lead's delayed copy, an eighth note (or a dotted
+  // eighth) later; `fill` puts it on voices left silent under the lead.
+  const echoRng = new Rng(seedKey, GENERATOR_VERSION, 'echo');
+  const echo = {
+    delay: meter.steps === 12 && meter.unit === 8 && meter.beats === 12 ? echoRng.pick([1, 2]) : echoRng.pick([2, 2, 3]),
+    fill: echoRng.chance(ECHO_CHANCE[style.family] ?? ECHO_DEFAULT),
+  };
   if (sections.length) {
     const last = sections[sections.length - 1];
     if (last.type === 'outro') {
@@ -535,6 +549,7 @@ export function planFromBrief(brief, seedKey) {
     palette: brief.palette,
     sound: brief.sound || null,
     themes: brief.themes || {},
+    echo,
     sections,
     totalBars: bar,
   };

@@ -4,6 +4,8 @@
 // Pulse sweeps stay within pw >= 768 and small steps: narrower or faster
 // sweeps alias into hiss in the emulator (launchpad known issue).
 
+import { HVSC_DRUMS, HVSC_BASSES, HVSC_LEADS } from './library/hvsc-instruments.js';
+
 // Pulse-width bounce: up from `start` to `hi`, down to `lo`, back to start.
 // Each value is held for two frames with twice the step: same sweep speed,
 // half the register writes (keeps .sid exports small).
@@ -66,6 +68,8 @@ const DRUMS = {
   arp =104 =101
   adsr 0 10 0 0
   gate -1`,
+  // kits in C64 style
+  ...Object.fromEntries(Object.entries(HVSC_DRUMS).map(([id, body]) => [id, body.trimEnd()])),
 };
 
 const MELODIC = {
@@ -218,6 +222,9 @@ const MELODIC = {
   adsr 3 9 10 5
   vibTri 2 s3 12
   gate -2`,
+
+  // ---- in C64 style -------------------------
+  ...Object.fromEntries(Object.entries({ ...HVSC_BASSES, ...HVSC_LEADS }).map(([id, v]) => [id, v.body.trimEnd()])),
 };
 
 // Chord arpeggio instruments, one per quality: 1 frame per arp step, the
@@ -288,12 +295,46 @@ export function customLeadBody(sound) {
   return `\n${lines.join('\n')}`;
 }
 
-export function instrumentBlocks(names, sound = null) {
+// Echo variant of a lead: the SID has no volume per voice, and
+// every attack peaks at full level, so the echo decays fast to a low
+// sustain (tracker echoes sit 3-6 sustain steps below their lead).
+// Pulse width stays at its first value and there is no vibrato: an echo
+// needs no movement of its own, and per-frame writes would fill the .sid.
+function echoBody(body) {
+  return body
+    .replace(/adsr (\d+) (\d+) (\d+) (\d+)/, (_, a, d, s, r) => `adsr ${a} ${Math.min(Number(d), 6)} ${Math.max(0, Number(s) - 6)} ${r}`)
+    .replace(/\n {2}pw (\d+)[^\n]*/, '\n  pw $1')
+    .replace(/\n {2}vib(Tri)? [^\n]*/, '');
+}
+
+// Bend variant of a lead: the same sound gliding into the note
+// from the previous one in about three frames, for the few notes a melody
+// slides into (tracker leads glide on about 5 % of notes, mostly by a
+// half or whole step).
+function bendBody(body, speed) {
+  return /\n {2}slide /.test(body) ? body : body.replace(/\n {2}gate /, `\n  slide ${Math.max(0.02, Math.round((300 / speed)) / 100)}\n  gate `);
+}
+
+function bodyOf(name, sound, speed) {
+  let body = DRUMS[name] || MELODIC[name];
+  if (!body && name === 'custom' && sound) body = customLeadBody(sound);
+  if (!body && ARP_QUALITY[name]) body = arpInstrument(ARP_QUALITY[name], ARP_SHAPES[ARP_QUALITY[name]]);
+  if (!body && name.endsWith('echo')) {
+    const base = bodyOf(name.slice(0, -4), sound, speed);
+    if (base) body = echoBody(base);
+  }
+  if (!body && name.endsWith('bend')) {
+    const base = bodyOf(name.slice(0, -4), sound, speed);
+    if (base) body = bendBody(base, speed);
+  }
+  return body;
+}
+
+// speed: frames per beat of the song (bend variants slide in frames).
+export function instrumentBlocks(names, sound = null, speed = 24) {
   const out = [];
   for (const name of names) {
-    let body = DRUMS[name] || MELODIC[name];
-    if (!body && name === 'custom' && sound) body = customLeadBody(sound);
-    if (!body && ARP_QUALITY[name]) body = arpInstrument(ARP_QUALITY[name], ARP_SHAPES[ARP_QUALITY[name]]);
+    const body = bodyOf(name, sound, speed);
     if (!body) throw new Error(`unknown instrument ${name}`);
     out.push(`instrument ${name}${body}\nend`);
   }

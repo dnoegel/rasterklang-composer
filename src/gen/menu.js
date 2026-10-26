@@ -13,7 +13,7 @@ import { CELLS } from './library/cells.js';
 import { PROGRESSIONS } from './library/progressions.js';
 import { TEXTURES, TRANSITIONS, FILTER_SHAPES } from './library/textures.js';
 import { FORMS, SECTION_ENERGY } from './library/forms.js';
-import { LEADS, BASSES, SNARES, CUSTOM_LEAD } from './library/palettes.js';
+import { LEADS, BASSES, SNARES, KITS, CUSTOM_LEAD } from './library/palettes.js';
 import { findArtist, artistSummary } from './hvsc-data.js';
 import { VARIATIONS } from './melody.js';
 
@@ -49,8 +49,8 @@ export function briefSchema() {
       palette: {
         type: 'object',
         additionalProperties: false,
-        required: ['bass', 'snare', 'chords'],
-        properties: { bass: en(Object.keys(BASSES)), snare: en(Object.keys(SNARES)), chords: en(['power', 'triad']) },
+        required: ['bass', 'snare', 'chords', 'kit'],
+        properties: { bass: en(Object.keys(BASSES)), snare: en(Object.keys(SNARES)), chords: en(['power', 'triad']), kit: en(Object.keys(KITS)) },
       },
       sound: {
         type: 'object',
@@ -125,7 +125,7 @@ ${bass}
 ## Melody feels per meter
 ${feels}
 
-## Textures (voices per stage: D drums, B bass, L lead, A chord arpeggio, M bass+drums on one voice, - silent; the number is the fraction of the section where the stage starts)
+## Textures (voices per stage: D drums, B bass, L lead, A chord arpeggio, M bass+drums on one voice, C counter-melody, E echo of the lead (an eighth later, softer), - silent; code may put an echo on a silent voice under the lead; the number is the fraction of the section where the stage starts)
 ${textures}
 
 ## Transitions (end of a section)
@@ -144,6 +144,7 @@ ${progs}
 - leads: ${Object.entries(LEADS).map(([k, v]) => `${k} (${v})`).join(', ')}
 - bass sounds: ${Object.entries(BASSES).map(([k, v]) => `${k} (${v})`).join(', ')}
 - snares: ${Object.entries(SNARES).map(([k, v]) => `${k} (${v})`).join(', ')}
+- drum kits (kick, snare, hat; a kit other than std replaces snare and snare2, a clap stays): ${Object.entries(KITS).map(([k, v]) => `${k} (${v.name})`).join(', ')}
 
 ## Moods
 ${Object.keys(MOODS).join(', ')}
@@ -182,6 +183,7 @@ Rules:
 - bass_sound per section: "palette" keeps the song's bass sound; another id changes the colour for that section (for example sub in the verse, growl or chipbass in the chorus, slidebass for 808 or acid slides).
 - sound designs the lead "custom": wave pulse, saw or triangle (or "none" for no custom lead), attack/decay/release 0-12, sustain 0-15 (SID envelope nibbles: 0 fast, 12 slow), vibrato 0-3, pwm none/slow/medium/fast (pulse only), pulse_width narrow (nasal, thin), medium or square (hollow, full; static width when pwm is none), onset none/noise (a hard click, like a picked string or a chiff)/octave (a bright octave blip at each note start), slide none/short/long (portamento between notes). Design a sound that fits this prompt, not a safe middle: envelope archetypes are staccato chip (0 4 0 0), pluck (0 6 2 3), sustained organ (0 0 15 3), soft swell (6 9 12 9), bowed (3 9 11 6). Use lead "custom" in the sections that should have this sound.
 - Leads: choose the lead colour for the prompt, and use two or three colours per song (a softer verse, a brighter chorus, another for the solo or bridge). bell is one colour among many, not a default.
+- Sounds marked (HVSC) are instrument programs taken from real C64 songs (tracker); palette.kit picks the drum kit, std is the bank's own. They sound most at home in game, synth, dance, pop and rock prompts.
 - Textures: the chorus does not always need "full". counter, counter_nodrums and duet add a counter-melody under the lead; build_up_band brings the band in during the section. Vary textures between repeats of a section when it helps the story.
 - variation: how a repeated section's melody changes against its first time (the head of each phrase stays, so the hook is recognised). "auto" lets code choose; use "exact" only when a literal repeat is the point (a riff, a chant). Give the second and third chorus different variations when the story builds.
 - Forms: verse/chorus is not the only option. AABA, a through-composed piece, a chorus only at the end, or a single long build are fine when they fit the prompt.
@@ -396,7 +398,7 @@ export function briefToAnswer(brief) {
     meter: brief.meter,
     key: KEYS[brief.keyRoot] || 'C',
     mode: brief.mode,
-    palette: brief.palette,
+    palette: { kit: 'std', ...brief.palette },
     sound: { wave: 'none', attack: 0, decay: 9, sustain: 10, release: 6, vibrato: 0, pwm: 'none', pulse_width: 'square', onset: 'none', slide: 'none', ...(brief.sound || {}) },
     sections: brief.sections.map((s) => ({
       type: s.type, bars: s.bars, energy: s.energy, energy_end: s.energyEnd ?? s.energy, filter: s.filter || 'follow',

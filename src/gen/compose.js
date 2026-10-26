@@ -142,7 +142,7 @@ export function describeTune(tune) {
     `Style ${plan.style.name}${plan.brief.blend ? ` (blend ${plan.brief.blend.style} ${plan.brief.blend.amount})` : ''}.`,
     `Key ${summary.key}, ${summary.bpm} bpm, meter ${summary.meter}, ${plan.totalBars} bars, about ${seconds} s.`,
     `Moods: ${Object.entries(plan.brief.moods || {}).map(([m, w]) => `${m} ${w.toFixed(2)}`).join(', ') || 'none'}.`,
-    `Sounds: bass ${plan.palette.bass}, snare ${plan.palette.snare}, chords ${plan.palette.chords}${plan.sound ? `, custom lead ${JSON.stringify(plan.sound)}` : ''}.`,
+    `Sounds: bass ${plan.palette.bass}, snare ${plan.palette.snare}, kit ${plan.palette.kit || 'std'}, chords ${plan.palette.chords}${plan.sound ? `, custom lead ${JSON.stringify(plan.sound)}` : ''}.`,
     'Sections:',
     ...plan.sections.map((s) => `- ${s.type} ${s.bars} bars, energy ${s.energy.toFixed(2)} to ${(s.energyEnd ?? s.energy).toFixed(2)}, filter ${s.filter || 'follow'}, texture ${s.texture} (${s.textureDef.name}), `
       + `groove ${s.drumPattern ? `own pattern ${s.drumPattern.join('|')}` : s.groove}, bass ${s.bassPattern ? `own pattern ${s.bassPattern.join('|')}` : s.bass}`

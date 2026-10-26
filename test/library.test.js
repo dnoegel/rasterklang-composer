@@ -9,7 +9,7 @@ import { FORMS, SECTION_ENERGY } from '../src/gen/library/forms.js';
 import { STYLES } from '../src/gen/styles.js';
 import { parseRoman } from '../src/gen/theory.js';
 import { instrumentBlocks } from '../src/gen/instruments.js';
-import { LEADS, BASSES, SNARES } from '../src/gen/library/palettes.js';
+import { LEADS, BASSES, SNARES, KITS, HVSC_POOLS } from '../src/gen/library/palettes.js';
 
 const steps = (m) => METERS[m].steps;
 
@@ -27,7 +27,9 @@ describe('library', () => {
   });
 
   it('textures and forms are well formed', () => {
-    for (const [id, t] of Object.entries(TEXTURES)) for (const [, roles] of t.stages) expect(roles, id).toMatch(/^[DBLAMC-]{3}$/);
+    for (const [id, t] of Object.entries(TEXTURES)) for (const [, roles] of t.stages) expect(roles, id).toMatch(/^[DBLAMCE-]{3}$/);
+    // an echo needs the lead it repeats
+    for (const [id, t] of Object.entries(TEXTURES)) for (const [, roles] of t.stages) if (roles.includes('E')) expect(roles, id).toContain('L');
     for (const f of Object.values(FORMS)) for (const [type] of f.sections) expect(SECTION_ENERGY[type]).toBeDefined();
   });
 
@@ -48,5 +50,18 @@ describe('library', () => {
 
   it('all instruments compile into blocks', () => {
     expect(() => instrumentBlocks([...Object.keys(LEADS), ...Object.keys(BASSES), ...Object.keys(SNARES), 'kick', 'hat', 'crash', 'tom', 'tomhi', 'ohat'])).not.toThrow();
+    const kits = Object.values(KITS).flatMap((k) => [k.kick, k.snare, k.hat]).filter(Boolean);
+    expect(() => instrumentBlocks(kits)).not.toThrow();
+    // echo and bend variants of every lead
+    expect(() => instrumentBlocks(Object.keys(LEADS).flatMap((l) => [`${l}echo`, `${l}bend`, `${l}bendecho`]))).not.toThrow();
+    for (const name of [...Object.keys(LEADS), ...Object.keys(BASSES), ...kits]) expect(name).not.toContain('_');
+  });
+
+  it('C64-style sound pools name known sounds', () => {
+    for (const [family, pool] of Object.entries(HVSC_POOLS)) {
+      for (const k of Object.keys(pool.kit || {})) expect(KITS[k], `${family} kit ${k}`).toBeDefined();
+      for (const b of Object.keys(pool.bass || {})) expect(BASSES[b], `${family} bass ${b}`).toBeDefined();
+      for (const l of Object.keys(pool.lead || {})) expect(LEADS[l], `${family} lead ${l}`).toBeDefined();
+    }
   });
 });
