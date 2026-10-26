@@ -99,6 +99,29 @@ const MELODIC = {
   wave saw
   adsr 6 9 12 8
   vib 0.08 4`,
+  // plain 50 % pulse: the punchy chip bass
+  chipbass: `
+  wave pulse
+  pw 2048
+  adsr 0 9 9 2
+  gate -2`,
+  // round sub that glides into each note (808 and 303 slides)
+  slidebass: `
+  wave pulse triangle
+  arp 12 0
+  pw 2048
+  loop wave 1 arp 1
+  adsr 0 10 11 4
+  slide 0.12
+  gate -2`,
+  // narrow pulse with a fast width sweep: a growling, detuned-sounding bass
+  growl: `
+  wave noise pulse
+  arp 12 0
+  pw ${pwBounce(768, 768, 1536, 40)}
+  loop wave 1 arp 1 pw 0
+  adsr 0 9 11 3
+  gate -2`,
 
   // ---- lead -------------------------------------------------------------
   lead: `
@@ -150,6 +173,34 @@ const MELODIC = {
   loop wave 1 arp 1 pw 0
   adsr 0 9 12 5
   vibTri 2 s4 18
+  gate -2`,
+  // plain square wave without vibrato: the dry chip lead
+  square: `
+  wave pulse
+  pw 2048
+  adsr 0 8 7 3
+  gate -2`,
+  // sawtooth lead with portamento between notes
+  glide: `
+  wave saw
+  adsr 1 9 11 6
+  slide 0.1
+  vibTri 2 s3 20
+  gate -2`,
+  // narrow static pulse: nasal, like an oboe or a clarinet
+  reed: `
+  wave pulse
+  pw 640
+  adsr 2 9 10 5
+  vibTri 2 s4 20
+  gate -2`,
+  // fast root-octave alternation: the warbling C64 lead
+  warble: `
+  wave pulse
+  arp 0 0 12 12
+  pw ${pwBounce(1536, 1024, 2560, 10)}
+  loop arp 0 pw 0
+  adsr 0 9 9 5
   gate -2`,
   // soft second voice for counter-melodies
   counter: `
@@ -215,12 +266,24 @@ export function customLeadBody(sound) {
   const wave = ['pulse', 'saw', 'triangle'].includes(sound.wave) ? sound.wave : 'pulse';
   const n = (v, lo, hi, d) => Math.max(lo, Math.min(hi, Math.round(Number.isFinite(Number(v)) ? Number(v) : d)));
   const adsr = [n(sound.attack, 0, 12, 1), n(sound.decay, 0, 12, 9), n(sound.sustain, 0, 15, 10), n(sound.release, 0, 12, 6)];
-  const lines = [`  wave ${wave}`];
+  // onset: a noise click or an octave-up first frame before the tone
+  const onset = sound.onset === 'noise' || sound.onset === 'octave' ? sound.onset : 'none';
+  const lines = [onset === 'noise' ? `  wave noise ${wave}` : `  wave ${wave}`];
+  const loops = [];
+  if (onset !== 'none') { lines.push(`  arp ${onset === 'noise' ? 12 : 24} 0`); loops.push(onset === 'noise' ? 'wave 1 arp 1' : 'arp 1'); }
   const pwmStep = { slow: 6, medium: 14, fast: 22 }[sound.pwm];
-  if (wave === 'pulse') lines.push(pwmStep ? `  pw ${pwBounce(1024, 768, 3072, pwmStep)}\n  loop pw 0` : '  pw 2048');
+  const width = { narrow: 768, medium: 1280, square: 2048 }[sound.pulse_width] || 2048;
+  if (wave === 'pulse' && pwmStep) {
+    const start = Math.max(1024, width);
+    lines.push(`  pw ${pwBounce(start, 768, start + 1536, pwmStep)}`);
+    loops.push('pw 0');
+  } else if (wave === 'pulse') lines.push(`  pw ${width}`);
+  if (loops.length) lines.push(`  loop ${loops.join(' ')}`);
   lines.push(`  adsr ${adsr.join(' ')}`);
   const vib = Math.max(0, Math.min(3, Number(sound.vibrato) || 0));
   if (vib > 0) lines.push(`  vibTri ${vib >= 2 ? 3 : 2} s${vib >= 2.5 ? 2 : vib >= 1.5 ? 3 : 4} 14`);
+  const slide = { short: 0.06, long: 0.14 }[sound.slide];
+  if (slide) lines.push(`  slide ${slide}`);
   lines.push('  gate -2');
   return `\n${lines.join('\n')}`;
 }

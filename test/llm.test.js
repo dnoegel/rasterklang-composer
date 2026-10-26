@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { answerToBrief, briefToAnswer, briefSchema, systemPrompt, drawConstraints, drawKeys, keyConstraint, refinePrompt, critiqueSystemPrompt } from '../src/gen/menu.js';
 import { composeBrief, compose, describeTune } from '../src/gen/compose.js';
 import { renderFrames } from '../src/gen/frames.js';
+import { buildSid } from '../src/export/sid.js';
 
 // What a model answer looks like (shape of briefSchema()).
 const ANSWER = {
@@ -59,6 +60,23 @@ describe('llm path', () => {
     expect(tune.plan.sections[3].keyRoot).toBe(4);
     const { frames } = renderFrames(tune.dsl, tune.plan.totalBars);
     expect(frames.length).toBeGreaterThan(1000);
+  });
+
+  it('renders every new sound, bass sounds per section and bass fills', () => {
+    const sections = ANSWER.sections.slice(0, 4).map((x, i) => ({
+      ...x, texture: 'full', energy: 0.8, energy_end: 0.8, bass_sound: ['slidebass', 'growl', 'chipbass', 'palette'][i], lead: ['glide', 'reed', 'warble', 'custom'][i],
+      bass_pattern: i === 1 ? 'R.2.4.5.8.4.2.A.' : '',
+    }));
+    sections[0].lead = 'square';
+    const answer = { ...ANSWER, sections, sound: { wave: 'pulse', attack: 0, decay: 6, sustain: 2, release: 3, vibrato: 1, pwm: 'slow', pulse_width: 'narrow', onset: 'noise', slide: 'short' } };
+    const tune = composeBrief(answerToBrief(answer, 'p'), { prompt: 'p', seed: 3 });
+    for (const name of ['slidebass', 'growl', 'chipbass', 'square', 'reed', 'warble', 'custom']) expect(tune.dsl).toContain(`instrument ${name}`);
+    expect(tune.plan.sections[1].bassPattern[0]).toBe('R.2.4.5.8.4.2.A.');
+    const { frames, barStarts } = renderFrames(tune.dsl, tune.plan.totalBars);
+    expect(buildSid(frames, barStarts, { title: 'x' }).complete).toBe(true);
+    const brief = briefToAnswer(tune.brief);
+    expect(brief.sections[1].bass_sound).toBe('growl');
+    expect(brief.sound.onset).toBe('noise');
   });
 
   it('round-trips a brief through the answer format for refinement', () => {

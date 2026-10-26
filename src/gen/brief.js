@@ -406,10 +406,11 @@ export function validateBrief(input) {
     }
     if (!CELLS[b.meter][s.feel]) s.feel = Object.keys(style.feels).find((f) => CELLS[b.meter][f]) || Object.keys(CELLS[b.meter])[0];
     if (!LEADS[s.lead] && !(s.lead === CUSTOM_LEAD && b.sound)) s.lead = Object.keys(style.palette.lead)[0];
+    if (!BASSES[s.bassSound] || s.bassSound === b.palette.bass) delete s.bassSound;
     s.energyEnd = clamp(Number(s.energyEnd ?? s.energy), 0.05, 1);
     if (!FILTER_SHAPES[s.filter]) s.filter = 'follow';
     if (!VARIATIONS[s.variation] || s.variation === 'auto') delete s.variation;
-    for (const [field, alphabet, must] of [['drumPattern', 'kshocTtx.', 'kst'], ['bassPattern', 'R583b6A_.', 'R'], ['arpPattern', 'x_.', 'x']]) {
+    for (const [field, alphabet, must] of [['drumPattern', 'kshocTtx.', 'kst'], ['bassPattern', 'R58324b6A_.', 'R'], ['arpPattern', 'x_.', 'x']]) {
       if (s[field] === undefined || s[field] === null || s[field] === '') { delete s[field]; continue; }
       const bars = Array.isArray(s[field]) ? s[field] : cleanPattern(s[field], steps, alphabet, must);
       if (bars && bars.every((r) => typeof r === 'string' && r.length === steps)) s[field] = bars;
@@ -494,6 +495,7 @@ export function planFromBrief(brief, seedKey) {
       bassDef: s.bassPattern ? { name: 'eigene Bass-Figur', row: s.bassPattern[0], rows: s.bassPattern, custom: true } : BASS[s.bass],
       arpRows: s.arpPattern || null,
       leadInst: s.lead,
+      bassInst: s.bassSound || null,
     });
     bar += s.bars;
   }

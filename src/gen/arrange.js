@@ -6,7 +6,7 @@
 
 import { DRUM_LETTERS, arpInstrumentFor } from './instruments.js';
 import { renderMelody } from './melody.js';
-import { noteName } from './theory.js';
+import { noteName, SCALES } from './theory.js';
 import { Rng } from './prng.js';
 import { GROOVES, FILLS } from './library/grooves.js';
 import { BASS } from './library/bass.js';
@@ -121,15 +121,55 @@ function bassIdiom(section, plan) {
   return section.bassDef;
 }
 
-function bassBar(section, b, plan, rng, idiom, inst) {
+// The k-th scale note above a chord root (2 = a step, 4 = a fourth), or a
+// fixed interval when the chord is borrowed from outside the scale.
+function scaleAbove(plan, section, root, k, fallback) {
+  const scale = SCALES[plan.mode].map((d) => (d + section.keyRoot) % 12);
+  const i = scale.indexOf(root % 12);
+  if (i < 0) return root + fallback;
+  return root + ((scale[(i + k) % 7] - scale[i] + 12) % 12);
+}
+
+// Fill on the last beat of a phrase: the bass walks up or down the scale,
+// runs chromatically or jumps octaves into the next chord, so it moves
+// between phrases instead of looping. Seeded by occurrence too, so a
+// repeated chorus gets other fills.
+function bassFill(cells, section, b, plan, rng, chord, next, inst, energy) {
+  const beat = plan.meter.strong;
+  const spacing = beat === 3 ? 1 : beat === 6 ? 2 : energy > 0.65 ? 1 : 2;
+  const n = beat / spacing;
+  const root = bassRoot(chord.root);
+  const target = bassRoot(next.root);
+  const scale = SCALES[plan.mode].map((d) => (d + section.keyRoot) % 12);
+  const inScale = (p) => scale.includes(((p % 12) + 12) % 12);
+  const below = [];
+  for (let p = target - 1; below.length < n && p > target - 12; p -= 1) if (inScale(p)) below.push(p);
+  const above = [];
+  for (let p = target + 1; above.length < n && p < target + 12; p += 1) if (inScale(p)) above.push(p);
+  const kinds = ['walk_up', 'walk_down', 'chromatic', 'octave'];
+  const kind = next.root === chord.root ? rng.pick(['octave', 'walk_down', 'walk_up']) : rng.pick(kinds);
+  let pitches;
+  if (kind === 'walk_up') pitches = below.slice(0, n).reverse();
+  else if (kind === 'walk_down') pitches = above.slice(0, n).reverse();
+  else if (kind === 'chromatic') pitches = Array.from({ length: n }, (_, i) => target - n + i);
+  else pitches = Array.from({ length: n }, (_, i) => (i % 2 ? root + 12 : root));
+  if (pitches.length < n) return cells;
+  const out = [...cells];
+  const start = cells.length - beat;
+  for (let i = start; i < cells.length; i += 1) out[i] = HOLD;
+  pitches.forEach((p, i) => { out[start + i * spacing] = { tok: noteName(Math.max(24, p)), inst }; });
+  return out;
+}
+
+function bassBar(section, b, plan, rng, idiom, inst, after = null) {
   const chord = section.chords[b];
-  const next = section.chords[b + 1] || chord;
+  const next = section.chords[b + 1] || after || chord;
   const root = bassRoot(chord.root);
   const third = chord.tones[1] !== undefined ? ((chord.tones[1] - chord.root + 12) % 12) : 4;
   let row = idiom.rows ? idiom.rows[b % idiom.rows.length] : idiom.row;
   if (!idiom.custom && !/^R_+$/.test(row)) row = varyBass(row, rng, energyAt(section, b));
   const lastOnset = Math.max(row.lastIndexOf('R'), row.lastIndexOf('5'), row.lastIndexOf('8'));
-  return [...row].map((c, i) => {
+  const cells = [...row].map((c, i) => {
     let pitch = null;
     if (c === 'R') pitch = root;
     else if (c === '5') pitch = root + 7;
@@ -137,6 +177,8 @@ function bassBar(section, b, plan, rng, idiom, inst) {
     else if (c === '3') pitch = root + third;
     else if (c === '6') pitch = root + 9;
     else if (c === 'b') pitch = root + 10;
+    else if (c === '2') pitch = scaleAbove(plan, section, root, 1, 2);
+    else if (c === '4') pitch = scaleAbove(plan, section, root, 3, 5);
     else if (c === 'A') pitch = bassRoot(next.root) + (rng.chance(0.5) ? -1 : 1);
     if (pitch !== null) {
       // approach note into a chord change, more often with tension
@@ -147,6 +189,14 @@ function bassBar(section, b, plan, rng, idiom, inst) {
     }
     return c === '_' ? HOLD : REST;
   });
+  // phrase ends (every 4th bar and the section's last) get a fill now and
+  // then; calm and drone bass stays still, written patterns get fewer
+  const energy = energyAt(section, b);
+  const phraseEnd = (b + 1) % 4 === 0 || b === section.bars - 1;
+  if (!phraseEnd || energy < 0.3 || section.textureDef.bass === 'drone') return cells;
+  const fillRng = new Rng(plan.seed, plan.version, 'bassfill', section.type, section.occurrence, b);
+  const chance = idiom.custom ? 0.25 + energy * 0.3 : 0.35 + energy * 0.45;
+  return fillRng.chance(chance) ? bassFill(cells, section, b, plan, fillRng, chord, next, inst, energy) : cells;
 }
 
 // Chord arpeggio with voice leading: major and minor chords may use an
@@ -252,11 +302,16 @@ export function arrange(plan, rng, melodyRng) {
       if (alt) leadInst = alt;
     }
     const isLastSection = si === plan.sections.length - 1;
+    const after = plan.sections[si + 1]?.chords[0] || null;
+    // the brief may give a section its own bass sound; a gliding bass would
+    // slide from the drum hits when it shares a voice with them
+    const sectionBass = section.bassInst || plan.palette.bass;
+    const bassInst = (roles) => (sectionBass === 'slidebass' && roles.includes('M') ? 'sub' : sectionBass);
 
     for (let b = 0; b < section.bars; b += 1) {
       const roles = stageAt(section, b);
       const drums = drumBar(section, b, plan, barRng(plan, section, b, 'drums'), b === 0 ? prevTransition : null);
-      const bass = bassBar(section, b, plan, barRng(plan, section, b, 'bass'), idiom, plan.palette.bass);
+      const bass = bassBar(section, b, plan, barRng(plan, section, b, 'bass'), idiom, bassInst(roles), after);
       const e = energyAt(section, b);
       const cellNow = section.arpRows ? section.arpRows[b % section.arpRows.length]
         : cells[Math.min(cells.length - 1, Math.floor(e * cells.length))];
@@ -284,7 +339,7 @@ export function arrange(plan, rng, melodyRng) {
         bar = [...roles].map((r) => {
           const out = restBar(steps).map(() => HOLD);
           if (r === 'D' || r === 'M') return [{ tok: 'c4', inst: 'crash' }, ...restBar(steps - 1)];
-          if (r === 'B') out[0] = { tok: noteName(bassRoot(chord.root)), inst: plan.palette.bass };
+          if (r === 'B') out[0] = { tok: noteName(bassRoot(chord.root)), inst: bassInst(roles) };
           else if (r === 'A') out[0] = arp.find((c) => c.inst) || { tok: noteName(48 + chord.root), inst: arpInstrumentFor('M') };
           else if (r === 'L') out[0] = { tok: noteName(72 + section.keyRoot - (section.keyRoot > 7 ? 12 : 0)), inst: leadInst };
           else return restBar(steps);
@@ -297,7 +352,7 @@ export function arrange(plan, rng, melodyRng) {
           if (i === half) {
             const r = roles[v];
             if (r === 'D' || r === 'M') return { tok: 'c4', inst: 'crash' };
-            if (r === 'B') return { tok: noteName(bassRoot(section.chords[b].root)), inst: plan.palette.bass };
+            if (r === 'B') return { tok: noteName(bassRoot(section.chords[b].root)), inst: bassInst(roles) };
           }
           return REST;
         }));

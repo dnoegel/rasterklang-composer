@@ -55,9 +55,10 @@ export function briefSchema() {
       sound: {
         type: 'object',
         additionalProperties: false,
-        required: ['wave', 'attack', 'decay', 'sustain', 'release', 'vibrato', 'pwm'],
+        required: ['wave', 'attack', 'decay', 'sustain', 'release', 'vibrato', 'pwm', 'pulse_width', 'onset', 'slide'],
         properties: {
           wave: en(['none', 'pulse', 'saw', 'triangle']), attack: int, decay: int, sustain: int, release: int, vibrato: num, pwm: en(['none', 'slow', 'medium', 'fast']),
+          pulse_width: en(['narrow', 'medium', 'square']), onset: en(['none', 'noise', 'octave']), slide: en(['none', 'short', 'long']),
         },
       },
       sections: {
@@ -65,7 +66,7 @@ export function briefSchema() {
         items: {
           type: 'object',
           additionalProperties: false,
-          required: ['type', 'bars', 'energy', 'energy_end', 'filter', 'texture', 'transition', 'groove', 'drums_pattern', 'bass', 'bass_pattern', 'arp_pattern', 'feel', 'lead', 'chords', 'chord_bars', 'transpose', 'variation'],
+          required: ['type', 'bars', 'energy', 'energy_end', 'filter', 'texture', 'transition', 'groove', 'drums_pattern', 'bass', 'bass_pattern', 'bass_sound', 'arp_pattern', 'feel', 'lead', 'chords', 'chord_bars', 'transpose', 'variation'],
           properties: {
             type: en(SECTION_TYPES),
             bars: int,
@@ -79,6 +80,7 @@ export function briefSchema() {
             transition: en(Object.keys(TRANSITIONS)),
             groove: en(Object.keys(GROOVES)),
             bass: en(Object.keys(BASS)),
+            bass_sound: en(['palette', ...Object.keys(BASSES)]),
             feel: en(feels),
             lead: en([...Object.keys(LEADS), CUSTOM_LEAD]),
             chords: { type: 'array', items: str },
@@ -117,7 +119,7 @@ ${styles}
 ## Grooves (drums, one SID voice)
 ${grooves}
 
-## Bass idioms (R root, 5 fifth, 8 octave, 3 third, 6 sixth, b flat 7th, A approach note)
+## Bass idioms (R root, 5 fifth, 8 octave, 3 third, 6 sixth, b flat 7th, 2 scale step above, 4 fourth, A approach note)
 ${bass}
 
 ## Melody feels per meter
@@ -174,9 +176,12 @@ Rules:
 - energy per section 0-1; intros, breakdowns and outros lower, choruses and solos higher.
 - Pick textures per section: intros, breakdowns, builds and outros have their own textures; main sections use main textures. Vary them: not every song starts the same way.
 - energy is where a section starts, energy_end where it ends (0-1): let pre-choruses and builds rise, choruses plateau or lift a little, outros fall. Drums, arpeggio density and the filter follow it bar by bar. filter: follow (default), open, close, wobble, steady.
-- Make the grooves yours: drums_pattern, bass_pattern and arp_pattern let you write the section's own pattern instead of the library id (keep the id as fallback). One character per step, 1 or 2 bars (two bars alternate), steps per bar as for themes. Drums: k kick, s snare, c clap, h closed hat, o open hat, t low tom, T high tom, x crash, . rest (one voice: one hit per step). Bass, resolved against each chord: R root, 5 fifth, 8 octave, 3 third, 6 sixth, b flat seventh, A approach note to the next chord, _ hold, . rest. Arp rhythm of the chord voice: x hit, _ hold, . rest. Write patterns for the verse and chorus at least whenever the genre needs a particular groove (a reggae one drop, a funk bass, a jig lilt); leave "" to use the library. Examples 4/4: drums "k.h.s.hkk.h.s.hh", bass "R..R..8.R.b.R.5.", arp "x.x.x_x_x.x.x___".
+- Make the grooves yours: drums_pattern, bass_pattern and arp_pattern let you write the section's own pattern instead of the library id (keep the id as fallback). One character per step, 1 or 2 bars (two bars alternate), steps per bar as for themes. Drums: k kick, s snare, c clap, h closed hat, o open hat, t low tom, T high tom, x crash, . rest (one voice: one hit per step). Bass, resolved against each chord: R root, 5 fifth, 8 octave, 3 third, 6 sixth, b flat seventh, 2 the scale step above the root, 4 the fourth, A approach note to the next chord, _ hold, . rest. Arp rhythm of the chord voice: x hit, _ hold, . rest. Write patterns for the verse and chorus at least whenever the genre needs a particular groove (a reggae one drop, a funk bass, a jig lilt); leave "" to use the library. Examples 4/4: drums "k.h.s.hkk.h.s.hh", bass "R..R..8.R.b.R.5.", arp "x.x.x_x_x.x.x___".
 - Themes may be 1 to 4 bars; a 3-4 bar theme is a full phrase and is played twice in an 8-bar section.
-- sound designs the lead "custom": wave pulse, saw or triangle (or "none" for no custom lead), attack/decay/release 0-12, sustain 0-15 (SID envelope nibbles: 0 fast, 12 slow), vibrato 0-3, pwm none/slow/medium/fast (pulse only). Use lead "custom" in the sections that should have this sound.
+- The bass is a full voice, not just the root: in main sections give it movement (octaves, fifths, thirds, steps, syncopation, approach notes) with a bass_pattern of its own, and let verse and chorus bass differ. Held bass (whole_note, sustained, half_note) belongs to calm sections or genres that need it. Code adds walks and runs at phrase ends.
+- bass_sound per section: "palette" keeps the song's bass sound; another id changes the colour for that section (for example sub in the verse, growl or chipbass in the chorus, slidebass for 808 or acid slides).
+- sound designs the lead "custom": wave pulse, saw or triangle (or "none" for no custom lead), attack/decay/release 0-12, sustain 0-15 (SID envelope nibbles: 0 fast, 12 slow), vibrato 0-3, pwm none/slow/medium/fast (pulse only), pulse_width narrow (nasal, thin), medium or square (hollow, full; static width when pwm is none), onset none/noise (a hard click, like a picked string or a chiff)/octave (a bright octave blip at each note start), slide none/short/long (portamento between notes). Design a sound that fits this prompt, not a safe middle: envelope archetypes are staccato chip (0 4 0 0), pluck (0 6 2 3), sustained organ (0 0 15 3), soft swell (6 9 12 9), bowed (3 9 11 6). Use lead "custom" in the sections that should have this sound.
+- Leads: choose the lead colour for the prompt, and use two or three colours per song (a softer verse, a brighter chorus, another for the solo or bridge). bell is one colour among many, not a default.
 - Textures: the chorus does not always need "full". counter, counter_nodrums and duet add a counter-melody under the lead; build_up_band brings the band in during the section. Vary textures between repeats of a section when it helps the story.
 - variation: how a repeated section's melody changes against its first time (the head of each phrase stays, so the hook is recognised). "auto" lets code choose; use "exact" only when a literal repeat is the point (a riff, a chant). Give the second and third chorus different variations when the story builds.
 - Forms: verse/chorus is not the only option. AABA, a through-composed piece, a chorus only at the end, or a single long build are fine when they fit the prompt.
@@ -294,6 +299,7 @@ export function answerToBrief(answer, prompt) {
       type: x.type, bars: x.bars, energy: x.energy, energyEnd: x.energy_end, filter: x.filter, texture: x.texture,
       transition: x.transition, groove: x.groove, bass: x.bass, feel: x.feel, lead: x.lead, chords: x.chords,
       transpose: x.transpose, chordBars: x.chord_bars, variation: x.variation, drumPattern: x.drums_pattern, bassPattern: x.bass_pattern, arpPattern: x.arp_pattern,
+      bassSound: x.bass_sound,
     })),
     themes,
   };
@@ -345,11 +351,11 @@ export function briefToAnswer(brief) {
     key: KEYS[brief.keyRoot] || 'C',
     mode: brief.mode,
     palette: brief.palette,
-    sound: brief.sound || { wave: 'none', attack: 0, decay: 9, sustain: 10, release: 6, vibrato: 0, pwm: 'none' },
+    sound: { wave: 'none', attack: 0, decay: 9, sustain: 10, release: 6, vibrato: 0, pwm: 'none', pulse_width: 'square', onset: 'none', slide: 'none', ...(brief.sound || {}) },
     sections: brief.sections.map((s) => ({
       type: s.type, bars: s.bars, energy: s.energy, energy_end: s.energyEnd ?? s.energy, filter: s.filter || 'follow',
       texture: s.texture, transition: s.transition, groove: s.groove, drums_pattern: (s.drumPattern || []).join(''),
-      bass: s.bass, bass_pattern: (s.bassPattern || []).join(''), arp_pattern: (s.arpPattern || []).join(''),
+      bass: s.bass, bass_pattern: (s.bassPattern || []).join(''), bass_sound: s.bassSound || 'palette', arp_pattern: (s.arpPattern || []).join(''),
       feel: s.feel, lead: s.lead, chords: s.chords, chord_bars: s.chordBars || 1, transpose: s.transpose || 0, variation: s.variation || 'auto',
     })),
     themes: Object.entries(brief.themes || {}).map(([section, t]) => ({ section, notes: t.notes })),
