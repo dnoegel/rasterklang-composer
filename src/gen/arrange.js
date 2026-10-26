@@ -11,6 +11,8 @@ import { Rng } from './prng.js';
 import { GROOVES, FILLS } from './library/grooves.js';
 import { BASS } from './library/bass.js';
 import { ARP_CELLS } from './library/cells.js';
+import { KITS } from './library/palettes.js';
+import { ECHO_MAX_BARS } from './library/textures.js';
 
 const REST = { tok: '~', inst: null };
 const HOLD = { tok: '_', inst: null };
@@ -60,6 +62,23 @@ function varyBass(row, rng, energy) {
   return cells.join('');
 }
 
+// Echo: the lead `delay` steps later on its own voice, with the
+// softer echo variant of each lead sound. A note that started in the bar
+// before is struck again at the bar line (a bar cannot start with a hold).
+function echoBar(prev, cur, delay) {
+  const steps = cur.length;
+  const echoOf = (c) => (c.inst ? { tok: c.tok, inst: `${c.inst}echo` } : c);
+  const cells = [...prev.slice(steps - delay), ...cur.slice(0, steps - delay)].map(echoOf);
+  if (cells[0].tok === '_') {
+    cells[0] = REST;
+    for (let i = steps - delay - 1; i >= 0; i -= 1) {
+      if (prev[i].tok === '~') break;
+      if (prev[i].inst) { cells[0] = echoOf(prev[i]); break; }
+    }
+  }
+  return cells;
+}
+
 function drumLevel(energy) {
   return energy < 0.22 ? 0 : energy < 0.5 ? 1 : energy < 0.78 ? 2 : 3;
 }
@@ -71,9 +90,42 @@ function stageAt(section, b) {
   return roles;
 }
 
+// The song's kit plays kick, snare and hat; a clap stays a
+// clap, and the bank's own kit uses the brief's snare.
+const kitOf = (plan) => KITS[plan.palette.kit] || KITS.std;
+// Lead tokens with the section's lead sound. A note reached by a half or
+// whole step straight from the note before may glide into place (its bend
+// variant), as tracker leads do on about 5 % of their notes.
+// Leads that glide on every note anyway are left alone.
+const SLIDING = new Set(['glide']);
+function leadBar(mbar, inst, plan, rng, state) {
+  const slides = SLIDING.has(inst) || (inst === 'custom' && plan.sound?.slide && plan.sound.slide !== 'none');
+  const pitches = new Map(mbar.notes.map((n) => [n.step, n.pitch]));
+  return mbar.tokens.map((t, i) => {
+    if (t === '~') { state.open = false; return { tok: t, inst: null }; }
+    if (t === '_') return { tok: t, inst: null };
+    const pitch = pitches.get(i);
+    const step = state.pitch !== null && pitch !== undefined ? Math.abs(pitch - state.pitch) : 0;
+    const bend = !slides && state.open && (step === 1 || step === 2) && rng.chance(0.12);
+    state.pitch = pitch ?? state.pitch;
+    state.open = true;
+    return { tok: t, inst: bend ? `${inst}bend` : inst };
+  });
+}
+
+// A song with an echo puts it on a voice left silent under the lead.
+function rolesAt(section, b, plan) {
+  const roles = stageAt(section, b);
+  return plan.echo?.fill && roles.includes('L') && roles.includes('-') ? roles.replace('-', 'E') : roles;
+}
+
 function drumCell(c, plan) {
   if (c === '.') return REST;
-  const inst = c === 's' ? plan.palette.snare : DRUM_LETTERS[c];
+  const kit = kitOf(plan);
+  let inst = DRUM_LETTERS[c];
+  if (c === 'k') inst = kit.kick;
+  else if (c === 'h') inst = kit.hat;
+  else if (c === 's') inst = kit.snare && plan.palette.snare !== 'clap' ? kit.snare : plan.palette.snare;
   return { tok: 'c4', inst };
 }
 
@@ -267,12 +319,12 @@ function counterBar(section, b, plan, leadNotes, prev, energy) {
 
 // Bass and drums on one voice: snares/claps/toms interrupt the bass, kicks
 // fall on bass notes (the bass instrument's noise click is the kick).
-function multiplex(drums, bass) {
+function multiplex(drums, bass, kit) {
   return drums.map((d, i) => {
-    const accent = d.inst && d.inst !== 'kick' && d.inst !== 'hat' && d.inst !== 'ohat';
+    const accent = d.inst && d.inst !== kit.kick && d.inst !== kit.hat && d.inst !== 'ohat';
     if (accent) return d;
     if (bass[i].tok !== '~') return bass[i];
-    if (d.inst === 'kick') return d;
+    if (d.inst === kit.kick) return d;
     return bass[i];
   });
 }
@@ -288,6 +340,10 @@ export function arrange(plan, rng, melodyRng) {
   plan.grooveTags = [...new Set(plan.sections.flatMap((s) => s.grooveDef.tags))];
   const arpState = { prev: null };
   let prevTransition = null;
+  let prevLead = restBar(steps);
+  const echoDelay = plan.echo?.delay || 2;
+  let echoBars = 0;
+  const bendState = { pitch: null, open: false };
 
   plan.sections.forEach((section, si) => {
     const idiom = bassIdiom(section, plan);
@@ -309,7 +365,8 @@ export function arrange(plan, rng, melodyRng) {
     const bassInst = (roles) => (sectionBass === 'slidebass' && roles.includes('M') ? 'sub' : sectionBass);
 
     for (let b = 0; b < section.bars; b += 1) {
-      const roles = stageAt(section, b);
+      let roles = rolesAt(section, b, plan);
+      if (roles.includes('E') && (echoBars += 1) > ECHO_MAX_BARS) roles = roles.replace('E', '-');
       const drums = drumBar(section, b, plan, barRng(plan, section, b, 'drums'), b === 0 ? prevTransition : null);
       const bass = bassBar(section, b, plan, barRng(plan, section, b, 'bass'), idiom, bassInst(roles), after);
       const e = energyAt(section, b);
@@ -317,7 +374,7 @@ export function arrange(plan, rng, melodyRng) {
         : cells[Math.min(cells.length - 1, Math.floor(e * cells.length))];
       const arp = arpBar(section, b, plan, cellNow, arpState);
       const lead = melody
-        ? melody.bars[b].tokens.map((t) => (t === '~' || t === '_' ? { tok: t, inst: null } : { tok: t, inst: leadInst }))
+        ? leadBar(melody.bars[b], leadInst, plan, barRng(plan, section, b, 'bend'), bendState)
         : restBar(steps);
       if (melody && roles.includes('L')) {
         leadNotes.push(...melody.bars[b].notes.map((n) => ({ ...n, bar: section.startBar + b, section: section.type })));
@@ -327,8 +384,9 @@ export function arrange(plan, rng, melodyRng) {
         if (r === 'B') return bass;
         if (r === 'L') return lead;
         if (r === 'A') return arp;
-        if (r === 'M') return multiplex(drums, bass);
+        if (r === 'M') return multiplex(drums, bass, kitOf(plan));
         if (r === 'C') return melody ? counterBar(section, b, plan, melody.bars[b].notes, counterState, e) : restBar(steps);
+        if (r === 'E') return echoBar(prevLead, roles.includes('L') ? lead : restBar(steps), echoDelay);
         return restBar(steps);
       });
 
@@ -360,10 +418,12 @@ export function arrange(plan, rng, melodyRng) {
         bar = bar.map((cellsV, v) => (roles[v] === 'D' ? restBar(steps) : roles[v] === 'M' ? bass : cellsV));
       }
       bar.forEach((cellsV, v) => voices[v].push(cellsV));
-      // filter routing: the bass voice; without bass the chords; else a
-      // silent voice (routing it is harmless), never the lead or drums alone
+      prevLead = roles.includes('L') ? bar[roles.indexOf('L')] : restBar(steps);
+      // filter routing: the bass voice and the echo (darker, further away);
+      // without them the chords; else a silent voice (routing it is
+      // harmless), never the lead or drums alone
       const pick = (set) => [...roles].map((r, v) => (set.includes(r) ? v : -1)).filter((v) => v >= 0);
-      let route = pick(['B', 'M']);
+      let route = pick(['B', 'M', 'E']);
       if (!route.length) route = pick(['A', 'C']);
       if (!route.length) route = pick(['-']).slice(0, 1);
       routes.push(route);

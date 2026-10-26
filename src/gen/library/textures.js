@@ -1,7 +1,8 @@
 // Textures: which role each of the three SID voices plays, bar by bar,
 // inside a section. Roles: D drums, B bass, L lead, A chord arpeggio,
 // M bass and drums on one voice (a classic SID trick), C counter-melody
-// (a second line under the lead, contrary motion, chord tones), - silent.
+// (a second line under the lead, contrary motion, chord tones), E echo (the
+// lead an eighth or dotted eighth later, softer), - silent.
 // stages: [fromFraction, roles] in order. lead: which motifs the lead
 // uses (own section, 'verse' or 'chorus' material). drums: override for
 // the drum part. filter: 'sweep' opens the filter over the section.
@@ -18,6 +19,7 @@ export const TEXTURES = {
   counter: { kind: 'main', name: 'bass+drums on one voice, counter-melody, lead', stages: [[0, 'MCL']] },
   counter_nodrums: { kind: 'main', name: 'bass, counter-melody, lead, no drums', stages: [[0, 'BCL']] },
   build_up_band: { kind: 'main', name: 'band builds up: bass and lead, then drums, then chords', stages: [[0, '-BL'], [0.25, 'DBL'], [0.75, 'MAL']] },
+  echo_lead: { kind: 'main', name: 'bass+drums on one voice, lead with a delayed echo', stages: [[0, 'MEL']] },
 
   // ---- intros ----------------------------------------------------------
   staggered: { kind: 'intro', name: 'staggered entry: bass, then drums, then chords', stages: [[0, '-B-'], [0.25, 'DB-'], [0.5, 'DBA']] },
@@ -33,6 +35,7 @@ export const TEXTURES = {
   bass_alone: { kind: 'breakdown', name: 'bass alone, drums come back', stages: [[0, '-B-'], [0.5, 'DB-']] },
   arp_lead: { kind: 'breakdown', name: 'only chords and lead', stages: [[0, '-AL']] },
   duet: { kind: 'breakdown', name: 'lead and counter-melody in duet', stages: [[0, '-CL']] },
+  echo_break: { kind: 'breakdown', name: 'bass, lead and its echo, no drums', stages: [[0, 'BEL']] },
   halftime_break: { kind: 'breakdown', name: 'halftime breakdown', stages: [[0, 'DBA']], drums: 'halftime' },
   drop_out: { kind: 'breakdown', name: 'drums and bass without melody', stages: [[0, 'DB-']] },
   snare_build: { kind: 'build', name: 'build-up with snare roll', stages: [[0, 'DBA']], drums: 'build', filter: 'open' },
@@ -63,3 +66,14 @@ export const TRANSITIONS = {
   dropout: { name: 'drums drop out for a bar' },
   none: { name: 'direct transition' },
 };
+
+// Echo voice: when a song has one, a voice that is silent while
+// the lead plays carries the lead's echo. Chance per style family; 13 % of
+// tracker songs echo their lead, most in game, demo and synth music.
+export const ECHO_CHANCE = {
+  synth: 0.6, game: 0.5, ambient: 0.6, cinematic: 0.45, pop: 0.35, dance: 0.35, rock: 0.25, metal: 0.2, hiphop: 0.3, funk: 0.2,
+};
+export const ECHO_DEFAULT = 0.15;
+// An echo voice repeats little bar to bar, so it costs .sid space like a
+// second lead; past this many bars per song the voice stays silent.
+export const ECHO_MAX_BARS = 16;

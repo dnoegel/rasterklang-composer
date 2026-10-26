@@ -5,6 +5,8 @@ import { renderFrames } from '../src/gen/frames.js';
 import { buildSid } from '../src/export/sid.js';
 import { loopToRomans, nudgeModes, findArtist } from '../src/gen/hvsc-data.js';
 import { ARTISTS, GENRE_HINTS } from '../src/gen/library/hvsc.js';
+import { HVSC_KITS, HVSC_BASSES, HVSC_LEADS } from '../src/gen/library/hvsc-instruments.js';
+import { readFileSync } from 'node:fs';
 
 describe('HVSC inventory data', () => {
   it('has genre hints and artist fingerprints with usable rows', () => {
@@ -55,5 +57,27 @@ describe('HVSC inventory data', () => {
     const tunes = [1, 2, 3, 4, 5, 6].map((s) => compose('melancholic rainy night synthwave', s));
     expect(tunes.some((t) => /arp(Maj|Min)[AB]/.test(t.dsl))).toBe(true);
     expect(tunes.some((t) => t.brief.sections.some((s) => s.chordBars === 2))).toBe(true);
+  });
+
+  it('C64-style instruments match their data file', () => {
+    const data = JSON.parse(readFileSync(new URL('../', import.meta.url), 'utf8'));
+    expect(Object.keys(HVSC_KITS)).toEqual(data.picked.kits.map((k) => k.id));
+    expect(Object.keys(HVSC_BASSES)).toEqual(data.picked.basses.map((b) => b.id));
+    expect(Object.keys(HVSC_LEADS)).toEqual(data.picked.leads.map((b) => b.id));
+    for (const b of [...data.picked.basses, ...data.picked.leads]) expect(b.authors).toBeGreaterThanOrEqual(4);
+    for (const b of data.picked.leads) expect(b.level).toBeGreaterThanOrEqual(data.picked.minLeadLevel);
+  });
+
+  it('songs use C64-style kits, sounds, echoes and bends, and still fit a .sid', () => {
+    const tunes = [1, 2, 3, 4, 5, 6].flatMap((s) => ['happy platformer level', 'melancholic rainy night synthwave'].map((p) => compose(p, s)));
+    expect(tunes.some((t) => t.plan.palette.kit && t.plan.palette.kit !== 'std')).toBe(true);
+    const kitSong = tunes.find((t) => t.plan.palette.kit && t.plan.palette.kit !== 'std');
+    expect(kitSong.dsl).toContain(`instrument ${HVSC_KITS[kitSong.plan.palette.kit].kick}`);
+    expect(tunes.some((t) => /instrument \w+echo\b/.test(t.dsl))).toBe(true);
+    expect(tunes.some((t) => /instrument \w+bend\b/.test(t.dsl))).toBe(true);
+    for (const t of tunes) {
+      const { frames, barStarts } = renderFrames(t.dsl, t.plan.totalBars);
+      expect(buildSid(frames, barStarts).complete).toBe(true);
+    }
   });
 });
