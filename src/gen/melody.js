@@ -13,6 +13,7 @@
 import { SCALES, nearestIndex, noteName } from './theory.js';
 import { Rng } from './prng.js';
 import { CELLS, CELL_VARIANTS } from './library/cells.js';
+import { HVSC_CELLS } from './library/hvsc-rhythms.js';
 import { SECTION_ENERGY } from './library/forms.js';
 
 const LEAD_RANGE = { metal: [52, 79], synth: [57, 81], game: [60, 84], folk: [62, 86], classical: [62, 86], ambient: [60, 86], jazz: [57, 81], blues: [55, 79], rock: [55, 81], pop: [60, 84], hiphop: [57, 81] };
@@ -116,6 +117,29 @@ function cadenceCell(cell, steps) {
   let out = cell.slice(0, half).replace(/x(?=[^x]*$)/, 'x');
   out += 'x' + '_'.repeat(steps - half - 1);
   return out;
+}
+
+// Lead rhythms of real SID music: the cells of a feel gain the
+// one-bar rhythms several tracker authors used, weighted by the square
+// root of their author count and together HVSC_SHARE times the bank's
+// weight, so the rare ones come up too. The "sid" feel draws on all of them.
+const HVSC_SHARE = 3;
+const hvscPool = {};
+function withHvsc(meterId, feel, bank) {
+  const corpus = HVSC_CELLS[meterId];
+  if (!corpus) return bank;
+  const key = `${meterId}|${feel}`;
+  if (!hvscPool[key]) {
+    const list = feel === 'sid' ? Object.values(corpus).flat() : corpus[feel] || [];
+    const seen = new Set(bank.map(([c]) => c));
+    hvscPool[key] = list.filter(([c]) => !seen.has(c)).map(([c, a]) => [c, Math.sqrt(a)]);
+  }
+  const extra = hvscPool[key];
+  if (!extra.length) return bank;
+  const bankWeight = bank.reduce((a, [, w]) => a + w, 0) || 1;
+  const extraWeight = extra.reduce((a, [, w]) => a + w, 0);
+  const k = (HVSC_SHARE * bankWeight) / extraWeight;
+  return [...bank, ...extra.map(([c, w]) => [c, w * k])];
 }
 
 // pool: [cell, weight]; derived cell variants weigh less than the library's.
@@ -286,7 +310,7 @@ function motifSet(material, section, plan, rng, memory) {
   const energy = material === section.type ? section.energy : Math.min(1, (SECTION_ENERGY[material] || 0.6) + target.energyBias * 0.7);
   const density = Math.max(0, Math.min(1, energy * 0.9 + (material === 'solo' ? 0.3 : 0) - target.legato * 0.15 - (material === 'chorus' ? 0.15 : 0)));
   const feel = CELLS[plan.meterId][section.feel] ? section.feel : Object.keys(CELLS[plan.meterId])[0];
-  const cellsOf = (f) => [...(CELLS[plan.meterId][f] || []).map((c) => [c, 1]), ...(CELL_VARIANTS[plan.meterId][f] || []).map((c) => [c, 0.5])];
+  const cellsOf = (f) => withHvsc(plan.meterId, f, [...(CELLS[plan.meterId][f] || []).map((c) => [c, 1]), ...(CELL_VARIANTS[plan.meterId][f] || []).map((c) => [c, 0.5])]);
   const pool = material === 'solo' ? [...cellsOf(feel), ...(feel === 'running' ? [] : cellsOf('running'))] : cellsOf(feel);
   const cellA = pickCell(pool, density, rng);
   const cellB = pickCell(pool, density, rng, cellA);

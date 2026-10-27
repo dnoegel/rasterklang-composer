@@ -16,6 +16,7 @@ import { FORMS, SECTION_ENERGY } from './library/forms.js';
 import { LEADS, BASSES, SNARES, KITS, CUSTOM_LEAD } from './library/palettes.js';
 import { findArtist, artistSummary } from './hvsc-data.js';
 import { VARIATIONS } from './melody.js';
+import { HVSC_BASS_ROWS } from './library/hvsc-rhythms.js';
 
 const SECTION_TYPES = Object.keys(SECTION_ENERGY);
 const KEYS = KEY_NAMES;
@@ -269,7 +270,7 @@ const FORM_DRAW = [
   'AABA: the A section carries the hook, B contrasts in harmony and texture',
   'one long build: start sparse, add a layer every section, peak at the end',
   'verse and chorus with a breakdown (drums out) before the last chorus',
-  'short and direct: no intro, verse and chorus twice, a short outro',
+  'short and direct: verse and chorus twice, a short outro',
   'a through-composed journey: every section new, only the chorus hook returns',
 ];
 const weighted = (rand, weights) => {
@@ -280,6 +281,12 @@ const weighted = (rand, weights) => {
 };
 
 // intros: restrict the intro draw (the three readings each get a group)
+const weightedRow = (rand, rows) => {
+  let r = rand() * rows.reduce((a, [, n]) => a + Math.sqrt(n), 0);
+  for (const [row, n] of rows) { r -= Math.sqrt(n); if (r <= 0) return row; }
+  return rows[rows.length - 1][0];
+};
+
 export function drawArrangement(rand, { intros = null } = {}) {
   const pool = intros ? Object.fromEntries(intros.map((t) => [t, INTRO_DRAW[t] ?? 1])) : INTRO_DRAW;
   const intro = weighted(rand, pool);
@@ -289,6 +296,11 @@ export function drawArrangement(rand, { intros = null } = {}) {
   const slow = rand() < 0.4;
   const leads = [...Object.keys(LEADS), CUSTOM_LEAD];
   const lead = leads[Math.floor(rand() * leads.length)];
+  // a verse bass figure of real C64 music: without it the model
+  // wrote the same few figures. (Two drawn hook rhythms made the lead more
+  // uniform, not less, and were dropped:
+  const onsets = (p) => [...p].filter((c) => c !== '.' && c !== '_').length;
+  const bassFigure = weightedRow(rand, HVSC_BASS_ROWS.filter(([r]) => onsets(r) >= 3 && onsets(r) <= 10));
   return [
     intro === 'none' ? 'Start directly with the first verse or the chorus: no intro section.' : `Open with an intro of texture ${intro}.`,
     `Set the tempo in the ${tempo} of the chosen style's tempo band.`,
@@ -296,6 +308,7 @@ export function drawArrangement(rand, { intros = null } = {}) {
     `Use the texture ${chorus} for the first chorus.`,
     slow ? 'Let the verse chords last two bars each (chord_bars 2).' : null,
     `Give the chorus the lead sound ${lead}${lead === CUSTOM_LEAD ? ' (design it in sound)' : ''}; other sections may use other leads.`,
+    `If the song is in 4/4, use this bass figure from real C64 tunes as the verse bass_pattern: "${bassFigure}".`,
   ].filter(Boolean);
 }
 
