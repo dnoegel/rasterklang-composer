@@ -5,6 +5,7 @@
 import { parsePrompt, describeIntent, resolveStyle } from './intent.js';
 import { sampleBrief, validateBrief, planFromBrief, GENERATOR_VERSION } from './brief.js';
 import { arrange } from './arrange.js';
+import { varyBrief } from './vary.js';
 import { emitDsl } from './emit.js';
 import { measureLead } from './measure.js';
 import { measureVariety, varietyPenalty } from './variety.js';
@@ -60,7 +61,11 @@ export function briefFromPrompt(prompt, seed = 1) {
 
 // Render any brief (rule-based or LLM) into a tune.
 export function composeBrief(rawBrief, { prompt = '', seed = 1, intent = null, candidates = 8, withLead = false, varietyWeight = 1 } = {}) {
-  const { brief, repairs, errors } = validateBrief(rawBrief);
+  const checked = validateBrief(rawBrief);
+  const { repairs, errors } = checked;
+  // seeds after the first draw code variants of a model brief
+  const varied = varyBrief(checked.brief, prompt, seed);
+  const brief = varied.changed.length ? validateBrief(varied.brief).brief : checked.brief;
   const seedKey = `${seedKeyOf(prompt, seed)}|${brief.source || 'rules'}`;
   const plan = planFromBrief(brief, seedKey);
   plan.seedNumber = seed;

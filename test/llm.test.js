@@ -88,7 +88,7 @@ describe('llm path', () => {
     }));
     sections[0].lead = 'square';
     const answer = { ...ANSWER, sections, sound: { wave: 'pulse', attack: 0, decay: 6, sustain: 2, release: 3, vibrato: 1, pwm: 'slow', pulse_width: 'narrow', onset: 'noise', slide: 'short' } };
-    const tune = composeBrief(answerToBrief(answer, 'p'), { prompt: 'p', seed: 3 });
+    const tune = composeBrief(answerToBrief(answer, 'p'), { prompt: 'p', seed: 1 });
     for (const name of ['slidebass', 'growl', 'chipbass', 'square', 'reed', 'warble', 'custom']) expect(tune.dsl).toContain(`instrument ${name}`);
     expect(tune.plan.sections[1].bassPattern[0]).toBe('R.2.4.5.8.4.2.A.');
     const { frames, barStarts } = renderFrames(tune.dsl, tune.plan.totalBars);
@@ -100,7 +100,7 @@ describe('llm path', () => {
 
   it('round-trips a brief through the answer format for refinement', () => {
     const tune = compose('celtic metal', 2);
-    const again = composeBrief(answerToBrief(briefToAnswer(tune.brief), 'celtic metal'), { prompt: 'celtic metal', seed: 2 });
+    const again = composeBrief(answerToBrief(briefToAnswer(tune.brief), 'celtic metal'), { prompt: 'celtic metal', seed: 1 });
     expect(again.brief.sections.map((s) => s.texture)).toEqual(tune.brief.sections.map((s) => s.texture));
     expect(again.plan.keyRoot).toBe(tune.plan.keyRoot);
     const text = refinePrompt('celtic metal', tune.brief, describeTune(tune), 'darker chorus');

@@ -118,7 +118,8 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
   const target = descriptorTarget(intent, style);
   const mode = chooseMode(style, target, intent, rng);
   const tonality = MINOR_MODES.has(mode) ? 'minor' : 'major';
-  const meter = pickWeighted(rng, style.meter);
+  // a fixed meter (variants of a model brief keep its themes' grid)
+  const meter = intent.meter && style.meter[intent.meter] !== undefined ? intent.meter : pickWeighted(rng, style.meter);
   const keyRoot = intent.key ? intent.key.root : rng.pick(KEY_POOLS[style.family] || KEY_POOLS.synth);
 
   const formId = intent.form === 'short' ? 'short' : intent.form === 'loop' ? 'loop' : pickWeighted(rng, style.forms);

@@ -43,7 +43,7 @@ describe('melody variety', () => {
     const render = (variation) => {
       const a = structuredClone(answer);
       for (const s of a.sections) { s.variation = variation; s.transpose = 0; }
-      return composeBrief(answerToBrief(a, 'happy pop song'), { prompt: 'happy pop song', seed: 3 });
+      return composeBrief(answerToBrief(a, 'happy pop song'), { prompt: 'happy pop song', seed: 1 });
     };
     expect(render('exact').variety.repeatSame).toBe(1);
     expect(render('octave').variety.repeatSame).toBeLessThan(0.7);
