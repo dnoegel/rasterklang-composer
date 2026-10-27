@@ -18,6 +18,7 @@ import { FORMS, SECTION_ENERGY } from './library/forms.js';
 import { LEADS, BASSES, SNARES, KITS, CUSTOM_LEAD, hvscPool } from './library/palettes.js';
 import { styleHint, nudgeModes, loopToRomans } from './hvsc-data.js';
 import { ARTISTS } from './library/hvsc.js';
+import { HVSC_BASS_ROWS } from './library/hvsc-rhythms.js';
 
 export const GENERATOR_VERSION = 'compose-0.2.0';
 
@@ -228,6 +229,25 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
     });
   });
   trimToLength(sections, (METERS[meter].unit === 8 ? METERS[meter].beats / 3 : METERS[meter].beats) * 60 / target.tempo);
+  // Bass figures of real SID music: sections other than the
+  // chorus (which carries the genre's signature bass) take a figure several
+  // tracker authors used, fitting the section's energy; a repeated
+  // section keeps its figure. Its own random stream leaves the other choices
+  // of the song as they were.
+  if (meter === '4/4') {
+    const brng = new Rng(seedKey, GENERATOR_VERSION, 'hvsc-bass');
+    const figure = {};
+    for (const s of sections) {
+      if (s.type === 'chorus' || s.bassPattern) continue;
+      if (!(s.type in figure)) {
+        const want = s.energy - target.legato * 0.15;
+        const fits = HVSC_BASS_ROWS.filter(([, , [lo, hi]]) => want >= lo && want <= hi);
+        figure[s.type] = fits.length && brng.chance(0.45) ? brng.weighted(fits.map(([row, a]) => [row, Math.sqrt(a)])) : null;
+      }
+      if (figure[s.type]) s.bassPattern = figure[s.type];
+    }
+  }
+
   // An artist fingerprint gives verse and chorus its measured drum row,
   // bass figure and bass-root loop
   if (artist && meter === '4/4') {
