@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { compose } from '../src/gen/compose.js';
+import { compose, composeBrief } from '../src/gen/compose.js';
+import { ARPS } from '../src/gen/library/palettes.js';
 import { renderFrames } from '../src/gen/frames.js';
 import { parsePrompt, resolveStyle } from '../src/gen/intent.js';
 import { buildSid } from '../src/export/sid.js';
@@ -84,6 +85,16 @@ describe('compose', () => {
     expect(sid.bytes.length).toBeLessThan(0xd000 - 0x1000 + 0x7e); // data ends before I/O at $D000
     expect(String.fromCharCode(...sid.bytes.slice(0, 4))).toBe('PSID');
   });
+
+  it('every arp sound renders and fits a .sid', () => {
+    const base = compose('happy platformer level', 1);
+    for (const arp of Object.keys(ARPS)) {
+      const tune = composeBrief({ ...base.brief, palette: { ...base.brief.palette, arp } }, { prompt: 'happy platformer level', seed: 1, candidates: 1 });
+      expect(tune.dsl, arp).toMatch(/instrument arp/);
+      const { frames, barStarts } = renderFrames(tune.dsl, tune.plan.totalBars);
+      expect(buildSid(frames, barStarts, { title: arp }).complete, arp).toBe(true);
+    }
+  }, 60000);
 
   it('blends two named styles, the last named leads', () => {
     const i = parsePrompt('celtic metal');

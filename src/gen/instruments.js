@@ -271,14 +271,29 @@ const ARP_NAMES = {
 const ARP_QUALITY = Object.fromEntries(Object.entries(ARP_NAMES).map(([q, n]) => [n, q]));
 export const arpInstrumentFor = (quality) => ARP_NAMES[quality];
 
-function arpInstrument(quality, shape) {
-  return `
-  wave pulse
-  arp ${shape.join(' ')}
-  pw ${pwBounce(1024, 768, 2560, 12)}
-  loop arp 0 pw 0
-  adsr 0 10 8 6
-  gate -2`;
+// The song's arp sound (palette.arp, library/palettes.js ARPS) sets the
+// waveform, envelope and pace of every chord quality's arpeggio.
+// wave, frames per arp note, pulse width (a number, a sweep [start, lo,
+// hi, step] or null), adsr; `wide` adds the octave above.
+const ARP_SOUNDS = {
+  pwm: ['pulse', 1, [1024, 768, 2560, 12], '0 10 8 6'],
+  square: ['pulse', 1, 2048, '0 9 9 4'],
+  thin: ['pulse', 1, 768, '0 10 7 5'],
+  saw: ['saw', 1, null, '0 9 7 5'],
+  tri: ['triangle', 1, null, '0 10 10 7'],
+  pluck: ['pulse', 1, [1536, 1024, 2304, 14], '0 6 2 3'],
+  slow: ['pulse', 2, [1280, 768, 2304, 10], '0 10 9 6'],
+  pad: ['triangle', 2, null, '4 10 11 9'],
+  wide: ['pulse', 1, [1536, 768, 2560, 16], '0 9 8 5'],
+};
+function arpInstrument(shape, kind) {
+  const [wave, frames, pw, adsr] = ARP_SOUNDS[kind] || ARP_SOUNDS.pwm;
+  const notes = kind === 'wide' ? [...shape, 12] : shape;
+  const lines = [`  wave ${wave}`, `  arp ${notes.map((x) => (frames > 1 ? `${x}!${frames}` : x)).join(' ')}`];
+  if (Array.isArray(pw)) lines.push(`  pw ${pwBounce(...pw)}`, '  loop arp 0 pw 0');
+  else lines.push(...(pw ? [`  pw ${pw}`] : []), '  loop arp 0');
+  lines.push(`  adsr ${adsr}`, '  gate -2');
+  return `\n${lines.join('\n')}`;
 }
 
 // A lead sound designed in the brief: waveform, envelope,
@@ -329,31 +344,45 @@ function bendBody(body, speed) {
   return /\n {2}slide /.test(body) ? body : body.replace(/\n {2}gate /, `\n  slide ${Math.max(0.02, Math.round((300 / speed)) / 100)}\n  gate `);
 }
 
-function bodyOf(name, sound, speed) {
+function bodyOf(name, sound, speed, arp) {
   let body = DRUMS[name] || MELODIC[name];
   if (!body && name === 'custom' && sound) body = customLeadBody(sound);
-  if (!body && ARP_QUALITY[name]) body = arpInstrument(ARP_QUALITY[name], ARP_SHAPES[ARP_QUALITY[name]]);
+  if (!body && ARP_QUALITY[name]) body = arpInstrument(ARP_SHAPES[ARP_QUALITY[name]], arp);
   if (!body && name.endsWith('echo')) {
-    const base = bodyOf(name.slice(0, -4), sound, speed);
+    const base = bodyOf(name.slice(0, -4), sound, speed, arp);
     if (base) body = echoBody(base);
   }
   if (!body && name.endsWith('bend')) {
-    const base = bodyOf(name.slice(0, -4), sound, speed);
+    const base = bodyOf(name.slice(0, -4), sound, speed, arp);
     if (base) body = bendBody(base, speed);
   }
   return body;
 }
 
-// speed: frames per beat of the song (bend variants slide in frames).
-export function instrumentBlocks(names, sound = null, speed = 24) {
+// speed: frames per beat of the song (bend variants slide in frames);
+// arp: the song's arp sound (ARP_SOUNDS).
+export function instrumentBlocks(names, sound = null, speed = 24, arp = 'pwm') {
   const out = [];
   for (const name of names) {
-    const body = bodyOf(name, sound, speed);
+    const body = bodyOf(name, sound, speed, arp);
     if (!body) throw new Error(`unknown instrument ${name}`);
     out.push(`instrument ${name}${body}\nend`);
   }
   return out.join('\n\n');
 }
 
-export const DRUM_LETTERS = { k: 'kick', s: 'snare', h: 'hat', o: 'ohat', c: 'clap', t: 'tom', T: 'tomhi', x: 'crash' };
+// Highest MIDI note the SID's 16-bit frequency register holds (B7, about
+// 3.95 kHz on PAL); higher pitches wrap around into a random squeal.
+export const SID_TOP_NOTE = 107;
+
+// How far an instrument's arp table climbs above the played note (bell
+// starts two octaves up), so melodies can keep note + arp on the chip.
+export function arpReach(name, sound = null) {
+  const arp = /\n {2}arp ([^\n]*)/.exec(bodyOf(name, sound) || '');
+  if (!arp) return 0;
+  const ups = arp[1].split(/\s+/).filter((t) => /^-?\d+(!\d+)?$/.test(t)).map((t) => parseInt(t, 10));
+  return Math.max(0, ...ups);
+}
+
+export const DRUM_LETTERS ={ k: 'kick', s: 'snare', h: 'hat', o: 'ohat', c: 'clap', t: 'tom', T: 'tomhi', x: 'crash' };
 export const isDrum = (name) => Boolean(DRUMS[name]);

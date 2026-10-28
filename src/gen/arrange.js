@@ -4,7 +4,7 @@
 // one voice (a classic SID trick), - silent. Transitions shape the last
 // bar of a section (fill, stop-time, drop-out).
 
-import { DRUM_LETTERS, arpInstrumentFor } from './instruments.js';
+import { DRUM_LETTERS, SID_TOP_NOTE, arpInstrumentFor, arpReach } from './instruments.js';
 import { renderMelody } from './melody.js';
 import { noteName, SCALES } from './theory.js';
 import { Rng } from './prng.js';
@@ -351,12 +351,13 @@ export function arrange(plan, rng, melodyRng) {
     const needsLead = section.textureDef.stages.some(([, r]) => r.includes('L') || r.includes('C'));
     const counterState = { pitch: null, lead: null };
     const material = section.textureDef.lead || section.type;
-    const melody = needsLead ? renderMelody(section, plan, melodyRng, melodyMemory, material) : null;
     let leadInst = section.leadInst;
     if (section.occurrence >= 3 && section.lastOccurrence && !plan.style.signature?.lead) {
       const alt = Object.keys(plan.style.palette.lead).find((l) => l !== leadInst);
       if (alt) leadInst = alt;
     }
+    const top = SID_TOP_NOTE - arpReach(leadInst, plan.sound);
+    const melody = needsLead ? renderMelody(section, plan, melodyRng, melodyMemory, material, top) : null;
     const isLastSection = si === plan.sections.length - 1;
     const after = plan.sections[si + 1]?.chords[0] || null;
     // the brief may give a section its own bass sound; a gliding bass would
