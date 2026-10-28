@@ -3,7 +3,7 @@
 // per-bar orderlist `<[$a] [$b] ...>`, the shape rasterklang-cycles'
 // tracker importer uses, so the result opens in cycles and the DAW.
 
-import { instrumentBlocks, tailWave } from './instruments.js';
+import { instrumentBlocks } from './instruments.js';
 import { KEY_NAMES } from './theory.js';
 
 function lerp(a, b, t) {
@@ -62,24 +62,6 @@ export function emitDsl(plan, arrangement, title) {
     voiceLines.push(`voice ${v} ${def}`);
     voiceLines.push(`  notes "<${noteOrder.join(' ')}>"`);
     if (instOrder.length) voiceLines.push(`  insts "<${instOrder.join(' ')}>"`);
-    // rests keep the last instrument's tail waveform instead of the
-    // fallback triangle; only a voice with `insts` loses its
-    // instrument in a rest
-    if (instOrder.length) {
-      const tails = new Map();
-      const order = [];
-      let cur = defaults[v];
-      for (const bar of bars) {
-        const text = bar.map((c) => {
-          if (c.inst) cur = c.inst;
-          if (!tails.has(cur)) tails.set(cur, tailWave(cur, plan.sound, plan.speed));
-          return tails.get(cur);
-        }).join(' ');
-        // the voice wave field takes no $pattern splices, so bars are inlined
-        order.push(`[${text}]`);
-      }
-      voiceLines.push(`  wave "<${order.join(' ')}>"`);
-    }
     // ring modulation and hard sync are voice fields: on for the steps the
     // ring and sync leads play
     for (const field of ['ring', 'sync']) {

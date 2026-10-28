@@ -344,27 +344,6 @@ function bodyOf(name, sound, speed) {
   return body;
 }
 
-// The waveform an instrument settles on: its wave table's loop entry
-// (index 0 when there is no loop, the DSL's plain wraparound), as a
-// mini-notation token for a voice `wave` pattern. In a rest after a note,
-// rasterklang-score drops the `insts` instrument and plays the voice's
-// fallback waveform (triangle by default) at the last pitch while the
-// release rings; a snare's noise at MIDI 80-94 then beeps as a triangle
-//. Playing the instrument's own tail waveform there keeps it.
-export function tailWave(name, sound = null, speed = 24) {
-  const body = bodyOf(name, sound, speed) || '';
-  const row = body.match(/\n\s*wave ([^\n]+)/);
-  if (!row) return 'triangle';
-  const cells = row[1].trim().split(/\s+/).flatMap((t) => {
-    const [v, n] = t.split('!');
-    return Array(Number(n) || 1).fill(v);
-  });
-  const loop = body.match(/\n\s*loop [^\n]*\bwave (\d+)/);
-  const cell = cells[Math.min(cells.length - 1, loop ? Number(loop[1]) : 0)];
-  if (cell === '0') return 'triangle';
-  return cell.includes('+') ? `[${cell.split('+').join(',')}]` : cell;
-}
-
 // speed: frames per beat of the song (bend variants slide in frames).
 export function instrumentBlocks(names, sound = null, speed = 24) {
   const out = [];
