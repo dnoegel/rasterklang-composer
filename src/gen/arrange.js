@@ -109,7 +109,10 @@ function leadBar(mbar, inst, plan, rng, state) {
     const bend = !slides && state.open && (step === 1 || step === 2) && rng.chance(0.12);
     state.pitch = pitch ?? state.pitch;
     state.open = true;
-    return { tok: t, inst: bend ? `${inst}bend` : inst };
+    // a note whose attack arp would climb past the SID's top pitch plays
+    // the variant without it (the register wraps into a squeal otherwise)
+    const sound = pitch !== undefined && pitch + arpReach(inst, plan.sound) > SID_TOP_NOTE ? `${inst}top` : inst;
+    return { tok: t, inst: bend ? `${sound}bend` : sound };
   });
 }
 
@@ -351,13 +354,12 @@ export function arrange(plan, rng, melodyRng) {
     const needsLead = section.textureDef.stages.some(([, r]) => r.includes('L') || r.includes('C'));
     const counterState = { pitch: null, lead: null };
     const material = section.textureDef.lead || section.type;
+    const melody = needsLead ? renderMelody(section, plan, melodyRng, melodyMemory, material) : null;
     let leadInst = section.leadInst;
     if (section.occurrence >= 3 && section.lastOccurrence && !plan.style.signature?.lead) {
       const alt = Object.keys(plan.style.palette.lead).find((l) => l !== leadInst);
       if (alt) leadInst = alt;
     }
-    const top = SID_TOP_NOTE - arpReach(leadInst, plan.sound);
-    const melody = needsLead ? renderMelody(section, plan, melodyRng, melodyMemory, material, top) : null;
     const isLastSection = si === plan.sections.length - 1;
     const after = plan.sections[si + 1]?.chords[0] || null;
     // the brief may give a section its own bass sound; a gliding bass would

@@ -344,6 +344,12 @@ function bendBody(body, speed) {
   return /\n {2}slide /.test(body) ? body : body.replace(/\n {2}gate /, `\n  slide ${Math.max(0.02, Math.round((300 / speed)) / 100)}\n  gate `);
 }
 
+// Top variant of a lead: the same sound without the upward attack arp,
+// for notes where note + arp would pass the SID's top pitch (SID_TOP_NOTE).
+function topBody(body) {
+  return body.replace(/\n {2}arp ([^\n]*)/, (_, vals) => `\n  arp ${vals.split(/\s+/).map((t) => (/^\d+(!\d+)?$/.test(t) ? t.replace(/^\d+/, '0') : t)).join(' ')}`);
+}
+
 function bodyOf(name, sound, speed, arp) {
   let body = DRUMS[name] || MELODIC[name];
   if (!body && name === 'custom' && sound) body = customLeadBody(sound);
@@ -355,6 +361,10 @@ function bodyOf(name, sound, speed, arp) {
   if (!body && name.endsWith('bend')) {
     const base = bodyOf(name.slice(0, -4), sound, speed, arp);
     if (base) body = bendBody(base, speed);
+  }
+  if (!body && name.endsWith('top')) {
+    const base = bodyOf(name.slice(0, -3), sound, speed, arp);
+    if (base) body = topBody(base);
   }
   return body;
 }
