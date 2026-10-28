@@ -54,6 +54,9 @@ export const GROOVES = {
   // most common one-voice drum lines of real SID music
   sid_drive: { meter: '4/4', name: 'SID drive (alternating kick and snare)', tags: ['sid', 'synth', 'game', 'rock'], energy: [0.3, 1], source: 'hvsc',
     levels: ['k.......k.......', 'k...s...k...s...', 'k.s.k.s.k.s.k.s.', 'ksssksssksssksss'] },
+  // the driving demo-scene beat of an earlier prototype's kits
+  c64_drive: { meter: '4/4', name: 'C64 drive with ticking hats', tags: ['c64', 'game', 'synth', 'dance'], energy: [0.4, 1],
+    levels: ['k...s...k...s...', 'k.h.s.hkk.h.s.hh', 'k.hhs.hhk.hhs.ho', 'khkhshkhkhkhshss'] },
   sid_kss: { meter: '4/4', name: 'SID kick with snare hats', tags: ['sid', 'game', 'synth'], energy: [0.3, 1], source: 'hvsc',
     levels: ['k.......k.......', 'k.s.s.s.k.s.s.s.', 'k.ssk.ssk.ssk.ss', 'ksssssssksssssss'] },
   tom_pulse: { meter: '4/4', name: 'tom pulse', tags: ['cinematic', 'tribal'], energy: [0.2, 1],

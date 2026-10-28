@@ -10,7 +10,12 @@ export const BASS = {
   half_note: { meter: '4/4', name: 'long roots', tags: ['any'], energy: [0, 0.4], row: 'R_______R_______' },
   whole_note: { meter: '4/4', name: 'sustained root', tags: ['any', 'ambient'], energy: [0, 0.3], row: 'R_______________' },
   octave_8ths: { meter: '4/4', name: 'octave bass in 8ths', tags: ['synth', 'disco', 'dance'], energy: [0.35, 0.8], row: 'R.8.R.8.R.8.R.8.' },
-  octave_16th: { meter: '4/4', name: 'octave bass in 16ths', tags: ['synth', 'dance', 'c64'], energy: [0.6, 1], row: 'R8R8R8R8R8R8R8R8' },
+  octave_16th: { meter: '4/4', name: 'octave bass in 16ths', tags: ['c64', 'synth', 'dance'], energy: [0.6, 1], row: 'R8R8R8R8R8R8R8R8' },
+  // bass in constant motion, as in an earlier prototype's C64 kits
+  run16: { meter: '4/4', name: 'root-fifth-octave run in 16ths', tags: ['c64', 'game', 'dance', 'synth'], energy: [0.6, 1], row: 'R585R585R585R585' },
+  sync_bass: { meter: '4/4', name: 'syncopated octave-fifth bass', tags: ['c64', 'game', 'synth', 'funk'], energy: [0.4, 0.9], row: 'R..8..R.5..8..5.' },
+  acid_line: { meter: '4/4', name: 'acid line jumping octave and fifth', tags: ['c64', 'dance', 'synth'], energy: [0.5, 1], row: 'R.8R.58.R8.5R.85' },
+  octave_roll: { meter: '4/4', name: 'rolling octave bass with pushes', tags: ['c64', 'game', 'dance'], energy: [0.6, 1], row: 'RR8RRR8RRR8R8R8R' },
   driving_8ths: { meter: '4/4', name: 'driving 8ths', tags: ['synth', 'rock', 'dance'], energy: [0.4, 1], row: 'R.R.R.R.R.R.R.R.' },
   sustained: { meter: '4/4', name: 'held bass notes with fifth', tags: ['synth', 'ambient', 'pop'], energy: [0, 0.45], row: 'R_______R___5___' },
   oom_pah: { meter: '4/4', name: 'oom-pah bass (root, fifth)', tags: ['game', 'march', 'folk', 'polka'], energy: [0.2, 0.7], row: 'R...5...R...5...' },

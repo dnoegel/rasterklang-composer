@@ -128,6 +128,20 @@ const MELODIC = {
   gate -2`,
 
   // ---- lead -------------------------------------------------------------
+  // classic SID tricks (an earlier prototype): ring modulation and hard sync
+  // take the neighbouring voice (usually the bass) as source, so the timbre
+  // moves with the bass line. ring/sync are voice fields in the DSL: the
+  // emitter switches them on for the steps these leads play (src/gen/emit.js).
+  ring: `
+  wave triangle
+  adsr 0 9 8 8
+  vibTri 2 s3 16
+  gate -2`,
+  sync: `
+  wave saw
+  adsr 0 10 10 6
+  vibTri 2 s3 14
+  gate -2`,
   lead: `
   wave pulse
   pw ${pwBounce(1024, 768, 3072, 16)}

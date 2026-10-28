@@ -9,6 +9,7 @@ export const LEADS = {
   pluck: 'plucked pulse', octave: 'pulse lead with octave attack', whistle: 'flute (triangle)', fiddle: 'fiddle (sawtooth with vibrato)',
   fuzz: 'fuzz lead (distorted guitar)', square: 'dry square wave, no vibrato (chip)', glide: 'sawtooth lead gliding between notes',
   reed: 'nasal narrow pulse (oboe, clarinet)', warble: 'warbling octave arpeggio lead (classic C64)',
+  ring: 'ring-modulated bell-metal lead moving with the bass (classic C64)', sync: 'hard-synced saw lead, growling with the bass (classic C64)',
   ...named(HVSC_LEADS),
 };
 // 'custom' is the lead designed in the brief's `sound` (LLM path only).

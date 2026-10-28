@@ -19,6 +19,7 @@ import { LEADS, BASSES, SNARES, KITS, CUSTOM_LEAD, hvscPool } from './library/pa
 import { styleHint, nudgeModes, loopToRomans } from './hvsc-data.js';
 import { ARTISTS } from './library/hvsc.js';
 import { HVSC_BASS_ROWS } from './library/hvsc-rhythms.js';
+import { estimateIdiom, alongIdiom, isC64Bass, isC64Groove, C64_LEADS, C64_TEXTURES, C64_FEELS } from './idiom.js';
 
 export const GENERATOR_VERSION = 'compose-0.2.0';
 
@@ -110,6 +111,11 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
   const hint = styleHint(styleId);
   const artist = intent.artist ? ARTISTS[intent.artist] : null;
   const style = { ...base, modes: nudgeModes(base.modes, artist ? artist.minorShare : hint?.minorShare, artist ? 0.8 : 0.5) };
+  // where the song sits between a genre played on the SID and fully
+  // C64-native; its own random stream
+  const irng = new Rng(seedKey, GENERATOR_VERSION, 'idiom');
+  const idiom = estimateIdiom(intent.prompt || '', styleId, { named: Boolean(intent.style), rand: () => irng.next() });
+  const c64Bass = Object.keys(BASS).filter((id) => isC64Bass(id) && BASS[id].meter === '4/4');
   if (style.slowHarmony === undefined && (artist?.slowHarmony ?? hint?.slowHarmony) != null) style.slowHarmony = artist?.slowHarmony ?? hint.slowHarmony;
   const drumsShare = artist?.drums ?? hint?.drums;
   if (drumsShare != null && drumsShare < 0.3) {
@@ -147,8 +153,8 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
     const grooveOk = (id) => GROOVES[id]?.meter === meter;
     const sidGrooves = meter === '4/4' ? { sid_drive: 0.5, sid_kss: 0.35 } : {};
     const sidBass = meter === '4/4' ? { offbeat_stab: 0.4, eighth_legato: 0.4, quarter_stab: 0.3, octave_legato: 0.3, syncopated_push: 0.3, offbeat_quarters: 0.2, octave_gallop: 0.2, pickup_whole: 0.2 } : {};
-    const groovePool = { ...sidGrooves, ...style.grooves };
-    const bassPool = { ...sidBass, ...style.bass };
+    const groovePool = alongIdiom({ ...sidGrooves, ...style.grooves }, idiom, isC64Groove, meter === '4/4' ? ['c64_drive'] : [], 0.8);
+    const bassPool = alongIdiom({ ...sidBass, ...style.bass }, idiom, isC64Bass, meter === '4/4' ? c64Bass : [], 1.2);
     let groove = type === 'chorus' && sig.grooves
       ? pickWeighted(rng, style.grooves, (id) => grooveOk(id) && sig.grooves.includes(id), (id) => energyFit(GROOVES[id], energy))
       : null;
@@ -159,11 +165,11 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
       ? pickWeighted(rng, style.bass, (id) => bassOk(id) && sig.bass.includes(id), (id) => energyFit(BASS[id], want))
       : null;
     bass = bass || pickWeighted(rng, bassPool, bassOk, (id) => energyFit(BASS[id], want));
-    const feel = pickWeighted(rng, { sid: 0.8, ...style.feels }, (f) => CELLS[meter][f]) || Object.keys(CELLS[meter])[0];
+    const feel = pickWeighted(rng, alongIdiom({ sid: 0.8, ...style.feels }, idiom, (f) => C64_FEELS.includes(f), ['running'], 0.6), (f) => CELLS[meter][f]) || Object.keys(CELLS[meter])[0];
     const kind = KIND_OF[type];
     // every style may use the counter-melody and build-up textures a little
     const pool = kind === 'main'
-      ? { counter: 0.7, counter_nodrums: 0.25, build_up_band: 0.4, echo_lead: 0.3, ...style.textures.main }
+      ? alongIdiom({ counter: 0.7, counter_nodrums: 0.25, build_up_band: 0.4, echo_lead: 0.3, ...style.textures.main }, idiom, (id) => C64_TEXTURES.includes(id), C64_TEXTURES, 0.6)
       : kind === 'breakdown' ? { duet: 0.6, echo_break: 0.4, ...(style.textures.breakdown || {}) } : (style.textures[kind] || style.textures.main);
     let texture = pickWeighted(rng, pool, (id) => TEXTURES[id], (id) => {
       let w = 1;
@@ -176,7 +182,8 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
       texture = pickWeighted(rng, style.textures.main, (id) => TEXTURES[id]?.stages.some(([, r]) => r.includes('L'))) || 'full';
     }
     // sounds derived from HVSC join the style's own palette
-    const leadPool = sig.lead ? Object.fromEntries(sig.lead.map((l) => [l, 1])) : { ...hvscPool(style, 'lead'), ...style.palette.lead };
+    const leadPool = sig.lead ? Object.fromEntries(sig.lead.map((l) => [l, 1]))
+      : alongIdiom({ ...hvscPool(style, 'lead'), ...style.palette.lead }, idiom, (l) => C64_LEADS.includes(l), C64_LEADS, 0.8);
     const lead = pickWeighted(rng, leadPool, (l) => LEADS[l]);
     // two bars per chord now and then (slower harmonic rhythm, typical in SID
     // music); the progression then spans eight bars
@@ -269,6 +276,7 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
   const [tLo, tHi] = style.tempo;
   return {
     version: 1,
+    sidIdiom: idiom,
     source: 'rules',
     style: styleId,
     blend: blend || null,
@@ -374,6 +382,7 @@ export function validateBrief(input) {
   const b = structuredClone(input || {});
   if (!STYLES[b.style]) { errors.push(`unknown style ${b.style}`); b.style = 'synthwave'; }
   if (b.blend && (!STYLES[b.blend.style] || b.blend.style === b.style)) { repairs.push('dropped invalid blend'); b.blend = null; }
+  b.sidIdiom = Number.isFinite(Number(b.sidIdiom)) && b.sidIdiom !== null ? clamp(Math.round(Number(b.sidIdiom) * 100) / 100, 0, 1) : null;
   if (b.blend) b.blend.amount = clamp(Number(b.blend.amount) || 0.3, 0.1, 0.5);
   const style = blendStyles(b.style, b.blend?.style, b.blend?.amount || 0);
   if (!METERS[b.meter] || !style.meter[b.meter]) {

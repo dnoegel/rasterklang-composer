@@ -62,6 +62,25 @@ export function emitDsl(plan, arrangement, title) {
     voiceLines.push(`voice ${v} ${def}`);
     voiceLines.push(`  notes "<${noteOrder.join(' ')}>"`);
     if (instOrder.length) voiceLines.push(`  insts "<${instOrder.join(' ')}>"`);
+    // ring modulation and hard sync are voice fields: on for the steps the
+    // ring and sync leads play
+    for (const field of ['ring', 'sync']) {
+      const uses = (inst) => inst === field || inst === `${field}bend`;
+      if (![...distinctInst].some(uses)) continue;
+      const names = new Map();
+      const order = [];
+      let cur = defaults[v];
+      for (const bar of bars) {
+        const text = bar.map((c) => { if (c.inst) cur = c.inst; return uses(cur) ? '1' : '0'; }).join(' ');
+        if (!names.has(text)) {
+          const name = `v${v}${field[0]}${names.size}`;
+          names.set(text, name);
+          lines.push(`pattern ${name} = "${text}"`);
+        }
+        order.push(`[$${names.get(text)}]`);
+      }
+      voiceLines.push(`  ${field} "<${order.join(' ')}>"`);
+    }
     voiceLines.push('end');
   });
   lines.push('');

@@ -17,6 +17,7 @@ import { LEADS, BASSES, SNARES, KITS, CUSTOM_LEAD } from './library/palettes.js'
 import { findArtist, artistSummary } from './hvsc-data.js';
 import { VARIATIONS } from './melody.js';
 import { HVSC_BASS_ROWS } from './library/hvsc-rhythms.js';
+import { C64_LEADS, C64_TEXTURES, C64_FEELS, isC64Bass, isC64Groove } from './idiom.js';
 
 const SECTION_TYPES = Object.keys(SECTION_ENERGY);
 const KEYS = KEY_NAMES;
@@ -30,7 +31,7 @@ export function briefSchema() {
   return {
     type: 'object',
     additionalProperties: false,
-    required: ['reasoning', 'title', 'imagery', 'liner_note', 'style', 'blend_style', 'blend_amount', 'moods', 'tempo', 'meter', 'key', 'mode', 'palette', 'sound', 'sections', 'themes'],
+    required: ['reasoning', 'title', 'imagery', 'liner_note', 'style', 'blend_style', 'blend_amount', 'sid_idiom', 'moods', 'tempo', 'meter', 'key', 'mode', 'palette', 'sound', 'sections', 'themes'],
     properties: {
       reasoning: str,
       title: str,
@@ -38,6 +39,7 @@ export function briefSchema() {
       liner_note: str,
       style: en(Object.keys(STYLES)),
       blend_style: en(['none', ...Object.keys(STYLES)]),
+      sid_idiom: { type: 'number' },
       blend_amount: num,
       moods: {
         type: 'array',
@@ -107,10 +109,11 @@ export function menuText() {
   const styles = lines(STYLES, (s) => `${s.name}; meter ${Object.keys(s.meter).join('/')}; ${Math.round(s.tempo[0])}-${Math.round(s.tempo[1])} bpm; `
     + `signature grooves ${(s.signature.grooves || []).join(', ')}; signature bass ${(s.signature.bass || []).join(', ')}`
     + `${s.signature.lead ? `; signature lead ${s.signature.lead.join(', ')}` : ''}; typical modes ${Object.keys(s.modes).join(', ')}`);
-  const grooves = lines(GROOVES, (g) => `${g.meter}, ${g.name}, energy ${g.energy.join('-')}, ${g.tags.join('/')}`);
-  const bass = lines(BASS, (b) => `${b.meter}, ${b.name}, energy ${b.energy.join('-')}, row ${b.row}`);
-  const feels = Object.entries(CELLS).map(([m, f]) => `- ${m}: ${Object.keys(f).join(', ')}`).join('\n');
-  const textures = lines(TEXTURES, (t) => `${t.kind}: ${t.name}; voices per stage ${t.stages.map(([f, r]) => `${f}:${r}`).join(' ')}`);
+  const c64 = (yes) => (yes ? ' (C64)' : '');
+  const grooves = lines(GROOVES, (g, id) => `${g.meter}, ${g.name}, energy ${g.energy.join('-')}, ${g.tags.join('/')}${c64(isC64Groove(id))}`);
+  const bass = lines(BASS, (b, id) => `${b.meter}, ${b.name}, energy ${b.energy.join('-')}, row ${b.row}${c64(isC64Bass(id))}`);
+  const feels = Object.entries(CELLS).map(([m, f]) => `- ${m}: ${Object.keys(f).map((x) => `${x}${c64(C64_FEELS.includes(x))}`).join(', ')}`).join('\n');
+  const textures = lines(TEXTURES, (t, id) => `${t.kind}: ${t.name}; voices per stage ${t.stages.map(([f, r]) => `${f}:${r}`).join(' ')}${c64(C64_TEXTURES.includes(id))}`);
   const transitions = lines(TRANSITIONS, (t) => t.name);
   const forms = lines(FORMS, (f) => f.sections.map(([t, b]) => `${t}${b}`).join(' '));
   const progs = lines(PROGRESSIONS, (p) => `${p.tonality}: ${p.chords.join(' ')} (${p.tags.join('/')})`);
@@ -142,7 +145,7 @@ ${forms}
 ${progs}
 
 ## Sounds
-- leads: ${Object.entries(LEADS).map(([k, v]) => `${k} (${v})`).join(', ')}
+- leads: ${Object.entries(LEADS).map(([k, v]) => `${k} (${v})${c64(C64_LEADS.includes(k))}`).join(', ')}
 - bass sounds: ${Object.entries(BASSES).map(([k, v]) => `${k} (${v})`).join(', ')}
 - snares: ${Object.entries(SNARES).map(([k, v]) => `${k} (${v})`).join(', ')}
 - drum kits (kick, snare, hat; a kit other than std replaces snare and snare2, a clap stays): ${Object.entries(KITS).map(([k, v]) => `${k} (${v.name})`).join(', ')}
@@ -162,7 +165,7 @@ export function systemPrompt() {
 
 Goal: the listener must recognise the prompt in the music. Genre is recognised mostly by tempo, groove and bass idiom, then by scale and one signature device; mood mostly by mode (major/minor brightness), then tempo, then register and articulation. Generated music tends to sound emotionally neutral, so make your choices clearly characteristic. Be creative inside the rules: an unexpected but fitting texture, a strong hook, a surprising but musical form are welcome. Avoid cliches you would pick every time.
 
-The SID is only the instrument. A rock, pop, hip-hop or folk prompt gets that genre, played on the SID: do not turn it into retro, synthwave, chiptune, demoscene or game music. Choose those styles only when the prompt is about games, the 80s, retro or the C64 scene.
+The SID can play any genre, and it has a native idiom of its own. Place every song on a spectrum, sid_idiom from 0 to 1. At 0 the genre is played faithfully on the SID: its groove, bass idiom and harmony, the chip only the instrument. At 1 the song is fully C64-native, the way the classic game and demo composers wrote: bass in constant motion (octave 16ths, root-fifth-octave runs, gallops, syncopated octave jumps), fast chord arpeggios as a main voice, quick runs and ornaments in the lead, echo, octave/ring/sync leads, pulse-width sweeps, a driving beat. Most songs sit in between: a genre with C64 colour, or a C64 tune with a genre's groove and harmony. Read the prompt: games, arcades, computers, robots, space, neon, demos, loaders and tapes pull towards 1; a named acoustic or traditional genre pulls towards 0 unless the prompt asks for a twist; imagery and moods leave you free, so choose what makes the picture most vivid, and do not settle in the middle by habit. The building blocks marked (C64) in the menu carry the native idiom: use more of them, and in more sections, the higher the value. Whatever the value, keep the prompt's genre recognisable in its chorus.
 
 Reference songs: when the prompt names an existing song or artist, recreate its musical fingerprint as closely as you can: tempo, key and mode, meter, form with section lengths, the dynamics between sections (for example a quiet verse and an explosive chorus), the groove (write drums_pattern), the bass behaviour (bass_pattern), the chord progression, the arrangement and the timbres (pick sounds or design a custom sound that imitates the original instrument), and signature devices (stops, riffs, shouts as short staccato bursts).  Say in reasoning which features you took from the reference.
 
@@ -188,6 +191,7 @@ Rules:
 - Textures: the chorus does not always need "full". counter, counter_nodrums and duet add a counter-melody under the lead; build_up_band brings the band in during the section. Vary textures between repeats of a section when it helps the story.
 - variation: how a repeated section's melody changes against its first time (the head of each phrase stays, so the hook is recognised). "auto" lets code choose; use "exact" only when a literal repeat is the point (a riff, a chant). Give the second and third chorus different variations when the story builds.
 - Forms: verse/chorus is not the only option. AABA, a through-composed piece, a chorus only at the end, or a single long build are fine when they fit the prompt.
+- sid_idiom: 0-1, see above; say in reasoning why the song sits there.
 - reasoning: 2-4 short sentences on how your choices express the prompt (in english).
 - title: short, evocative, no real song or artist names. imagery: one line of the picture the music paints (english). liner_note: 1-2 sentences for the listener (english).
 
@@ -349,6 +353,7 @@ export function answerToBrief(answer, prompt) {
     reasoning: answer.reasoning,
     style: answer.style,
     blend: answer.blend_style && answer.blend_style !== 'none' ? { style: answer.blend_style, amount: answer.blend_amount } : null,
+    sidIdiom: Number.isFinite(answer.sid_idiom) ? answer.sid_idiom : null,
     moods,
     tempo: answer.tempo,
     meter: answer.meter,
@@ -406,6 +411,7 @@ export function briefToAnswer(brief) {
     style: brief.style,
     blend_style: brief.blend?.style || 'none',
     blend_amount: brief.blend?.amount || 0,
+    sid_idiom: brief.sidIdiom ?? 0.3,
     moods: Object.entries(brief.moods || {}).map(([mood, weight]) => ({ mood, weight: Math.round(weight * 100) / 100 })),
     tempo: brief.tempo,
     meter: brief.meter,
