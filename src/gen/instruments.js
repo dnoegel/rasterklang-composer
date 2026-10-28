@@ -344,10 +344,11 @@ function bendBody(body, speed) {
   return /\n {2}slide /.test(body) ? body : body.replace(/\n {2}gate /, `\n  slide ${Math.max(0.02, Math.round((300 / speed)) / 100)}\n  gate `);
 }
 
-// Top variant of a lead: the same sound without the upward attack arp,
-// for notes where note + arp would pass the SID's top pitch (SID_TOP_NOTE).
+// Top variant of a lead: the same sound with its upward attack arp one
+// octave lower (bell 24 12 0 -> 12 0 0), for notes where note + arp would
+// pass the SID's top pitch (SID_TOP_NOTE). Stacks: belltoptop drops two.
 function topBody(body) {
-  return body.replace(/\n {2}arp ([^\n]*)/, (_, vals) => `\n  arp ${vals.split(/\s+/).map((t) => (/^\d+(!\d+)?$/.test(t) ? t.replace(/^\d+/, '0') : t)).join(' ')}`);
+  return body.replace(/\n {2}arp ([^\n]*)/, (_, vals) => `\n  arp ${vals.split(/\s+/).map((t) => (/^\d+(!\d+)?$/.test(t) ? t.replace(/^\d+/, (v) => String(Math.max(0, Number(v) - 12))) : t)).join(' ')}`);
 }
 
 function bodyOf(name, sound, speed, arp) {

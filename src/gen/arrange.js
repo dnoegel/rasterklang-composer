@@ -109,9 +109,11 @@ function leadBar(mbar, inst, plan, rng, state) {
     const bend = !slides && state.open && (step === 1 || step === 2) && rng.chance(0.12);
     state.pitch = pitch ?? state.pitch;
     state.open = true;
-    // a note whose attack arp would climb past the SID's top pitch plays
-    // the variant without it (the register wraps into a squeal otherwise)
-    const sound = pitch !== undefined && pitch + arpReach(inst, plan.sound) > SID_TOP_NOTE ? `${inst}top` : inst;
+    // a note whose attack arp would climb past the SID's top pitch (the
+    // register wraps into a squeal) drops the arp an octave at a time,
+    // only as far as needed; every other note keeps the full arp
+    let sound = inst;
+    while (pitch !== undefined && pitch + arpReach(sound, plan.sound) > SID_TOP_NOTE && sound.length < inst.length + 9) sound += 'top';
     return { tok: t, inst: bend ? `${sound}bend` : sound };
   });
 }
