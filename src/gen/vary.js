@@ -43,8 +43,8 @@ export function varyBrief(brief, prompt, seed) {
     changed.push('key');
   }
   if (tempo !== brief.tempo) { out.tempo = tempo; changed.push('tempo'); }
-  out.palette = { ...brief.palette, bass: drawn.palette.bass, snare: drawn.palette.snare, kit: drawn.palette.kit };
-  if (['bass', 'snare', 'kit'].some((f) => out.palette[f] !== brief.palette[f])) changed.push('sounds');
+  out.palette = { ...brief.palette, bass: drawn.palette.bass, snare: drawn.palette.snare, kit: drawn.palette.kit, arp: drawn.palette.arp };
+  if (['bass', 'snare', 'kit', 'arp'].some((f) => out.palette[f] !== brief.palette[f])) changed.push('sounds');
   const swapped = new Set();
   const newChords = {};
   const keepPattern = {};

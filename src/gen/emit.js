@@ -27,7 +27,7 @@ export function emitDsl(plan, arrangement, title) {
     return null;
   });
   for (const bars of voices) for (const bar of bars) for (const c of bar) if (c.inst) used.add(c.inst);
-  lines.push(instrumentBlocks([...used], plan.sound, plan.speed));
+  lines.push(instrumentBlocks([...used], plan.sound, plan.speed, plan.palette.arp));
   lines.push('');
 
   const voiceLines = [];

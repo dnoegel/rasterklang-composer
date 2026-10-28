@@ -15,11 +15,11 @@ import { CELLS } from './library/cells.js';
 import { PROGRESSIONS } from './library/progressions.js';
 import { TEXTURES, KIND_OF, TRANSITIONS, FILTER_SHAPES, ECHO_CHANCE, ECHO_DEFAULT } from './library/textures.js';
 import { FORMS, SECTION_ENERGY } from './library/forms.js';
-import { LEADS, BASSES, SNARES, KITS, CUSTOM_LEAD, hvscPool } from './library/palettes.js';
+import { LEADS, BASSES, SNARES, KITS, ARPS, ARP_POOLS, CUSTOM_LEAD, hvscPool } from './library/palettes.js';
 import { styleHint, nudgeModes, loopToRomans } from './hvsc-data.js';
 import { ARTISTS } from './library/hvsc.js';
 import { HVSC_BASS_ROWS } from './library/hvsc-rhythms.js';
-import { estimateIdiom, alongIdiom, isC64Bass, isC64Groove, C64_LEADS, C64_TEXTURES, C64_FEELS } from './idiom.js';
+import { estimateIdiom, alongIdiom, isC64Bass, isC64Groove, C64_LEADS, C64_ARPS, C64_TEXTURES, C64_FEELS } from './idiom.js';
 
 export const GENERATOR_VERSION = 'compose-0.2.0';
 
@@ -294,6 +294,7 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
       snare: pickWeighted(rng, style.palette.snare) || 'snare',
       chords: style.palette.chords,
       kit: pickWeighted(rng, { std: 1, ...hvscPool(style, 'kit') }) || 'std',
+      arp: pickWeighted(rng, alongIdiom(ARP_POOLS[style.family] || { pwm: 1 }, idiom, (a) => C64_ARPS.includes(a), C64_ARPS, 0.8)) || 'pwm',
     },
     form: formId,
     sections,
@@ -406,6 +407,7 @@ export function validateBrief(input) {
   if (!BASSES[b.palette.bass]) b.palette.bass = Object.keys(style.palette.bass)[0];
   if (!SNARES[b.palette.snare]) b.palette.snare = Object.keys(style.palette.snare)[0];
   if (!KITS[b.palette.kit]) b.palette.kit = 'std';
+  if (!ARPS[b.palette.arp]) b.palette.arp = 'pwm';
   if (b.palette.chords !== 'power' && b.palette.chords !== 'triad') b.palette.chords = style.palette.chords;
   b.moods = Object.fromEntries(Object.entries(b.moods || {}).filter(([m, w]) => MOODS[m] && w > 0));
   if (!b.sound || !['pulse', 'saw', 'triangle'].includes(b.sound.wave)) b.sound = null;

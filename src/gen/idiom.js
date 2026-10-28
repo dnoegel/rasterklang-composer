@@ -39,6 +39,7 @@ export function estimateIdiom(prompt, styleId, { named = true, rand = Math.rando
 
 // The building blocks that carry the native idiom.
 export const C64_LEADS = ['octave', 'ring', 'sync', 'square', 'warble'];
+export const C64_ARPS = ['pwm', 'square', 'wide'];
 export const C64_TEXTURES = ['multiplex', 'groove_chords', 'echo_lead', 'counter'];
 export const C64_FEELS = ['running', 'sid'];
 export const isC64Bass = (id) => Boolean(BASS[id]?.tags?.includes('c64'));
