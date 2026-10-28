@@ -458,8 +458,10 @@ export function renderMelody(section, plan, rng, memory, material = section.type
           if (prev !== null && Math.abs(pitch - prev) > leapMax) pitch += pitch > prev ? -12 : 12;
           pitch = Math.max(lo, Math.min(hi, pitch));
         }
-        pitch += octave;
+        // leaps and clamps work on the unshifted line; remembering the
+        // shifted note made every next note jump up and stick to the top
         prev = pitch;
+        pitch += octave;
         tokens.push(noteName(pitch));
         notes.push({ step: i, pitch, strong: isStrong, chord });
         k += 1;
