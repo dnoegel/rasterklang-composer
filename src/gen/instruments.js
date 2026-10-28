@@ -355,5 +355,18 @@ export function instrumentBlocks(names, sound = null, speed = 24) {
   return out.join('\n\n');
 }
 
-export const DRUM_LETTERS = { k: 'kick', s: 'snare', h: 'hat', o: 'ohat', c: 'clap', t: 'tom', T: 'tomhi', x: 'crash' };
+// Highest MIDI note the SID's 16-bit frequency register holds (B7, about
+// 3.95 kHz on PAL); higher pitches wrap around into a random squeal.
+export const SID_TOP_NOTE = 107;
+
+// How far an instrument's arp table climbs above the played note (bell
+// starts two octaves up), so melodies can keep note + arp on the chip.
+export function arpReach(name, sound = null) {
+  const arp = /\n {2}arp ([^\n]*)/.exec(bodyOf(name, sound) || '');
+  if (!arp) return 0;
+  const ups = arp[1].split(/\s+/).filter((t) => /^-?\d+(!\d+)?$/.test(t)).map((t) => parseInt(t, 10));
+  return Math.max(0, ...ups);
+}
+
+export const DRUM_LETTERS ={ k: 'kick', s: 'snare', h: 'hat', o: 'ohat', c: 'clap', t: 'tom', T: 'tomhi', x: 'crash' };
 export const isDrum = (name) => Boolean(DRUMS[name]);

@@ -368,7 +368,8 @@ function motifSet(material, section, plan, rng, memory) {
 }
 
 // Returns per bar { tokens: [...], notes: [...] } for the lead voice.
-export function renderMelody(section, plan, rng, memory, material = section.type) {
+// top: highest note the lead instrument can play, including its arp.
+export function renderMelody(section, plan, rng, memory, material = section.type, top = 96) {
   const { style, target, mode } = plan;
   const keyRoot = section.keyRoot ?? plan.keyRoot;
   const steps = plan.meter.steps;
@@ -382,7 +383,7 @@ export function renderMelody(section, plan, rng, memory, material = section.type
   const lo = lo0 + shift - (set.themed ? 5 : 0);
   const hi = hi0 + shift + (set.themed ? 7 : 0);
   // an octave that does not fit the SID's range becomes ornaments
-  if (variation === 'octave' && hi + 12 > 96) variation = 'ornament';
+  if (variation === 'octave' && hi + 12 > Math.min(96, top)) variation = 'ornament';
   const octave = variation === 'octave' ? 12 : 0;
 
   const bars = [];
@@ -459,6 +460,7 @@ export function renderMelody(section, plan, rng, memory, material = section.type
           pitch = Math.max(lo, Math.min(hi, pitch));
         }
         pitch += octave;
+        while (pitch > top) pitch -= 12;
         prev = pitch;
         tokens.push(noteName(pitch));
         notes.push({ step: i, pitch, strong: isStrong, chord });
