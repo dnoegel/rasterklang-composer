@@ -8,13 +8,23 @@ import { STYLES } from './styles.js';
 import { findArtist } from './hvsc-data.js';
 import { KEY_NAMES } from './theory.js';
 
-const ENERGY_UP = ['fast', 'energetic', 'high energy', 'intense', 'frantic', 'driving', 'hard', 'wild', 'action', 'speedy'];
-const ENERGY_DOWN = ['slow', 'calm', 'chill', 'soft', 'quiet', 'minimal', 'laid back', 'lazy', 'gentle'];
+// English, then German (prompts arrive in both, the app itself is English)
+const ENERGY_UP = ['fast', 'energetic', 'high energy', 'intense', 'frantic', 'driving', 'hard', 'wild', 'action', 'speedy',
+  'schnell', 'wilde', 'wildes', 'wilder', 'rasant', 'energisch', 'treibend', 'hektisch'];
+const ENERGY_DOWN = ['slow', 'calm', 'chill', 'soft', 'quiet', 'minimal', 'laid back', 'lazy', 'gentle',
+  'langsam', 'ruhig', 'leise', 'sanft', 'gemütlich', 'entspannt'];
 const FORM_WORDS = {
-  loop: ['loop', 'looping', 'background'],
-  short: ['short', 'jingle', 'quick'],
-  song: ['song', 'full song', 'long', 'epic length'],
+  loop: ['loop', 'looping', 'background', 'schleife', 'hintergrund'],
+  short: ['short', 'jingle', 'quick', 'kurz', 'kurzes'],
+  song: ['song', 'full song', 'long', 'epic length', 'langes lied'],
 };
+
+// The medium, not a genre: a prompt that only asks for "a C64 tune" gets
+// the native style; any genre or scene word wins over it
+const C64_WORDS = ['c64', 'commodore', 'sid', 'sid tune', 'sid-tune', '8-bit', '8 bit', '8bit'];
+// No style word and no mood word at all: spread over the C64-native end
+// instead of always landing on the style with the highest base weight
+const FALLBACK_STYLES = ['demoscene', 'platformer', 'synthwave', 'newwave'];
 
 // Word match. Words of 5+ letters also match as the start of a longer
 // word, so inflections and compounds count ("rainy", "jazzy", "spookiest").
@@ -57,16 +67,24 @@ export function parsePrompt(prompt) {
   let scene = null;
   let energy = 0;
   let form = null;
+  let sceneHits = [];
   for (const [id, s] of Object.entries(SCENES)) {
-    if (s.words.some((w) => has(text, w))) {
-      scene = id;
-      matched.push(...s.words.filter((w) => has(text, w)));
-      for (const [m, w] of Object.entries(s.moods)) moods[m] = (moods[m] || 0) + w;
-      for (const [st, w] of Object.entries(s.styleHint)) styleScores[st] = (styleScores[st] || 0) + w;
-      energy += s.energy;
-      if (s.form) form = s.form;
-      break;
-    }
+    const hits = s.words.filter((w) => has(text, w));
+    if (hits.length > sceneHits.length) { scene = id; sceneHits = hits; }
+  }
+  if (scene) {
+    const s = SCENES[scene];
+    matched.push(...sceneHits);
+    for (const [m, w] of Object.entries(s.moods)) moods[m] = (moods[m] || 0) + w;
+    for (const [st, w] of Object.entries(s.styleHint)) styleScores[st] = (styleScores[st] || 0) + w;
+    energy += s.energy;
+    if (s.form) form = s.form;
+  }
+
+  const c64 = C64_WORDS.filter((w) => has(text, w));
+  if (c64.length && !Object.keys(styleScores).length) {
+    styleScores.demoscene = 1;
+    matched.push(...c64);
   }
 
   for (const w of ENERGY_UP) if (has(text, w)) { energy += 0.25; matched.push(w); }
@@ -125,6 +143,11 @@ export function parsePrompt(prompt) {
 // Fill unspecified fields from moods: a style is always needed downstream.
 export function resolveStyle(intent) {
   if (intent.style) return intent.style;
+  if (!Object.keys(intent.moods).length) {
+    let h = 0;
+    for (const ch of String(intent.prompt || '')) h = (h * 31 + ch.codePointAt(0)) >>> 0;
+    return FALLBACK_STYLES[h % FALLBACK_STYLES.length];
+  }
   const score = Object.entries(STYLES).map(([id, st]) => [id,
     (st.base || 0) + Object.entries(st.moods || {}).reduce((sum, [m, w]) => sum + (intent.moods[m] || 0) * w, 0)]);
   return score.sort((a, b) => b[1] - a[1])[0][0];

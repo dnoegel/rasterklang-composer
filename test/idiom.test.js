@@ -8,6 +8,8 @@ describe('SID-idiom spectrum', () => {
   it('reads the prompt: genres low, C64 worlds high', () => {
     expect(estimateIdiom('lazy bossa nova on a sunny afternoon', 'bossa')).toBeLessThan(0.25);
     expect(estimateIdiom('neon arcade boss rush', 'platformer')).toBeGreaterThan(0.8);
+    expect(estimateIdiom('Roboter im Weltraum', 'ambient')).toBeGreaterThan(estimateIdiom('Wolken am Himmel', 'ambient'));
+    expect(estimateIdiom('Wiegenlied mit Klavier', 'waltz')).toBe(0);
     expect(estimateIdiom('bossa nova on a sunny day', 'bossa')).toBe(estimateIdiom('nova on a sunny day', 'bossa')); // "bossa" is not "boss"
   });
 

@@ -20,9 +20,14 @@ export const STYLE_IDIOM = {
 const TOWARDS = ['arcade', 'video game', 'game', 'level', 'boss', 'pixel', '8-bit', '8 bit', 'chip', 'retro', 'c64', 'commodore', 'sid',
   'demo', 'cracktro', 'loader', 'loading', 'tape', 'floppy', 'disk', 'joystick', 'sprite', 'hacker', 'cyber', 'neon', 'laser', 'robot',
   'android', 'space', 'galaxy', 'asteroid', 'starship', 'alien', 'rave', 'techno', 'trance', 'computer', 'terminal', 'glitch',
-  'power-up', 'high score', 'highscore', 'insert coin', 'speedrun', 'console', 'synth', 'machine'];
+  'power-up', 'high score', 'highscore', 'insert coin', 'speedrun', 'console', 'synth', 'machine',
+  // German prompts
+  'spiel', 'videospiel', 'computerspiel', 'spielhalle', 'diskette', 'kassette', 'datasette', 'roboter', 'weltraum', 'weltall',
+  'raumschiff', 'außerirdische', 'maschine'];
 const AWAY = ['acoustic', 'unplugged', 'orchestra', 'orchestral', 'choir', 'string quartet', 'strings', 'piano', 'church', 'campfire',
-  'lullaby', 'wedding', 'ballroom', 'tavern', 'bluegrass', 'live band', 'jazz club'];
+  'lullaby', 'wedding', 'ballroom', 'tavern', 'bluegrass', 'live band', 'jazz club',
+  'akustisch', 'orchester', 'chor', 'streicher', 'klavier', 'kirche', 'lagerfeuer', 'wiegenlied', 'schlaflied', 'hochzeit',
+  'ballsaal', 'kneipe', 'taverne'];
 
 const hits = (text, words) => words.filter((w) => new RegExp(`(^|[^a-z])${w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}s?([^a-z]|$)`).test(text)).length;
 const clamp = (x) => Math.max(0, Math.min(1, x));

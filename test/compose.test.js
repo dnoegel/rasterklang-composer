@@ -24,6 +24,42 @@ describe('intent', () => {
     expect(resolveStyle(parsePrompt(prompt))).toBe(style);
   });
 
+  // scene words and German prompts, read the way the AI composer reads them
+  it.each([
+    ['waves rolling onto a quiet shore', 'ambient'],
+    ['a chase over the rooftops', 'dnb'],
+    ['viking warriors sail home', 'metal'],
+    ['a sea shanty for tired pirates', 'folk'],
+    ['lullaby for a sleepy owl', 'folk'],
+    ['someone goes shopping on a Monday', 'ragtime'],
+    ['Wellen und Brandung am Meer', 'ambient'],
+    ['Eine Verfolgung über die Dächer', 'dnb'],
+    ['Ein Wiegenlied für eine Katze', 'waltz'],
+    ['Seemannslied auf dem Kutter', 'folk'],
+    ['Werbung für Limonade', 'pop'],
+    ['Wir rennen beim Autorennen um den Sieg', 'hardrock'],
+  ])('%s -> %s', (prompt, style) => {
+    expect(resolveStyle(parsePrompt(prompt))).toBe(style);
+  });
+
+  it('reads German mood words', () => {
+    expect(parsePrompt('ein trauriges, einsames Stück').moods.melancholic).toBeGreaterThan(0);
+    expect(parsePrompt('düster und bedrohlich').moods.menacing).toBe(1);
+    expect(parsePrompt('Kriegst du das hin?').scene).toBe(null); // "kriegst" is not "Krieg"
+  });
+
+  it('a bare C64 prompt is demoscene, a named genre or scene wins over the medium', () => {
+    expect(resolveStyle(parsePrompt('Give me a typical C64 tune'))).toBe('demoscene');
+    expect(resolveStyle(parsePrompt('C64 metal'))).toBe('metal');
+    expect(resolveStyle(parsePrompt('a SID tune about a lullaby'))).not.toBe('demoscene');
+  });
+
+  it('a prompt without any known word spreads over the native styles, stable per prompt', () => {
+    const picks = ['qwerty zxcv', 'foo bar baz', 'lorem ipsum', 'xyzzy plugh', 'abc def ghi', 'hmm hmm'].map((p) => resolveStyle(parsePrompt(p)));
+    expect(new Set(picks).size).toBeGreaterThan(1);
+    expect(resolveStyle(parsePrompt('qwerty zxcv'))).toBe(picks[0]);
+  });
+
   it('reads explicit tempo and key', () => {
     const i = parsePrompt('synthwave in F# minor at 100 bpm');
     expect(i.tempo).toBe(100);
