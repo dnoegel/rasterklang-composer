@@ -20,6 +20,34 @@ export const BASSES = { bass: 'pulse bass with click', sub: 'round sub bass', sl
 };
 export const SNARES = { snare: 'noise snare', snare2: 'tonal rock snare', clap: 'clap' };
 
+// Sound of the chord arpeggio voice, one per song. `pwm` was the only one
+// until 2026-10-28 and stays the default for briefs that name none, so
+// stored songs keep their sound.
+export const ARPS = {
+  pwm: 'pulse arpeggio with a width sweep (classic)', square: 'dry square arpeggio (chip)', thin: 'thin narrow-pulse arpeggio (nasal, glassy)',
+  saw: 'bright sawtooth arpeggio (buzzy)', tri: 'soft triangle arpeggio (music box)', pluck: 'plucked pulse arpeggio, fast decay (harp, strum)',
+  slow: 'rolling pulse arpeggio, two frames per note', pad: 'swelling triangle pad, rolling', wide: 'pulse arpeggio over an octave (sparkling)',
+};
+// Weights per style family; defaults to tune by ear.
+export const ARP_POOLS = {
+  game: { pwm: 2, square: 2, wide: 2, thin: 1, pluck: 1 },
+  synth: { pwm: 2, saw: 2, wide: 1.5, slow: 1.5, pad: 1, thin: 1 },
+  dance: { saw: 2, pwm: 1.5, wide: 2, square: 1, pluck: 1 },
+  rock: { saw: 2, pwm: 1.5, pluck: 1.5, slow: 1, square: 0.5 },
+  metal: { saw: 3, pwm: 1, thin: 1, slow: 1 },
+  pop: { pwm: 1.5, pluck: 2, wide: 1, square: 1, tri: 1 },
+  funk: { pluck: 2, thin: 2, square: 1, pwm: 1 },
+  hiphop: { tri: 2, pluck: 2, pad: 1.5, thin: 1 },
+  cinematic: { pad: 2, slow: 2, saw: 1.5, tri: 1, pwm: 1 },
+  latin: { pluck: 3, tri: 2, thin: 1 },
+  reggae: { pluck: 2, thin: 2, square: 1 },
+  jazz: { tri: 2, pluck: 2, pad: 1.5, thin: 1 },
+  blues: { pluck: 2, thin: 1.5, saw: 1, tri: 1 },
+  folk: { pluck: 3, tri: 2, slow: 1 },
+  classical: { tri: 2, pluck: 2, slow: 1.5, pad: 1 },
+  ambient: { pad: 3, tri: 2, slow: 1.5 },
+};
+
 // Drum kits: which instrument plays kick, snare and closed hat. `std` is
 // the bank's own kit (its snare is the brief's snare choice); the others
 // are kits in C64 style, whose snare replaces
