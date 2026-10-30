@@ -294,8 +294,11 @@ const weightedRow = (rand, rows) => {
   return rows[rows.length - 1][0];
 };
 
-// prompt: the sounds follow the rule-based reading of it
-export function drawArrangement(rand, { intros = null, prompt = '' } = {}) {
+// prompt, understanding: the sounds follow the first pass's
+// reading of the prompt, else the rule-based one; what the
+// prompt fixed is not drawn
+export function drawArrangement(rand, { intros = null, prompt = '', understanding = null } = {}) {
+  const fixed = new Set(understanding?.fixed || []);
   const pool = intros ? Object.fromEntries(intros.map((t) => [t, INTRO_DRAW[t] ?? 1])) : INTRO_DRAW;
   const intro = weighted(rand, pool);
   const tempo = TEMPO_DRAW[Math.floor(rand() * TEMPO_DRAW.length)];
@@ -311,13 +314,13 @@ export function drawArrangement(rand, { intros = null, prompt = '' } = {}) {
   const bassFigure = weightedRow(rand, HVSC_BASS_ROWS.filter(([r]) => onsets(r) >= 3 && onsets(r) <= 10));
   return [
     intro === 'none' ? 'Start directly with the first verse or the chorus: no intro section.' : `Open with an intro of texture ${intro}.`,
-    `Set the tempo in the ${tempo} of the chosen style's tempo band.`,
-    `Form: ${form}.`,
+    fixed.has('tempo') ? null : `Set the tempo in the ${tempo} of the chosen style's tempo band.`,
+    fixed.has('form') ? null : `Form: ${form}.`,
     `Use the texture ${chorus} for the first chorus.`,
     slow ? 'Let the verse chords last two bars each (chord_bars 2).' : null,
-    `Give the chorus the lead sound ${lead}${lead === CUSTOM_LEAD ? ' (design it in sound)' : ''}; other sections may use other leads.`,
-    `If the song is in 4/4, use this bass figure from real C64 tunes as the verse bass_pattern: "${bassFigure}".`,
-    ...drawVoicing(rand, prompt).lines,
+    fixed.has('lead') ? null : `Give the chorus the lead sound ${lead}${lead === CUSTOM_LEAD ? ' (design it in sound)' : ''}; other sections may use other leads.`,
+    fixed.has('bass') ? null : `If the song is in 4/4, use this bass figure from real C64 tunes as the verse bass_pattern: "${bassFigure}".`,
+    ...drawVoicing(rand, prompt, understanding).lines,
   ].filter(Boolean);
 }
 

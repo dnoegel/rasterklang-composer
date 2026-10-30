@@ -114,7 +114,8 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
   // where the song sits between a genre played on the SID and fully
   // C64-native; its own random stream
   const irng = new Rng(seedKey, GENERATOR_VERSION, 'idiom');
-  const idiom = estimateIdiom(intent.prompt || '', styleId, { named: Boolean(intent.style), rand: () => irng.next() });
+  // a model's reading of the prompt brings its own value
+  const idiom = Number.isFinite(intent.sidIdiom) ? intent.sidIdiom : estimateIdiom(intent.prompt || '', styleId, { named: Boolean(intent.style), rand: () => irng.next() });
   const c64Bass = Object.keys(BASS).filter((id) => isC64Bass(id) && BASS[id].meter === '4/4');
   if (style.slowHarmony === undefined && (artist?.slowHarmony ?? hint?.slowHarmony) != null) style.slowHarmony = artist?.slowHarmony ?? hint.slowHarmony;
   const drumsShare = artist?.drums ?? hint?.drums;

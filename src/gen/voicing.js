@@ -6,13 +6,15 @@
 // hands it over as the default; the model keeps it unless it clearly fights
 // the prompt, and says in reasoning what it changed.
 //
-// The draw follows the rule-based reading of the prompt (style guess and
-// SID-idiom estimate), so the defaults mostly fit; the model reads the
-// prompt better and corrects the rest.
+// The draw follows a reading of the prompt: the first model pass's genre
+// candidates, moods, energy and SID idiom, or the rule-based
+// reading when that pass is missing. So the defaults mostly fit; the
+// composer corrects the rest.
 
 import { parsePrompt, resolveStyle } from './intent.js';
 import { sampleBrief } from './brief.js';
 import { ARPS, BASSES, KITS } from './library/palettes.js';
+import { STYLES } from './styles.js';
 
 const pick = (rand, list) => list[Math.floor(rand() * list.length)];
 const between = (rand, [lo, hi]) => lo + Math.floor(rand() * (hi - lo + 1));
@@ -84,9 +86,26 @@ const ARP_RHYTHMS_GENRE = {
 // Melody feels of the chorus in 4/4: "syncopated" took 42 % of main sections.
 const FEELS = { straight: 1, riff: 1, long: 1, dotted: 1, syncopated: 0.5, running: 1, sid: 1 };
 
-export function drawVoicing(rand, prompt = '') {
-  const intent = parsePrompt(prompt);
-  const styleId = resolveStyle(intent);
+// The sampler's intent from a model reading (src/gen/understand.js); the
+// style is drawn from its candidates unless the prompt fixed it.
+function intentFrom(understanding, prompt, rand) {
+  const fixed = understanding.fixed.includes('style');
+  const top = Object.entries(understanding.genres).sort((a, b) => b[1] - a[1])[0][0];
+  const style = fixed ? top : weighted(rand, understanding.genres);
+  return {
+    prompt, style, blend: null, artist: null, scene: null, form: null, tempo: null, key: null,
+    moods: understanding.moods,
+    energy: Math.max(-0.6, Math.min(0.6, (understanding.energy - 0.5) * 1.2)),
+    sidIdiom: understanding.sidIdiom,
+  };
+}
+
+// understanding: the first pass's reading of the prompt; without
+// it (the call failed, scripts) the rule-based reading stands in.
+export function drawVoicing(rand, prompt = '', understanding = null) {
+  const intent = understanding ? intentFrom(understanding, prompt, rand) : parsePrompt(prompt);
+  const styleId = understanding ? intent.style : resolveStyle(intent);
+  const fixed = new Set(understanding?.fixed || []);
   // the style sampler's palette for this reading of the prompt, with its
   // own random seed (sampleBrief is deterministic per key)
   const drawn = sampleBrief(intent, `voicing|${Math.floor(rand() * 1e9)}`, styleId, intent.blend);
@@ -94,7 +113,7 @@ export function drawVoicing(rand, prompt = '') {
   const arp = ARPS[drawn.palette.arp] ? drawn.palette.arp : 'pwm';
   const bass = BASSES[drawn.palette.bass] ? drawn.palette.bass : 'bass';
   const kit = KITS[drawn.palette.kit] ? drawn.palette.kit : 'std';
-  const character = weighted(rand, characterWeights(drawn.energy || 0, idiom));
+  const character = weighted(rand, characterWeights(understanding ? intent.energy : drawn.energy || 0, idiom));
   const sound = drawSound(rand, character);
   const native = rand() < 0.25 + idiom * 0.6;
   const arpRhythm = weighted(rand, native ? ARP_RHYTHMS_NATIVE : ARP_RHYTHMS_GENRE);
@@ -102,12 +121,21 @@ export function drawVoicing(rand, prompt = '') {
   const s = sound;
   const soundText = `wave ${s.wave}, attack ${s.attack}, decay ${s.decay}, sustain ${s.sustain}, release ${s.release}, vibrato ${s.vibrato}`
     + `${s.wave === 'pulse' ? `, pulse_width ${s.pulse_width}, pwm ${s.pwm}` : ''}, onset ${s.onset}, slide ${s.slide}`;
+  const palette = [
+    fixed.has('arp') ? null : `palette.arp ${arp}`,
+    fixed.has('bass') ? null : `palette.bass ${bass}`,
+    fixed.has('drums') ? null : `palette.kit ${kit}`,
+  ].filter(Boolean);
+  const style = STYLES[styleId]?.name || styleId;
   return {
     voicing: { styleGuess: styleId, arp, bass, kit, character, sound, arpRhythm, feel },
+    style: styleId,
     lines: [
-      `Sounds: palette.arp ${arp}, palette.bass ${bass}, palette.kit ${kit}.`,
-      `Custom lead (sound): a ${character} sound, ${soundText}.`,
-      `If the song is in 4/4, give the chorus the melody feel ${feel} and, where the chord arpeggio plays, the arp_pattern "${arpRhythm}".`,
-    ],
+      understanding && !fixed.has('style') && Object.keys(understanding.genres).length > 1
+        ? `Style: ${styleId} (${style}), one of the styles that fit this prompt.` : null,
+      palette.length ? `Sounds: ${palette.join(', ')}.` : null,
+      fixed.has('lead') ? null : `Custom lead (sound): a ${character} sound, ${soundText}.`,
+      `If the song is in 4/4, give the chorus the melody feel ${feel}${fixed.has('arp') ? '' : ` and, where the chord arpeggio plays, the arp_pattern "${arpRhythm}"`}.`,
+    ].filter(Boolean),
   };
 }

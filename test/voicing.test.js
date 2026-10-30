@@ -44,3 +44,32 @@ describe('drawn sounds for model briefs', () => {
     expect(brief.palette.arp).toBe('pluck');
   });
 });
+
+describe('first pass: the model reads the prompt, code draws', () => {
+  it('cleans a reading and drops unknown ids', async () => {
+    const { cleanUnderstanding } = await import('../src/gen/understand.js');
+    const r = cleanUnderstanding({
+      genres: [{ style: 'ambient', weight: 2 }, { style: 'nope', weight: 1 }, { style: 'cinematic', weight: 2 }],
+      moods: [{ mood: 'melancholic', weight: 1 }], energy: 1.4, valence: 0.2, tension: 0.6, sid_idiom: 0.4, fixed: ['tempo', 'x'], reference: '',
+    });
+    expect(r.genres).toEqual({ ambient: 0.5, cinematic: 0.5 });
+    expect(r.energy).toBe(1);
+    expect(r.fixed).toEqual(['tempo']);
+    expect(cleanUnderstanding({ genres: [] })).toBeNull();
+  });
+
+  it('draws the style from the candidates and leaves fixed fields to the prompt', () => {
+    const understanding = { genres: { ambient: 0.5, cinematic: 0.5 }, moods: { melancholic: 1 }, energy: 0.2, valence: 0.2, tension: 0.5, sidIdiom: 0.9, fixed: ['tempo', 'lead'], reference: '' };
+    const styles = new Set();
+    for (let i = 0; i < 30; i += 1) {
+      const lines = drawArrangement(rand(`u${i}`), { prompt: 'a lonely lighthouse in a storm', understanding });
+      expect(lines.some((l) => l.startsWith('Set the tempo'))).toBe(false);
+      expect(lines.some((l) => l.startsWith('Custom lead') || l.startsWith('Give the chorus the lead'))).toBe(false);
+      styles.add(lines.find((l) => l.startsWith('Style:')).split(' ')[1]);
+    }
+    expect([...styles].sort()).toEqual(['ambient', 'cinematic']);
+    const one = drawVoicing(rand('fixed'), 'Depeche Mode', { ...understanding, genres: { newwave: 0.8, indie: 0.2 }, fixed: ['style'] });
+    expect(one.style).toBe('newwave');
+    expect(one.lines.some((l) => l.startsWith('Style:'))).toBe(false);
+  });
+});
