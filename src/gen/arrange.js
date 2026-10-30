@@ -181,7 +181,7 @@ function bassIdiom(section, plan) {
 // The k-th scale note above a chord root (2 = a step, 4 = a fourth), or a
 // fixed interval when the chord is borrowed from outside the scale.
 function scaleAbove(plan, section, root, k, fallback) {
-  const scale = SCALES[plan.mode].map((d) => (d + section.keyRoot) % 12);
+  const scale = SCALES[section.mode || plan.mode].map((d) => (d + section.keyRoot) % 12);
   const i = scale.indexOf(root % 12);
   if (i < 0) return root + fallback;
   return root + ((scale[(i + k) % 7] - scale[i] + 12) % 12);
@@ -197,7 +197,7 @@ function bassFill(cells, section, b, plan, rng, chord, next, inst, energy) {
   const n = beat / spacing;
   const root = bassRoot(chord.root);
   const target = bassRoot(next.root);
-  const scale = SCALES[plan.mode].map((d) => (d + section.keyRoot) % 12);
+  const scale = SCALES[section.mode || plan.mode].map((d) => (d + section.keyRoot) % 12);
   const inScale = (p) => scale.includes(((p % 12) + 12) % 12);
   const below = [];
   for (let p = target - 1; below.length < n && p > target - 12; p -= 1) if (inScale(p)) below.push(p);

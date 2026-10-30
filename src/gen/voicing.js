@@ -13,7 +13,8 @@
 
 import { parsePrompt, resolveStyle } from './intent.js';
 import { sampleBrief } from './brief.js';
-import { ARPS, BASSES, KITS } from './library/palettes.js';
+import { ARPS, BASSES, KITS, LEADS } from './library/palettes.js';
+import { MOODS } from './moods.js';
 import { STYLES } from './styles.js';
 
 const pick = (rand, list) => list[Math.floor(rand() * list.length)];
@@ -100,6 +101,33 @@ function intentFrom(understanding, prompt, rand) {
   };
 }
 
+// A story told in phases: code draws a lead, a bass sound and,
+// where the mood turns between dark and bright, a mode for each phase from
+// the style sampler with that phase's mood and energy. The composer shapes
+// the form on the phases instead of a drawn form.
+const BRIGHT = { ionian: 2, mixolydian: 1, lydian: 0.5 };
+const DARK = { aeolian: 2, dorian: 1, phrygian: 0.5 };
+function drawPhases(rand, understanding, styleId) {
+  const brightness = (mood) => MOODS[mood]?.brightness ?? 0;
+  const turns = understanding.arc.some((p) => Math.sign(brightness(p.mood)) !== Math.sign(brightness(understanding.arc[0].mood)) && Math.abs(brightness(p.mood)) > 0.2);
+  let from = 0;
+  return understanding.arc.map((p, i) => {
+    const intent = {
+      prompt: '', style: styleId, blend: null, artist: null, scene: null, form: null, tempo: null, key: null,
+      moods: { [p.mood]: 1 }, energy: Math.max(-0.6, Math.min(0.6, (p.energy - 0.5) * 1.2)), sidIdiom: understanding.sidIdiom,
+    };
+    const d = sampleBrief(intent, `phase|${i}|${Math.floor(rand() * 1e9)}`, styleId);
+    const main = d.sections.find((s) => s.type === 'chorus') || d.sections.find((s) => s.type === 'verse') || d.sections[0];
+    const lead = LEADS[main?.lead] ? main.lead : null;
+    const mode = turns ? weighted(rand, brightness(p.mood) > 0 ? BRIGHT : DARK) : null;
+    const start = Math.round(from * 100);
+    from += p.share;
+    return { ...p, from: start, to: Math.round(from * 100), lead, bass: BASSES[d.palette.bass] ? d.palette.bass : null, mode };
+  });
+}
+const phaseText = (p, i) => `phase ${i + 1} (about ${p.from}-${p.to} % of the song): ${p.mood}, energy ${p.energy}`
+  + `${p.lead ? `, lead ${p.lead}` : ''}${p.bass ? `, bass_sound ${p.bass}` : ''}${p.mode ? `, mode ${p.mode}` : ''}`;
+
 // understanding: the first pass's reading of the prompt; without
 // it (the call failed, scripts) the rule-based reading stands in.
 export function drawVoicing(rand, prompt = '', understanding = null) {
@@ -127,14 +155,16 @@ export function drawVoicing(rand, prompt = '', understanding = null) {
     fixed.has('drums') ? null : `palette.kit ${kit}`,
   ].filter(Boolean);
   const style = STYLES[styleId]?.name || styleId;
+  const phases = understanding?.arc?.length ? drawPhases(rand, understanding, styleId) : null;
   return {
-    voicing: { styleGuess: styleId, arp, bass, kit, character, sound, arpRhythm, feel },
+    voicing: { styleGuess: styleId, arp, bass, kit, character, sound, arpRhythm, feel, phases },
     style: styleId,
     lines: [
       understanding && !fixed.has('style') && Object.keys(understanding.genres).length > 1
         ? `Style: ${styleId} (${style}), one of the styles that fit this prompt.` : null,
       palette.length ? `Sounds: ${palette.join(', ')}.` : null,
       fixed.has('lead') ? null : `Custom lead (sound): a ${character} sound, ${soundText}.`,
+      phases ? `The prompt tells a story; build the form and the energy curve on its phases, in order, and let each phase sound different: ${phases.map(phaseText).join('; ')}.${phases.some((p) => p.mode) ? ' Set the mode field on the sections of each phase ("song" where it matches the song\'s mode) and write their chords for it.' : ''}` : null,
       `If the song is in 4/4, give the chorus the melody feel ${feel}${fixed.has('arp') ? '' : ` and, where the chord arpeggio plays, the arp_pattern "${arpRhythm}"`}.`,
     ].filter(Boolean),
   };

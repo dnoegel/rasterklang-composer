@@ -453,6 +453,8 @@ export function validateBrief(input) {
     if (!CELLS[b.meter][s.feel]) s.feel = Object.keys(style.feels).find((f) => CELLS[b.meter][f]) || Object.keys(CELLS[b.meter])[0];
     if (!LEADS[s.lead] && !(s.lead === CUSTOM_LEAD && b.sound)) s.lead = Object.keys(style.palette.lead)[0];
     if (!BASSES[s.bassSound] || s.bassSound === b.palette.bass) delete s.bassSound;
+    // a section may change the colour; none or the song's mode keeps it
+    if (!SCALES[s.mode] || s.mode === b.mode) delete s.mode;
     s.energyEnd = clamp(Number(s.energyEnd ?? s.energy), 0.05, 1);
     if (!FILTER_SHAPES[s.filter]) s.filter = 'follow';
     if (!VARIATIONS[s.variation] || s.variation === 'auto') delete s.variation;
@@ -547,6 +549,7 @@ export function planFromBrief(brief, seedKey) {
       arpRows: s.arpPattern || null,
       leadInst: s.lead,
       bassInst: s.bassSound || null,
+      mode: s.mode || brief.mode,
     });
     bar += s.bars;
   }
@@ -561,7 +564,7 @@ export function planFromBrief(brief, seedKey) {
   if (sections.length) {
     const last = sections[sections.length - 1];
     if (last.type === 'outro') {
-      const tonic = chordAt(last.keyRoot, MINOR_MODES.has(brief.mode) ? 'i' : 'I');
+      const tonic = chordAt(last.keyRoot, MINOR_MODES.has(last.mode) ? 'i' : 'I');
       last.chords[last.chords.length - 1] = tonic;
     }
   }

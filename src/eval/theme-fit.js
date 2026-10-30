@@ -51,9 +51,9 @@ export function themeFit(brief, prompt = '') {
       const bar = (b % 4) + 1;
       const key = `${bar} ${x.chord.symbol}`;
       if (!bars.has(key)) {
-        bars.set(key, { bar, chord: x.chord.symbol, chordDegrees: x.chord.tones.map((t) => degreeOf(t, sec.keyRoot, brief.mode)), notes: [] });
+        bars.set(key, { bar, chord: x.chord.symbol, chordDegrees: x.chord.tones.map((t) => degreeOf(t, sec.keyRoot, sec.mode || brief.mode)), notes: [] });
       }
-      const d = degreeOf(x.pitch % 12, sec.keyRoot, brief.mode);
+      const d = degreeOf(x.pitch % 12, sec.keyRoot, sec.mode || brief.mode);
       if (!bars.get(key).notes.includes(d)) bars.get(key).notes.push(d);
     }
     const share = strong ? fit / strong : 1;

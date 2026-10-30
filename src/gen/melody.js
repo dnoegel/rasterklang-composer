@@ -369,8 +369,10 @@ function motifSet(material, section, plan, rng, memory) {
 
 // Returns per bar { tokens: [...], notes: [...] } for the lead voice.
 export function renderMelody(section, plan, rng, memory, material = section.type) {
-  const { style, target, mode } = plan;
+  const { style, target } = plan;
   const keyRoot = section.keyRoot ?? plan.keyRoot;
+  // a section may have its own mode
+  const mode = section.mode || plan.mode;
   const steps = plan.meter.steps;
   const strong = plan.meter.strong;
   const set = motifSet(material, section, plan, rng, memory);

@@ -70,7 +70,7 @@ export function briefSchema() {
         items: {
           type: 'object',
           additionalProperties: false,
-          required: ['type', 'bars', 'energy', 'energy_end', 'filter', 'texture', 'transition', 'groove', 'drums_pattern', 'bass', 'bass_pattern', 'bass_sound', 'arp_pattern', 'feel', 'lead', 'chords', 'chord_bars', 'transpose', 'variation'],
+          required: ['type', 'bars', 'energy', 'energy_end', 'filter', 'texture', 'transition', 'groove', 'drums_pattern', 'bass', 'bass_pattern', 'bass_sound', 'arp_pattern', 'feel', 'lead', 'chords', 'chord_bars', 'transpose', 'mode', 'variation'],
           properties: {
             type: en(SECTION_TYPES),
             bars: int,
@@ -90,6 +90,7 @@ export function briefSchema() {
             chords: { type: 'array', items: str },
             chord_bars: int,
             transpose: int,
+            mode: en(['song', ...Object.keys(SCALES)]),
             variation: en(Object.keys(VARIATIONS)),
           },
         },
@@ -179,7 +180,8 @@ Rules:
 - Bars per section: 2, 4, 8, 16 (12 for blues). Total length 30 to 150 seconds. Contrast: the chorus should differ from the verse (energy, texture, groove or harmony) and come back recognisably.
 - Chords: roman numerals relative to the tonic, read against the major scale: lowercase minor (i, iv, v), b for flat (bVI, bVII, bIII, bII), suffixes 7, M7, m7 (use "ii7"), dim, sus2, sus4, 5. They should fit the mode. One chord per bar; the list repeats over the section. A section's chords list may be 2 to 16 entries.
 - chord_bars: 1 (one chord per bar) or 2 (each chord lasts two bars; slower harmonic rhythm, common in SID music).
-- transpose: 0, or 2 for a key change up a whole step on a late chorus.
+- transpose: semitones for this section, usually 0; 2 for a key change up a whole step on a late chorus.
+- mode per section: "song" keeps the song's mode. Another mode changes the colour of this section when the story turns, for example dark to bright: the parallel mode (same key, aeolian to ionian or dorian to mixolydian), or the relative major of a minor song (transpose 3, mode ionian) and back. Write that section's chords for its own mode. Use it for a real turn in the story, not for decoration; most songs keep one mode.
 - Themes (optional but encouraged for the chorus, and the verse): "notes" is one token per step of 1 to 4 bars, space separated. Steps per bar: 4/4 = 16 (16th notes), 3/4 = 12, 6/8 = 12 (16th notes), 12/8 = 12 (8th triplets). Token: a scale degree 1-7 (8-14 for the octave above, -1 to -7 for the octave below), "_" holds the previous note, "." is a rest. Write a memorable hook: a short motif that comes back, developed rather than copied (a sequence a step higher, a changed ending, a fragment), mostly steps with one leap into a high point, ending on a stable degree (1, 3 or 5). Give each song its own rhythm; the user prompt shows one example shape, do not copy it.
 - energy per section 0-1; intros, breakdowns and outros lower, choruses and solos higher.
 - Pick textures per section: intros, breakdowns, builds and outros have their own textures; main sections use main textures. Vary them: not every song starts the same way.
@@ -299,6 +301,8 @@ const weightedRow = (rand, rows) => {
 // prompt fixed is not drawn
 export function drawArrangement(rand, { intros = null, prompt = '', understanding = null } = {}) {
   const fixed = new Set(understanding?.fixed || []);
+  // a story in phases shapes the form itself
+  if (understanding?.arc?.length) fixed.add('form');
   const pool = intros ? Object.fromEntries(intros.map((t) => [t, INTRO_DRAW[t] ?? 1])) : INTRO_DRAW;
   const intro = weighted(rand, pool);
   const tempo = TEMPO_DRAW[Math.floor(rand() * TEMPO_DRAW.length)];
@@ -318,7 +322,7 @@ export function drawArrangement(rand, { intros = null, prompt = '', understandin
     fixed.has('form') ? null : `Form: ${form}.`,
     `Use the texture ${chorus} for the first chorus.`,
     slow ? 'Let the verse chords last two bars each (chord_bars 2).' : null,
-    fixed.has('lead') ? null : `Give the chorus the lead sound ${lead}${lead === CUSTOM_LEAD ? ' (design it in sound)' : ''}; other sections may use other leads.`,
+    fixed.has('lead') || understanding?.arc?.length ? null : `Give the chorus the lead sound ${lead}${lead === CUSTOM_LEAD ? ' (design it in sound)' : ''}; other sections may use other leads.`,
     fixed.has('bass') ? null : `If the song is in 4/4, use this bass figure from real C64 tunes as the verse bass_pattern: "${bassFigure}".`,
     ...drawVoicing(rand, prompt, understanding).lines,
   ].filter(Boolean);
@@ -372,7 +376,7 @@ export function answerToBrief(answer, prompt) {
     sections: (answer.sections || []).map((x) => ({
       type: x.type, bars: x.bars, energy: x.energy, energyEnd: x.energy_end, filter: x.filter, texture: x.texture,
       transition: x.transition, groove: x.groove, bass: x.bass, feel: x.feel, lead: x.lead, chords: x.chords,
-      transpose: x.transpose, chordBars: x.chord_bars, variation: x.variation, drumPattern: x.drums_pattern, bassPattern: x.bass_pattern, arpPattern: x.arp_pattern,
+      transpose: x.transpose, mode: x.mode && x.mode !== 'song' ? x.mode : undefined, chordBars: x.chord_bars, variation: x.variation, drumPattern: x.drums_pattern, bassPattern: x.bass_pattern, arpPattern: x.arp_pattern,
       bassSound: x.bass_sound,
     })),
     themes,
@@ -431,7 +435,7 @@ export function briefToAnswer(brief) {
       type: s.type, bars: s.bars, energy: s.energy, energy_end: s.energyEnd ?? s.energy, filter: s.filter || 'follow',
       texture: s.texture, transition: s.transition, groove: s.groove, drums_pattern: (s.drumPattern || []).join(''),
       bass: s.bass, bass_pattern: (s.bassPattern || []).join(''), bass_sound: s.bassSound || 'palette', arp_pattern: (s.arpPattern || []).join(''),
-      feel: s.feel, lead: s.lead, chords: s.chords, chord_bars: s.chordBars || 1, transpose: s.transpose || 0, variation: s.variation || 'auto',
+      feel: s.feel, lead: s.lead, chords: s.chords, chord_bars: s.chordBars || 1, transpose: s.transpose || 0, mode: s.mode || 'song', variation: s.variation || 'auto',
     })),
     themes: Object.entries(brief.themes || {}).map(([section, t]) => ({ section, notes: t.notes })),
   };

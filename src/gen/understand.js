@@ -17,7 +17,7 @@ export function understandSchema() {
   return {
     type: 'object',
     additionalProperties: false,
-    required: ['genres', 'moods', 'energy', 'valence', 'tension', 'sid_idiom', 'fixed', 'reference'],
+    required: ['genres', 'moods', 'energy', 'valence', 'tension', 'sid_idiom', 'arc', 'fixed', 'reference'],
     properties: {
       genres: {
         type: 'array',
@@ -31,6 +31,10 @@ export function understandSchema() {
       valence: num,
       tension: num,
       sid_idiom: num,
+      arc: {
+        type: 'array',
+        items: { type: 'object', additionalProperties: false, required: ['mood', 'energy', 'share'], properties: { mood: en(Object.keys(MOODS)), energy: num, share: num } },
+      },
       fixed: { type: 'array', items: en(FIXABLE) },
       reference: { type: 'string' },
     },
@@ -44,6 +48,7 @@ export function understandSystemPrompt() {
 - moods: 1 to 3 from the list, with weights summing to 1.
 - energy (0 calm to 1 driving), valence (0 dark or sad to 1 bright or happy), tension (0 relaxed to 1 tense), each 0 to 1.
 - sid_idiom 0 to 1: 0 the genre played faithfully on the SID, 1 fully C64-native game and demo music. Games, arcades, computers, robots, space, neon, demos, loaders and tapes pull towards 1; a named acoustic or traditional genre towards 0; pure imagery sits wherever it is most vivid.
+- arc: only if the prompt tells a sequence (first this, then that; starts ... ends ...; suddenly ...): its 2 to 4 phases in order, each with a mood, an energy 0 to 1 and its share of the song (shares sum to 1). Empty if the prompt describes one state.
 - fixed: only what the prompt states explicitly: style (a genre, artist or song is named), tempo (slow, fast, a bpm), form, lead (a lead instrument or sound is named), bass, drums, arp. Empty if the prompt states none of them.
 - reference: the song or artist the prompt names, else "".
 
@@ -66,6 +71,15 @@ const weights = (list, key, known, max) => {
   return Object.fromEntries(top.map(([id, w]) => [id, w / total]));
 };
 
+// 2-4 phases in order, shares summing to 1; anything else is no arc
+function cleanArc(list) {
+  const phases = (Array.isArray(list) ? list : []).filter((p) => MOODS[p?.mood]).slice(0, 4)
+    .map((p) => ({ mood: p.mood, energy: clamp01(p.energy), share: Math.max(0.05, Number(p.share) || 1) }));
+  if (phases.length < 2) return [];
+  const total = phases.reduce((s, p) => s + p.share, 0);
+  return phases.map((p) => ({ ...p, share: Math.round((p.share / total) * 100) / 100 }));
+}
+
 // The model's answer -> a clean reading, or null if it names no style.
 export function cleanUnderstanding(answer) {
   const genres = weights(answer?.genres, 'style', STYLES, 3);
@@ -77,6 +91,7 @@ export function cleanUnderstanding(answer) {
     valence: clamp01(answer?.valence),
     tension: clamp01(answer?.tension),
     sidIdiom: clamp01(answer?.sid_idiom, null),
+    arc: cleanArc(answer?.arc),
     fixed: [...new Set((Array.isArray(answer?.fixed) ? answer.fixed : []).filter((f) => FIXABLE.includes(f)))],
     reference: typeof answer?.reference === 'string' ? answer.reference.slice(0, 120) : '',
   };
@@ -92,6 +107,7 @@ export function understandingFromStop(stop) {
     valence: null,
     tension: null,
     sidIdiom: null,
+    arc: [],
     fixed: ['style'],
     reference: '',
   };
