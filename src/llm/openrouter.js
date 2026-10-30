@@ -40,6 +40,9 @@ async function chatOnce({ url, key, model, system, user, turns = [], schemaName,
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(`OpenRouter ${res.status}: ${data?.error?.message || 'error'}`);
+  // OpenRouter keeps slow requests alive with whitespace and then reports a
+  // provider failure in the body of a 200 response
+  if (data?.error) throw new Error(`OpenRouter: ${data.error.message || 'error'}${data.error.code ? ` (${data.error.code})` : ''}${data.error.metadata?.provider_name ? `, ${data.error.metadata.provider_name}` : ''}`);
   const choice = data.choices?.[0];
   const content = choice?.message?.content;
   const text = Array.isArray(content) ? content.map((c) => c.text || '').join('') : content;
