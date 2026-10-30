@@ -2,7 +2,19 @@
 // scripts (scripts/intent-models.mjs compares models with the exact request
 // the server sends).
 
-export async function chatJson({ url, key, model, system, user, turns = [], schemaName, schema, temperature = 0.9, maxTokens = 6000, timeoutMs = 90000, reasoning = null }) {
+// Some models cannot switch reasoning off; they get the lowest effort instead.
+export async function chatJson(opts) {
+  try {
+    return await chatOnce(opts);
+  } catch (err) {
+    if (opts.reasoning?.enabled === false && /reasoning is mandatory/i.test(err.message)) {
+      return { ...(await chatOnce({ ...opts, reasoning: { effort: 'low' } })), reasoning: 'low' };
+    }
+    throw err;
+  }
+}
+
+async function chatOnce({ url, key, model, system, user, turns = [], schemaName, schema, temperature = 0.9, maxTokens = 6000, timeoutMs = 90000, reasoning = null }) {
   const res = await fetch(`${url}/chat/completions`, {
     method: 'POST',
     headers: {
