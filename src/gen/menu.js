@@ -13,11 +13,12 @@ import { CELLS } from './library/cells.js';
 import { PROGRESSIONS } from './library/progressions.js';
 import { TEXTURES, TRANSITIONS, FILTER_SHAPES } from './library/textures.js';
 import { FORMS, SECTION_ENERGY } from './library/forms.js';
-import { LEADS, BASSES, SNARES, KITS, CUSTOM_LEAD } from './library/palettes.js';
+import { LEADS, BASSES, SNARES, KITS, ARPS, CUSTOM_LEAD } from './library/palettes.js';
 import { findArtist, artistSummary } from './hvsc-data.js';
 import { VARIATIONS } from './melody.js';
 import { HVSC_BASS_ROWS } from './library/hvsc-rhythms.js';
-import { C64_LEADS, C64_TEXTURES, C64_FEELS, isC64Bass, isC64Groove } from './idiom.js';
+import { C64_LEADS, C64_ARPS, C64_TEXTURES, C64_FEELS, isC64Bass, isC64Groove } from './idiom.js';
+import { drawVoicing } from './voicing.js';
 
 const SECTION_TYPES = Object.keys(SECTION_ENERGY);
 const KEYS = KEY_NAMES;
@@ -52,8 +53,8 @@ export function briefSchema() {
       palette: {
         type: 'object',
         additionalProperties: false,
-        required: ['bass', 'snare', 'chords', 'kit'],
-        properties: { bass: en(Object.keys(BASSES)), snare: en(Object.keys(SNARES)), chords: en(['power', 'triad']), kit: en(Object.keys(KITS)) },
+        required: ['bass', 'snare', 'chords', 'kit', 'arp'],
+        properties: { bass: en(Object.keys(BASSES)), snare: en(Object.keys(SNARES)), chords: en(['power', 'triad']), kit: en(Object.keys(KITS)), arp: en(Object.keys(ARPS)) },
       },
       sound: {
         type: 'object',
@@ -146,6 +147,7 @@ ${progs}
 
 ## Sounds
 - leads: ${Object.entries(LEADS).map(([k, v]) => `${k} (${v})${c64(C64_LEADS.includes(k))}`).join(', ')}
+- arp sounds (palette.arp, the chord arpeggio voice): ${Object.entries(ARPS).map(([k, v]) => `${k} (${v})${c64(C64_ARPS.includes(k))}`).join(', ')}
 - bass sounds: ${Object.entries(BASSES).map(([k, v]) => `${k} (${v})`).join(', ')}
 - snares: ${Object.entries(SNARES).map(([k, v]) => `${k} (${v})`).join(', ')}
 - drum kits (kick, snare, hat; a kit other than std replaces snare and snare2, a clap stays): ${Object.entries(KITS).map(([k, v]) => `${k} (${v.name})`).join(', ')}
@@ -170,6 +172,7 @@ The SID can play any genre, and it has a native idiom of its own. Place every so
 Reference songs: when the prompt names an existing song or artist, recreate its musical fingerprint as closely as you can: tempo, key and mode, meter, form with section lengths, the dynamics between sections (for example a quiet verse and an explosive chorus), the groove (write drums_pattern), the bass behaviour (bass_pattern), the chord progression, the arrangement and the timbres (pick sounds or design a custom sound that imitates the original instrument), and signature devices (stops, riffs, shouts as short staccato bursts).  Say in reasoning which features you took from the reference.
 
 Rules:
+- The user prompt brings an arrangement and sounds drawn by code for this song, so that songs differ from each other. They are your starting point, not a suggestion among many: keep them, and change one only when it clearly works against the prompt, a reference song or a melody. Then choose something that fits better, not the most common choice, and name in reasoning what you changed and why.
 - Use the style whose signature grooves and bass fit the prompt; use blend_style (amount 0.2-0.5) only when the prompt names two genres, else "none".
 - The groove and bass ids must match the meter you choose. Main sections (verse, chorus) should use at least one signature groove or bass of the style.
 - Tempo inside the style's band unless the prompt asks otherwise. tempo is bpm of the felt beat (dotted quarter in 6/8 and 12/8).
@@ -291,7 +294,8 @@ const weightedRow = (rand, rows) => {
   return rows[rows.length - 1][0];
 };
 
-export function drawArrangement(rand, { intros = null } = {}) {
+// prompt: the sounds follow the rule-based reading of it
+export function drawArrangement(rand, { intros = null, prompt = '' } = {}) {
   const pool = intros ? Object.fromEntries(intros.map((t) => [t, INTRO_DRAW[t] ?? 1])) : INTRO_DRAW;
   const intro = weighted(rand, pool);
   const tempo = TEMPO_DRAW[Math.floor(rand() * TEMPO_DRAW.length)];
@@ -313,6 +317,7 @@ export function drawArrangement(rand, { intros = null } = {}) {
     slow ? 'Let the verse chords last two bars each (chord_bars 2).' : null,
     `Give the chorus the lead sound ${lead}${lead === CUSTOM_LEAD ? ' (design it in sound)' : ''}; other sections may use other leads.`,
     `If the song is in 4/4, use this bass figure from real C64 tunes as the verse bass_pattern: "${bassFigure}".`,
+    ...drawVoicing(rand, prompt).lines,
   ].filter(Boolean);
 }
 
@@ -417,7 +422,7 @@ export function briefToAnswer(brief) {
     meter: brief.meter,
     key: KEYS[brief.keyRoot] || 'C',
     mode: brief.mode,
-    palette: { kit: 'std', ...brief.palette },
+    palette: { kit: 'std', arp: 'pwm', ...brief.palette },
     sound: { wave: 'none', attack: 0, decay: 9, sustain: 10, release: 6, vibrato: 0, pwm: 'none', pulse_width: 'square', onset: 'none', slide: 'none', ...(brief.sound || {}) },
     sections: brief.sections.map((s) => ({
       type: s.type, bars: s.bars, energy: s.energy, energy_end: s.energyEnd ?? s.energy, filter: s.filter || 'follow',
