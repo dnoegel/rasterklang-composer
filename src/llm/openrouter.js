@@ -40,8 +40,19 @@ async function chatOnce({ url, key, model, system, user, turns = [], schemaName,
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(`OpenRouter ${res.status}: ${data?.error?.message || 'error'}`);
-  const content = data.choices?.[0]?.message?.content;
+  const choice = data.choices?.[0];
+  const content = choice?.message?.content;
   const text = Array.isArray(content) ? content.map((c) => c.text || '').join('') : content;
-  const answer = JSON.parse(String(text).replace(/^```(json)?|```$/g, '').trim());
+  // an answer cut off at max_tokens (reasoning counts too) or an empty one
+  // says so, instead of failing later on a broken brief
+  const why = `finish ${choice?.finish_reason || '?'}, ${data.usage?.completion_tokens ?? '?'} tokens`;
+  if (!text || !String(text).trim()) throw new Error(`empty answer (${why})`);
+  let answer;
+  try {
+    answer = JSON.parse(String(text).replace(/^```(json)?|```$/g, '').trim());
+  } catch (err) {
+    throw new Error(`no valid JSON (${why}): ${err.message}`);
+  }
+  if (!answer || typeof answer !== 'object') throw new Error(`no JSON object (${why})`);
   return { answer, usage: data.usage || null };
 }
