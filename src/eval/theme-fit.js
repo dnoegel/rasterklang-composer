@@ -10,13 +10,16 @@ import { validateBrief } from '../gen/brief.js';
 import { answerToBrief } from '../gen/menu.js';
 import { SCALES } from '../gen/theory.js';
 
+// The generator version that renders the brief; V2 by default.
+const LATEST = { composeBrief, validateBrief, answerToBrief, SCALES };
+
 export const THEME_FIT_GATE = 0.7;
 export const THEME_FIT_MIN = 0.8;
 
 // scale degree of a pitch class in the key, as the brief writes it (6, 4#, 7b)
-function degreeOf(pc, keyRoot, mode) {
+function degreeOf(pc, keyRoot, mode, scales = SCALES) {
   const rel = (pc - keyRoot + 12) % 12;
-  const scale = SCALES[mode];
+  const scale = scales[mode];
   const i = scale.indexOf(rel);
   if (i >= 0) return String(i + 1);
   const below = scale.indexOf((rel + 11) % 12);
@@ -28,10 +31,10 @@ function degreeOf(pc, keyRoot, mode) {
 // chordDegrees, notes }] }] }: the song's share (seed 1, as the radio and the
 // compose tab play it) and, when it misses THEME_FIT_GATE, the themes below
 // THEME_FIT_MIN. A user's own melody is never checked (it plays as written).
-export function themeFit(brief, prompt = '') {
+export function themeFit(brief, prompt = '', gen = LATEST) {
   const themes = Object.entries(brief.themes || {}).filter(([, t]) => !t.user);
   if (!themes.length) return { chordTone: null, misfits: [] };
-  const tune = composeBrief(brief, { prompt, seed: 1, withLead: true });
+  const tune = gen.composeBrief(brief, { prompt, seed: 1, withLead: true });
   const { chordTone } = tune.measure;
   if (!(chordTone < THEME_FIT_GATE)) return { chordTone, misfits: [] };
   const out = [];
@@ -51,9 +54,9 @@ export function themeFit(brief, prompt = '') {
       const bar = (b % 4) + 1;
       const key = `${bar} ${x.chord.symbol}`;
       if (!bars.has(key)) {
-        bars.set(key, { bar, chord: x.chord.symbol, chordDegrees: x.chord.tones.map((t) => degreeOf(t, sec.keyRoot, sec.mode || brief.mode)), notes: [] });
+        bars.set(key, { bar, chord: x.chord.symbol, chordDegrees: x.chord.tones.map((t) => degreeOf(t, sec.keyRoot, sec.mode || brief.mode, gen.SCALES)), notes: [] });
       }
-      const d = degreeOf(x.pitch % 12, sec.keyRoot, sec.mode || brief.mode);
+      const d = degreeOf(x.pitch % 12, sec.keyRoot, sec.mode || brief.mode, gen.SCALES);
       if (!bars.get(key).notes.includes(d)) bars.get(key).notes.push(d);
     }
     const share = strong ? fit / strong : 1;
@@ -72,9 +75,9 @@ export function themeFitText(misfits, brief) {
   return `Your themes do not fit the chords under them, so they sound off-key. On the beats, at least ${Math.round(THEME_FIT_MIN * 100)} % of a theme's notes must belong to the chord of their bar (degrees in brackets); code only fixes notes a semitone off.\n${lines.join('\n')}\nReturn the complete brief again: rewrite these themes so their beat notes are chord tones (or change those chords to fit the melody), keep everything else.`;
 }
 
-const fitOf = (brief, prompt) => {
+const fitOf = (brief, prompt, gen) => {
   try {
-    return themeFit(brief, prompt);
+    return themeFit(brief, prompt, gen);
   } catch (err) {
     console.warn('theme fit check failed', err);
     return { chordTone: null, misfits: [] };
@@ -92,8 +95,8 @@ const shares = (fit) => ({
 // the same model call with the answer and the follow-up appended. The new
 // brief is kept only if it is valid and fits better; if the call fails, the
 // first brief stays. brief.themeRetry records the shares and which was kept.
-export async function themeFollowUp({ prompt, out, result, ask }) {
-  const fit = fitOf(result.brief, prompt);
+export async function themeFollowUp({ prompt, out, result, ask, gen = LATEST }) {
+  const fit = fitOf(result.brief, prompt, gen);
   if (!fit.misfits.length) return { result, usage: out.usage };
   const themeRetry = { before: shares(fit), kept: 'first' };
   let usage = out.usage;
@@ -103,9 +106,9 @@ export async function themeFollowUp({ prompt, out, result, ask }) {
       { role: 'user', content: themeFitText(fit.misfits, result.brief) },
     ]);
     usage = addUsage(out.usage, again.usage);
-    const next = validateBrief(answerToBrief(again.answer, prompt));
+    const next = gen.validateBrief(gen.answerToBrief(again.answer, prompt));
     if (!next.errors.length) {
-      const after = fitOf(next.brief, prompt);
+      const after = fitOf(next.brief, prompt, gen);
       themeRetry.after = shares(after);
       if ((after.chordTone ?? 1) > fit.chordTone) {
         themeRetry.kept = 'retry';
