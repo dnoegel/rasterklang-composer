@@ -87,6 +87,27 @@ ${note('E', 5, 2)}${note('G', 5, 2, '')}${note('C', 6, 2, '<tie type="start"/>')
     expect(r.chords[0]).toBe('C');
   });
 
+  it('moves an upbeat to the end of bar 1, so bar lines fall on the downbeats', () => {
+    // Spring: an eighth e5 before the bar, g# g# g# f#e b over the cello's
+    // quarters; the file starts the pickup at 0 and ends half a beat late
+    const bar = (q) => [[80, q, 0.5], [80, q + 0.5, 0.5], [80, q + 1, 0.5], [78, q + 1.5, 0.25], [76, q + 1.75, 0.25], [83, q + 2, 1.5], [83, q + 3.5, 0.25], [81, q + 3.75, 0.25]];
+    const spring = midiFile([
+      { name: 'violin', notes: [[76, 0, 0.5], ...bar(0.5), ...bar(4.5), [80, 8.5, 4]] },
+      // where the cello rests, the second violin's figure is no bass
+      { name: 'violin 2', notes: [[64, 4.5, 0.5], [71, 5, 0.5]] },
+      { name: 'cello', notes: [0.5, 1.5, 2.5, 3.5, 8.5, 9.5, 10.5, 11.5].map((q) => [52, q, 1]) },
+    ], { sharps: 4 });
+    const r = reduceScore(midiScore(spring));
+    expect(r.pickup).toBe(2);
+    expect(overviewText(r)).toMatch(/upbeat/);
+    expect(r.lead.slice(14, 16).join(' ')).toBe('e5 _');
+    expect(r.lead.slice(16, 32).join(' ')).toBe('g#5 _ g#5 _ g#5 _ f#5 e5 b5 _ _ _ _ _ b5 a5');
+    expect(r.bass.slice(16, 32).join(' ')).toBe('e3 _ _ _ e3 _ _ _ e3 _ _ _ e3 _ _ _');
+    expect(r.bass.slice(32, 34).join(' ')).toBe('. .');
+    // a file that starts on the downbeat stays as it is
+    expect(reduceScore(midiScore(AUTUMN)).pickup).toBe(0);
+  });
+
   it('detects the file type of downloads', () => {
     expect(readScoreFile(Buffer.from(AUTUMN), 'a.mid')[0].score.parts).toHaveLength(2);
     expect(readScoreFile(Buffer.from('X:1\nT:One\nK:G\nGABc|\n\nX:2\nT:Two\nK:D\nDEFG|'), 'x.abc').map((f) => f.name)).toEqual(['One', 'Two']);

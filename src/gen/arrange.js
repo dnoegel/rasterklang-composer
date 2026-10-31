@@ -428,6 +428,8 @@ export function arrange(plan, rng, melodyRng) {
         if (r === 'A') return arp;
         if (r === 'M') return multiplex(drums, bass, kitOf(plan));
         if (r === 'C') return melody ? counterBar(section, b, plan, melody.bars[b].notes, counterState, e) : restBar(steps);
+        // a fast line from a score (runs, trills) blurs under its own echo
+        if (r === 'E' && section.score && melody && melody.bars[b].notes.length > steps / 2) return restBar(steps);
         if (r === 'E') return echoBar(prevLead, roles.includes('L') ? lead : restBar(steps), echoDelay);
         return restBar(steps);
       });
@@ -448,7 +450,8 @@ export function arrange(plan, rng, melodyRng) {
       } else if (lastBar && section.transition === 'stop' && !isLastSection) {
         const half = Math.floor(steps / 2);
         bar = bar.map((cellsV, v) => cellsV.map((c, i) => {
-          if (i < half) return c;
+          // the melody of a score ends its phrase; the band stops under it
+          if (i < half || (section.score && roles[v] === 'L')) return c;
           if (i === half) {
             const r = roles[v];
             if (r === 'D' || r === 'M') return { tok: 'c4', inst: 'crash' };

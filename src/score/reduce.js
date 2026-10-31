@@ -81,6 +81,41 @@ function chordOf(hist, bassPc, key, single) {
   return best.name;
 }
 
+// steps per beat and the second strong step (half bar) per meter
+const BEAT = { '4/4': 4, '3/4': 4, '6/8': 6, '12/8': 3 };
+const HALF = { '4/4': 8, '6/8': 6, '12/8': 6 };
+
+// An upbeat: files (MIDI from LilyPond, MusicXML, ABC) start the pickup
+// note at time 0, so every bar line of the grid would fall that much too
+// early, phrases would end in the next bar and drums and chords would run
+// against the melody. Returns the pickup length in steps (0: none). The
+// last note ending that far past a bar line is the clear sign; otherwise
+// only a shift whose notes sit much better on the beats counts.
+function pickupSteps(parts, meter, steps, stepTicks, end) {
+  const weight = (p) => (p === 0 ? 4 : p === HALF[meter] ? 3 : p % BEAT[meter] === 0 ? 2 : p % 2 === 0 ? 1 : 0);
+  // offset o: a note at step s sits on bar position (s + o) % steps
+  const fit = (o) => {
+    let sum = 0;
+    let total = 0;
+    for (const p of parts) {
+      for (const n of p.notes) {
+        const w = Math.log2(1 + n.dur / stepTicks) * (n.pitch < 55 ? 1.5 : 1);
+        sum += w * weight((Math.round(n.start / stepTicks) + o) % steps);
+        total += w;
+      }
+    }
+    return total ? sum / total : 0;
+  };
+  const fits = Array.from({ length: steps }, (_, o) => fit(o));
+  const top = Math.max(...fits);
+  // (a last note cut short also ends off the bar line: the shift must
+  // then still be among the best fits)
+  const tail = Math.round(end / stepTicks) % steps;
+  if (tail > 0 && fits[steps - tail] > fits[0] * 1.05 && fits[steps - tail] >= top * 0.97) return tail;
+  const best = fits.indexOf(top);
+  return best && top > fits[0] * 1.15 ? steps - best : 0;
+}
+
 // score: { ppq, num, den, bpm, fifths?, minor?, parts: [{ name, notes: [{ pitch, start, dur }] }] }
 // opts: { lead: part index or null (highest line over all parts), bass: part index or null }
 export function reduceScore(score, opts = {}) {
@@ -96,16 +131,24 @@ export function reduceScore(score, opts = {}) {
     return { i, name: p.name || `part ${i + 1}`, notes: p.notes, mean, low: Math.min(...pitches), high: Math.max(...pitches) };
   }).filter((p) => p.notes.length);
   if (!parts.length) throw new Error('the score has no notes');
-  const end = Math.max(...parts.flatMap((p) => p.notes.map((n) => n.start + n.dur)));
+  let end = Math.max(...parts.flatMap((p) => p.notes.map((n) => n.start + n.dur)));
+  // an upbeat goes to the end of bar 1, so bar 2 starts on the first downbeat
+  const pickup = pickupSteps(parts, meter, steps, stepTicks, end);
+  if (pickup) {
+    const shift = (steps - pickup) * stepTicks;
+    for (const p of parts) p.notes = p.notes.map((n) => ({ ...n, start: n.start + shift }));
+    end += shift;
+  }
   const totalSteps = Math.ceil(end / stepTicks);
   const bars = Math.ceil(totalSteps / steps);
 
   // one line from a set of parts: per step the highest (or lowest) note
   // sounding; a new token where that note starts or changes
-  const line = (set, pickHigh) => {
+  const line = (set, pickHigh, ceiling = Infinity) => {
     const best = new Array(bars * steps).fill(null);
     for (const p of set) {
       for (const n of p.notes) {
+        if (n.pitch >= ceiling && p !== byMean[0]) continue;
         const s0 = Math.round(n.start / stepTicks);
         const s1 = Math.max(s0 + 1, Math.round((n.start + n.dur) / stepTicks));
         for (let s = s0; s < s1 && s < best.length; s += 1) {
@@ -129,7 +172,9 @@ export function reduceScore(score, opts = {}) {
     : parts.length > 1 ? byMean.slice(0, Math.max(1, Math.ceil(parts.length / 2))) : parts;
   const lead = line(leadSet, true);
   // a single melody line (ABC, a lead sheet) has no bass of its own
-  let bass = parts.length > 1 ? line(bassSet, false) : new Array(bars * steps).fill('.');
+  // where the lowest part rests, an upper part's figures (violins at c5)
+  // are no bass: only notes below middle C fill in for it
+  let bass = parts.length > 1 ? line(bassSet, false, Number.isInteger(opts.bass) ? Infinity : 60) : new Array(bars * steps).fill('.');
   // the bass must not double the lead: where they are the same note, rest
   bass = bass.map((t, s) => (typeof t === 'number' && t === lead[s] && parts.length > 1 ? '.' : t));
 
@@ -164,6 +209,7 @@ export function reduceScore(score, opts = {}) {
     keyRoot: key.root,
     mode: key.mode,
     bars,
+    pickup,
     parts: parts.map((p) => ({ index: p.i, name: p.name, notes: p.notes.length, range: `${noteName(p.low)}-${noteName(p.high)}` })),
     lead: lead.map((t) => (typeof t === 'number' ? noteName(t) : t)),
     bass: bass.map((t) => (typeof t === 'number' ? noteName(t) : t)),
@@ -192,7 +238,9 @@ export function phraseMap(r) {
     return n && hit / n >= 0.75;
   };
   let next = 0;
-  for (let b0 = 0; b0 < r.bars; b0 += 4) {
+  // after an upbeat the phrases start in bar 2
+  if (r.pickup) blocks.push({ from: 1, to: 1, label: 'upbeat', silent: true, sig: [] });
+  for (let b0 = r.pickup ? 1 : 0; b0 < r.bars; b0 += 4) {
     const s = sig(b0);
     const silent = s.every((t) => t === '.' || t === '_');
     const earlier = blocks.find((x) => !x.silent && same(x.sig, s));
@@ -212,7 +260,7 @@ export function barsText(r, from, to) {
 }
 
 export function overviewText(r) {
-  return `meter ${r.meter}${r.sourceMeter !== r.meter ? ` (source ${r.sourceMeter})` : ''}, ${r.bpm} bpm (from the file, may be wrong), key ${r.key} ${r.mode === 'ionian' ? 'major' : r.mode === 'aeolian' ? 'minor' : r.mode}, ${r.bars} bars
+  return `meter ${r.meter}${r.sourceMeter !== r.meter ? ` (source ${r.sourceMeter})` : ''}, ${r.bpm} bpm (from the file, may be wrong), key ${r.key} ${r.mode === 'ionian' ? 'major' : r.mode === 'aeolian' ? 'minor' : r.mode}, ${r.bars} bars${r.pickup ? ` (starts with an upbeat: bar 1 holds only the pickup, the first full bar is bar 2)` : ''}
 parts: ${r.parts.map((p) => `${p.index}: ${p.name} (${p.range}, ${p.notes} notes)`).join('; ')}
 phrase map (4-bar blocks, same letter = same lead line): ${phraseMap(r)}`;
 }
