@@ -23,12 +23,14 @@ Tools:
 - load_score(id, lead_part, bass_part): downloads a score and reduces it to a lead line (highest voice, or the part you name), a bass line (lowest voice) and one chord per bar. Shows each file (a zip holds one file per movement) with meter, key, tempo, parts and a phrase map (4-bar blocks with letters; the same letter means the lead line returns).
 - show_bars(id, file, from_bar, to_bar): the notes of up to 24 bars: per bar the chord, the lead and the bass as note names on the step grid (4/4: 16 steps per bar, 3/4 and 6/8: 12), "_" holds, "." rests.
 - submit_material(...): hand in the material. This ends the research.
+- no_score_found(reason): say that no usable score of this piece exists in the sources. This ends the research; the user gets an error instead of a song.
 
 How to work:
 1. Search, load the most likely score, find the right movement or file, and look at the bars that carry the famous theme. Check them against what you know of the piece: the theme must be recognisable. A file whose notes do not look like the piece is the wrong file or a bad transcription: try another.
 2. Choose 2 to ${MAX_SEGMENTS} segments of 4 to ${SCORE_MAX_BARS} bars that together tell the piece: the main theme first, then contrasting material (an episode, a second theme, a bridge), as the piece has them. A segment should start on a downbeat and end at a phrase end. If the lead line jumps between voices in a way that breaks the melody, load again with lead_part set to the melody's part.
-3. If the piece cannot be found as a score after a few tries, write its themes from memory in submit_material: lead (and bass if you know it) as note names on the step grid, chords per bar. Say so in source. Never invent a melody and call it the original.
-Use at most ${RESEARCH_MAX_CALLS} tool calls before submitting.`;
+3. Every segment must come from a score you loaded and looked at. Never write notes from memory, never guess, never use a different piece because it is similar.
+4. Before giving up, try at least two search_scores queries (title and composer or artist, other spellings or the original-language title) and at least one web_search for a MIDI, MusicXML or ABC file of the piece, and load the files you find. If none is the piece, or the notes are not recognisably the piece, call no_score_found and say briefly what you searched.
+Use at most ${RESEARCH_MAX_CALLS} tool calls before submitting or giving up.`;
 }
 
 export function researchUserPrompt(prompt, interpretation) {
@@ -62,29 +64,26 @@ export function researchTools() {
       work: s('title of the piece (and movement)'),
       by: s('composer or artist'),
       tempo: { type: 'number', description: 'the tempo the piece is usually played at, bpm of the felt beat (dotted quarter in 6/8)' },
-      source: s('where the notes come from, one line (e.g. "Mutopia score, 1st movement" or "from memory")'),
+      source: s('where the notes come from, one line (e.g. "Mutopia score, 1st movement")'),
       segments: {
         type: 'array',
         description: `2 to ${MAX_SEGMENTS} segments, the main theme first`,
         items: obj({
           id: s('short id: A, B, C ...'),
           label: s('what it is, e.g. "ritornello: the peasants\' dance"'),
-          score_id: s('id of the loaded score, or "" when written from memory'),
-          file: i('file index in that score (0 when written from memory)'),
-          from_bar: i('first bar (0 when written from memory)'),
-          to_bar: i('last bar, inclusive (0 when written from memory)'),
-          lead: s('only from memory: note names per step, e.g. "a5 _ a5 _ a5 _ a#5 _ ..."; else ""'),
-          bass: s('only from memory: bass note names per step, or ""'),
-          chords: s('only from memory: one chord name per bar, space separated, e.g. "F F C7 F"; else ""'),
-          meter: s('only from memory: 4/4, 3/4, 6/8 or 12/8; else ""'),
+          score_id: s('id of the loaded score'),
+          file: i('file index in that score (0 when there is one file)'),
+          from_bar: i('first bar'),
+          to_bar: i('last bar, inclusive'),
         }),
       },
+    })),
+    fn('no_score_found', 'No usable score of the piece was found. Ends the research with an error for the user.', obj({
+      reason: s('one or two sentences: what was searched and why nothing fits'),
     })),
   ];
 }
 
-const NOTE = /^[a-g](#|b)?-?\d$/i;
-const toks = (v) => String(v || '').trim().split(/\s+/).filter(Boolean);
 
 // The model's submit_material + loaded scores -> material, or { error }
 // for the model to fix. getReduced(id, file) returns a reduced score or null.
@@ -96,41 +95,23 @@ export function buildMaterial(args, getReduced, extract) {
   let meter = null;
   let keyRoot = null;
   let mode = null;
-  let fromScore = 0;
   for (const [n, seg] of segs.entries()) {
     const id = String(seg.id || String.fromCharCode(65 + n)).replace(/[^A-Za-z0-9]/g, '').slice(0, 4) || String.fromCharCode(65 + n);
     if (out.some((x) => x.id === id)) { problems.push(`segment id ${id} used twice`); continue; }
-    let m;
-    if (seg.score_id) {
-      const r = getReduced(seg.score_id, seg.file || 0);
-      if (!r) { problems.push(`${id}: score ${seg.score_id} file ${seg.file || 0} is not loaded`); continue; }
-      const from = Math.max(1, Number(seg.from_bar) || 1);
-      const to = Math.min(from + SCORE_MAX_BARS - 1, Number(seg.to_bar) || from + 7);
-      m = { ...extract(r, from, to), meter: r.meter, keyRoot: r.keyRoot, mode: r.mode, from: `${seg.score_id.replace(/^url:/, '')} #${seg.file || 0} bars ${from}-${to}` };
-      fromScore += 1;
-    } else {
-      const segMeter = METERS[seg.meter] ? seg.meter : meter || '4/4';
-      const steps = METERS[segMeter].steps;
-      const lead = toks(seg.lead).map((t) => (NOTE.test(t) ? t.toLowerCase() : t === '_' ? '_' : '.'));
-      const bass = toks(seg.bass).map((t) => (NOTE.test(t) ? t.toLowerCase() : t === '_' ? '_' : '.'));
-      if (!lead.some((t) => NOTE.test(t))) { problems.push(`${id}: no lead notes`); continue; }
-      const bars = Math.min(SCORE_MAX_BARS, Math.ceil(lead.length / steps));
-      const chords = toks(seg.chords).slice(0, bars);
-      m = { lead: lead.slice(0, bars * steps), bass: bass.some((t) => NOTE.test(t)) ? bass.slice(0, bars * steps) : null, chords, bars, meter: segMeter, from: 'memory' };
-    }
+    // only notes from a loaded score count; nothing is written from memory
+    if (!seg.score_id) { problems.push(`${id}: every segment needs a loaded score (score_id); notes from memory are not accepted`); continue; }
+    const r = getReduced(seg.score_id, seg.file || 0);
+    if (!r) { problems.push(`${id}: score ${seg.score_id} file ${seg.file || 0} is not loaded`); continue; }
+    const from = Math.max(1, Number(seg.from_bar) || 1);
+    const to = Math.min(from + SCORE_MAX_BARS - 1, Number(seg.to_bar) || from + 7);
+    const m = { ...extract(r, from, to), meter: r.meter, keyRoot: r.keyRoot, mode: r.mode, from: `${seg.score_id.replace(/^url:/, '')} #${seg.file || 0} bars ${from}-${to}` };
     if (meter && m.meter !== meter) { problems.push(`${id}: meter ${m.meter} differs from ${meter}; all segments need one meter`); continue; }
     meter = m.meter;
     if (m.keyRoot !== undefined && keyRoot === null) { keyRoot = m.keyRoot; mode = m.mode; }
     out.push({ id, label: String(seg.label || '').slice(0, 120), ...m });
   }
-  if (!out.length) return { error: problems.join('; ') || 'no usable segments' };
-  // a key for material from memory: the last chord of the first segment
-  if (keyRoot === null) {
-    const last = out[0].chords.filter(Boolean).pop() || 'C';
-    const mm = /^([A-G])([#b]?)(m)?/.exec(last) || ['', 'C', '', ''];
-    keyRoot = ({ C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }[mm[1]] + (mm[2] === '#' ? 1 : mm[2] === 'b' ? -1 : 0) + 12) % 12;
-    mode = mm[3] ? 'aeolian' : 'ionian';
-  }
+  // a single missing or unloaded segment sends the whole submission back
+  if (!out.length || problems.length) return { error: problems.join('; ') || 'no usable segments' };
   // empty chord bars take the chord before (or the tonic)
   for (const seg of out) {
     const tonic = `${KEY_NAMES[keyRoot]}${mode === 'aeolian' ? 'm' : ''}`;
@@ -143,8 +124,8 @@ export function buildMaterial(args, getReduced, extract) {
     material: {
       work: String(args.work || '').slice(0, 120),
       by: String(args.by || '').slice(0, 80),
-      source: String(args.source || (fromScore ? 'score' : 'memory')).slice(0, 160),
-      fromScore: fromScore === out.length ? 'score' : fromScore ? 'mixed' : 'memory',
+      source: String(args.source || 'score').slice(0, 160),
+      fromScore: 'score',
       tempo,
       meter,
       keyRoot,

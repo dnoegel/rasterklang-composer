@@ -9,10 +9,17 @@ const script = [
   [{ name: 'submit_material', args: { work: 'Autumn', by: 'Vivaldi', tempo: 100, source: 'Mutopia', segments: [{ id: 'A', label: 'theme', score_id: 'mutopia:x', file: 0, from_bar: 1, to_bar: 2 }] } }],
 ];
 const seen = [];
+// after a run, a second script: gives up too early, searches, then may give up
+const giveUp = [
+  [{ name: 'search_scores', args: { query: 'welle erdball monoton' } }],
+  [{ name: 'no_score_found', args: { reason: 'nothing' } }],
+  [{ name: 'search_scores', args: { query: 'monoton und minimal' } }, { name: 'web_search', args: { query: 'monoton und minimal midi' } }],
+  [{ name: 'no_score_found', args: { reason: 'No MIDI, MusicXML or ABC of the song exists in the sources.' } }],
+];
 vi.mock('../tools/openrouter.mjs', () => ({
   chatStep: async ({ messages }) => {
     seen.push(messages[messages.length - 1]);
-    const turn = script.shift();
+    const turn = script.length ? script.shift() : giveUp.shift();
     return { message: { role: 'assistant', content: null, tool_calls: turn.map((t, i) => ({ id: `c${seen.length}${i}`, type: 'function', function: { name: t.name, arguments: JSON.stringify(t.args) } })) } };
   },
   webSearch: async () => ({ text: 'none' }),
@@ -39,5 +46,15 @@ describe('research loop', () => {
     expect(seen[1]).toMatchObject({ role: 'tool' });
     expect(seen[4].content).toMatch(/Not usable: .*not loaded/);
     expect(m.calls).toBe(5);
+  });
+
+  it('reports no score instead of guessing, but only after a real search', async () => {
+    const { research } = await import('../research.mjs');
+    seen.length = 0;
+    const r = await research({ prompt: 'monoton und minimal c64', interpretation: { kind: 'work', work: 'Monoton und Minimal', by: 'Welle:Erdball' }, url: 'x', key: 'k', model: 'm', searchModel: 's' });
+    expect(r.notFound).toBe(true);
+    expect(r.reason).toMatch(/No MIDI/);
+    expect(seen[2].content).toMatch(/Not yet: search more first \(1 of 2 score searches, 0 of 1 web search/);
+    expect(r.steps.map((s) => s.tool)).toEqual(['search_scores', 'search_scores', 'web_search']);
   });
 });

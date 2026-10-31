@@ -108,17 +108,21 @@ describe('interpretation path', () => {
     work: 'Autumn', by: 'Vivaldi', tempo: 108, source: 'test score',
     segments: [
       { id: 'A', label: 'ritornello', score_id: 's1', file: 0, from_bar: 1, to_bar: 1 },
-      { id: 'B', label: 'from memory', score_id: '', lead: 'c6 _ a5 _ f5 _ _ _ c6 _ a5 _ f5 _ _ _', bass: '', chords: 'F', meter: '4/4' },
+      { id: 'B', label: 'again', score_id: 's1', file: 0, from_bar: 1, to_bar: 1 },
     ],
   }, (id) => (id === 's1' ? reduced : null), extractMaterial).material;
 
-  it('builds material from score bars and from memory', () => {
+  it('builds material from loaded score bars only, never from memory', () => {
     expect(material.keyRoot).toBe(5);
     expect(material.meter).toBe('4/4');
-    expect(material.fromScore).toBe('mixed');
-    expect(material.segments.map((s) => [s.id, s.bars, s.bass ? 'bass' : 'none'])).toEqual([['A', 1, 'bass'], ['B', 1, 'none']]);
+    expect(material.fromScore).toBe('score');
+    expect(material.segments.map((s) => [s.id, s.bars, s.bass ? 'bass' : 'none'])).toEqual([['A', 1, 'bass'], ['B', 1, 'bass']]);
     const bad = buildMaterial({ segments: [{ id: 'A', score_id: 'nope', file: 0, from_bar: 1, to_bar: 4 }] }, () => null, extractMaterial);
     expect(bad.error).toMatch(/not loaded/);
+    // one segment written from memory sends the whole submission back
+    const guessed = buildMaterial({ segments: [{ id: 'A', score_id: 's1', file: 0, from_bar: 1, to_bar: 1 }, { id: 'B', score_id: '', lead: 'c6 _ a5' }] }, (id) => (id === 's1' ? reduced : null), extractMaterial);
+    expect(guessed.material).toBeUndefined();
+    expect(guessed.error).toMatch(/memory are not accepted/);
     expect(interpretationSchema(['A', 'B']).properties.sections.items.properties.material.enum).toEqual(['A', 'B', 'none']);
     expect(interpretationUserPrompt('vivaldi autumn c64', material)).toMatch(/key F ionian, meter 4\/4/);
   });
@@ -144,8 +148,8 @@ describe('interpretation path', () => {
     expect(brief.tempo).toBe(170);
     expect(brief.sections.map((s) => s.bars)).toEqual([1, 1, 2]);
     expect(brief.sections[0].score.lead.slice(0, 4)).toEqual(['a5', '_', 'a5', '_']);
-    expect(brief.sections[1].score.bass).toBeNull();
-    expect(brief.interpretation).toMatchObject({ work: 'Autumn', by: 'Vivaldi', fromScore: 'mixed' });
+    expect(brief.sections[1].score.bass.slice(0, 2)).toEqual(['f3', '_']);
+    expect(brief.interpretation).toMatchObject({ work: 'Autumn', by: 'Vivaldi', fromScore: 'score' });
 
     const tune = composeBrief(brief, { prompt: 'vivaldi autumn c64', seed: 1, withLead: true });
     const first = tune.leadNotes.filter((n) => n.bar === 0).map((n) => n.pitch);

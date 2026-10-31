@@ -53,18 +53,29 @@ export async function research({ prompt, interpretation, url, key, model, search
     return `unknown tool ${name}`;
   };
 
+  // giving up counts only after a real search: two score searches and
+  // one web search (or when time is up)
+  const tried = { search_scores: 0, web_search: 0 };
+  const notFound = (reason) => {
+    log(`research found no score: ${String(reason).slice(0, 160)}, ${steps.length} steps, ${Math.round((Date.now() - started) / 1000)} s`);
+    return { notFound: true, reason: String(reason || '').slice(0, 300), steps, calls: modelCalls, ms: Date.now() - started };
+  };
+  const ending = new Set(['submit_material', 'no_score_found']);
   for (let round = 0; round < RESEARCH_MAX_CALLS + 3; round += 1) {
     const late = calls >= RESEARCH_MAX_CALLS || Date.now() - started > BUDGET_MS;
-    const toolChoice = late ? { type: 'function', function: { name: 'submit_material' } } : 'auto';
     if (late && round > 0 && messages[messages.length - 1].role === 'tool') {
-      messages.push({ role: 'user', content: 'Time is up: submit the material now with what you have (from memory if no score fits).' });
+      messages.push({ role: 'user', content: 'Time is up: submit material from the scores you loaded, or call no_score_found.' });
     }
     modelCalls += 1;
-    const { message } = await chatStep({ url, key, model, messages, tools, toolChoice, maxTokens: 8000, timeoutMs: 60000 });
+    const { message } = await chatStep({
+      url, key, model, messages, maxTokens: 8000, timeoutMs: 60000,
+      tools: late ? tools.filter((t) => ending.has(t.function.name)) : tools,
+      toolChoice: late ? 'required' : 'auto',
+    });
     messages.push({ role: 'assistant', content: message.content ?? (message.tool_calls?.length ? null : ''), ...(message.tool_calls?.length ? { tool_calls: message.tool_calls } : {}) });
     const toolCalls = message.tool_calls || [];
     if (!toolCalls.length) {
-      messages.push({ role: 'user', content: 'Use the tools, and finish with submit_material.' });
+      messages.push({ role: 'user', content: 'Use the tools, and finish with submit_material or no_score_found.' });
       continue;
     }
     for (const tc of toolCalls) {
@@ -78,9 +89,16 @@ export async function research({ prompt, interpretation, url, key, model, search
           log(`research done: ${built.material.work} (${built.material.fromScore}), ${steps.length} steps, ${Math.round((Date.now() - started) / 1000)} s`);
           return { ...built.material, steps, calls: modelCalls, ms: Date.now() - started, problems: built.problems };
         }
-        messages.push({ role: 'tool', tool_call_id: tc.id, content: `Not usable: ${built.error}. Fix it and submit again.` });
+        messages.push({ role: 'tool', tool_call_id: tc.id, content: `Not usable: ${built.error}. Fix it and submit again, or call no_score_found.` });
         continue;
       }
+      if (name === 'no_score_found') {
+        const late = calls >= RESEARCH_MAX_CALLS || Date.now() - started > BUDGET_MS;
+        if (late || (tried.search_scores >= 2 && tried.web_search >= 1)) return notFound(args.reason);
+        messages.push({ role: 'tool', tool_call_id: tc.id, content: `Not yet: search more first (${tried.search_scores} of 2 score searches, ${tried.web_search} of 1 web search for a MIDI, MusicXML or ABC file).` });
+        continue;
+      }
+      if (name in tried) tried[name] += 1;
       calls += 1;
       let result;
       try {
@@ -92,5 +110,5 @@ export async function research({ prompt, interpretation, url, key, model, search
       messages.push({ role: 'tool', tool_call_id: tc.id, content: String(result).slice(0, 12000) });
     }
   }
-  throw new Error('the research did not hand in material');
+  return notFound('the research did not finish');
 }
