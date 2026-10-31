@@ -140,10 +140,18 @@ describe('interpretation path', () => {
     expect(material.segments.map((s) => [s.id, s.bars, s.bass ? 'bass' : 'none'])).toEqual([['A', 1, 'bass'], ['B', 1, 'bass']]);
     const bad = buildMaterial({ segments: [{ id: 'A', score_id: 'nope', file: 0, from_bar: 1, to_bar: 4 }] }, () => null, extractMaterial);
     expect(bad.error).toMatch(/not loaded/);
-    // one segment written from memory sends the whole submission back
-    const guessed = buildMaterial({ segments: [{ id: 'A', score_id: 's1', file: 0, from_bar: 1, to_bar: 1 }, { id: 'B', score_id: '', lead: 'c6 _ a5' }] }, (id) => (id === 's1' ? reduced : null), extractMaterial);
-    expect(guessed.material).toBeUndefined();
-    expect(guessed.error).toMatch(/memory are not accepted/);
+    // memory may fill in around a score of the piece, never replace it
+    const get = (id) => (id === 's1' ? reduced : null);
+    const mixed = buildMaterial({ segments: [{ id: 'A', score_id: 's1', file: 0, from_bar: 1, to_bar: 1 }, { id: 'B', label: 'episode', score_id: '', lead: 'c6 _ a5 _ f5', chords: 'F' }] }, get, extractMaterial).material;
+    expect(mixed.fromScore).toBe('mixed');
+    expect(mixed.segments[1]).toMatchObject({ id: 'B', bars: 1, from: 'memory', label: 'episode (from memory)', bass: null, chords: ['F'] });
+    expect(mixed.segments[1].lead).toHaveLength(16);
+    const memoryFirst = buildMaterial({ segments: [{ id: 'A', score_id: '', lead: 'c6 _ a5' }, { id: 'B', score_id: 's1', file: 0, from_bar: 1, to_bar: 1 }] }, get, extractMaterial);
+    expect(memoryFirst.error).toMatch(/first segment .* must come from a loaded score/);
+    const mostlyMemory = buildMaterial({ segments: [{ id: 'A', score_id: 's1', file: 0, from_bar: 1, to_bar: 1 }, { id: 'B', score_id: '', lead: 'c6' }, { id: 'C', score_id: '', lead: 'a5' }] }, get, extractMaterial);
+    expect(mostlyMemory.error).toMatch(/at least half/);
+    const onlyMemory = buildMaterial({ segments: [{ id: 'A', score_id: '', lead: 'c6 _ a5' }] }, get, extractMaterial);
+    expect(onlyMemory.material).toBeUndefined();
     expect(interpretationSchema(['A', 'B']).properties.sections.items.properties.material.enum).toEqual(['A', 'B', 'none']);
     expect(interpretationUserPrompt('vivaldi autumn c64', material)).toMatch(/key F ionian, meter 4\/4/);
   });
