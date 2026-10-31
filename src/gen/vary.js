@@ -19,9 +19,11 @@ export function varyBrief(brief, prompt, seed) {
   const rng = new Rng(key, GENERATOR_VERSION, 'vary');
   const style = blendStyles(brief.style, brief.blend?.style, brief.blend?.amount || 0);
   // the user's own melody is played as written: its key stays
-  const userTheme = Object.values(brief.themes || {}).some((t) => t.user);
+  // so are the notes of a score
+  const userTheme = Object.values(brief.themes || {}).some((t) => t.user) || brief.sections.some((s) => s.score);
   const [lo, hi] = style.tempo;
-  const tempo = Math.round(Math.max(lo * 0.85, Math.min(hi * 1.15, brief.tempo * rng.float(0.9, 1.1))));
+  const tempo = brief.interpretation ? Math.round(brief.tempo * rng.float(0.92, 1.08))
+    : Math.round(Math.max(lo * 0.85, Math.min(hi * 1.15, brief.tempo * rng.float(0.9, 1.1))));
   const intent = {
     moods: brief.moods,
     energy: brief.energy || 0,
@@ -71,7 +73,7 @@ export function varyBrief(brief, prompt, seed) {
     }
     // harmony: the chorus keeps the model's chords (the hook sits on them);
     // other kinds get the sampler's progression half the time, per type
-    if (own && !KEEP_CHORDS.has(s.type)) {
+    if (own && !KEEP_CHORDS.has(s.type) && !s.score) {
       if (newChords[s.type] === undefined) newChords[s.type] = rng.chance(0.5);
       if (newChords[s.type]) { s.chords = own.chords; s.chordBars = own.chordBars; swapped.add(s.type); }
     }

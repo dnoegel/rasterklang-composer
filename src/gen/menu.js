@@ -436,6 +436,8 @@ export function briefToAnswer(brief) {
       texture: s.texture, transition: s.transition, groove: s.groove, drums_pattern: (s.drumPattern || []).join(''),
       bass: s.bass, bass_pattern: (s.bassPattern || []).join(''), bass_sound: s.bassSound || 'palette', arp_pattern: (s.arpPattern || []).join(''),
       feel: s.feel, lead: s.lead, chords: s.chords, chord_bars: s.chordBars || 1, transpose: s.transpose || 0, mode: s.mode || 'song', variation: s.variation || 'auto',
+      // an interpretation's sections name their segment of real notes
+      ...(brief.interpretation ? { material: s.score?.from || 'none' } : {}),
     })),
     themes: Object.entries(brief.themes || {}).map(([section, t]) => ({ section, notes: t.notes })),
   };

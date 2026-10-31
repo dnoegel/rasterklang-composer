@@ -13,6 +13,7 @@ import { BASS } from './library/bass.js';
 import { ARP_CELLS } from './library/cells.js';
 import { KITS } from './library/palettes.js';
 import { ECHO_MAX_BARS } from './library/textures.js';
+import { noteMidi } from './brief.js';
 
 const REST = { tok: '~', inst: null };
 const HOLD = { tok: '_', inst: null };
@@ -336,6 +337,41 @@ function multiplex(drums, bass, kit) {
 
 const restBar = (steps) => Array.from({ length: steps }, () => REST);
 
+// Notes from a score, played exactly: the lead as melody bars
+// (the shape renderMelody returns), the bass as voice cells. The section's
+// transpose and the song's octave shift apply.
+function scoreMelody(section, plan) {
+  const steps = plan.meter.steps;
+  const shift = (plan.scoreShift?.lead || 0) + (section.transpose || 0);
+  const strong = plan.meter.strong;
+  const bars = [];
+  for (let b = 0; b < section.bars; b += 1) {
+    const tokens = [];
+    const notes = [];
+    for (let i = 0; i < steps; i += 1) {
+      const t = section.score.lead[b * steps + i];
+      const n = t ? noteMidi(t) : null;
+      if (n !== null) {
+        const pitch = n + shift;
+        tokens.push(noteName(pitch));
+        notes.push({ step: i, pitch, strong: i % strong === 0, chord: section.chords[b] });
+      } else tokens.push(t === '_' && (i > 0 || b > 0) ? '_' : '~');
+    }
+    bars.push({ tokens, notes, label: 'score', section: section.type });
+  }
+  return { bars, template: 'score', themed: true, variation: 'exact' };
+}
+
+function scoreBassBar(section, b, plan, inst) {
+  const steps = plan.meter.steps;
+  const shift = (plan.scoreShift?.bass || 0) + (section.transpose || 0);
+  return section.score.bass.slice(b * steps, (b + 1) * steps).map((t, i) => {
+    const n = noteMidi(t);
+    if (n !== null) return { tok: noteName(Math.max(24, n + shift)), inst };
+    return t === '_' && (i > 0 || b > 0) ? HOLD : REST;
+  });
+}
+
 export function arrange(plan, rng, melodyRng) {
   const steps = plan.meter.steps;
   const voices = [[], [], []];
@@ -356,7 +392,7 @@ export function arrange(plan, rng, melodyRng) {
     const needsLead = section.textureDef.stages.some(([, r]) => r.includes('L') || r.includes('C'));
     const counterState = { pitch: null, lead: null };
     const material = section.textureDef.lead || section.type;
-    const melody = needsLead ? renderMelody(section, plan, melodyRng, melodyMemory, material) : null;
+    const melody = !needsLead ? null : section.score?.lead ? scoreMelody(section, plan) : renderMelody(section, plan, melodyRng, melodyMemory, material);
     let leadInst = section.leadInst;
     if (section.occurrence >= 3 && section.lastOccurrence && !plan.style.signature?.lead) {
       const alt = Object.keys(plan.style.palette.lead).find((l) => l !== leadInst);
@@ -373,7 +409,8 @@ export function arrange(plan, rng, melodyRng) {
       let roles = rolesAt(section, b, plan);
       if (roles.includes('E') && (echoBars += 1) > ECHO_MAX_BARS) roles = roles.replace('E', '-');
       const drums = drumBar(section, b, plan, barRng(plan, section, b, 'drums'), b === 0 ? prevTransition : null);
-      const bass = bassBar(section, b, plan, barRng(plan, section, b, 'bass'), idiom, bassInst(roles), after);
+      const bass = section.score?.bass ? scoreBassBar(section, b, plan, bassInst(roles))
+        : bassBar(section, b, plan, barRng(plan, section, b, 'bass'), idiom, bassInst(roles), after);
       const e = energyAt(section, b);
       const cellNow = section.arpRows ? section.arpRows[b % section.arpRows.length]
         : cells[Math.min(cells.length - 1, Math.floor(e * cells.length))];

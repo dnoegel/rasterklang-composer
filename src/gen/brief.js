@@ -360,6 +360,30 @@ function parseTheme(theme, steps) {
   })) : null;
 }
 
+// Notes from a score: lead and bass as note names per step
+// ("a5 _ a5 . c6"), played exactly. Returns token arrays of whole bars (at
+// most 16), or null when neither line has a note.
+const NOTE_TOKEN = /^[a-g](#|b)?-?\d$/;
+export const SCORE_MAX_BARS = 16;
+export function cleanScore(score, steps) {
+  if (!score || typeof score !== 'object') return null;
+  const tokens = (v) => (Array.isArray(v) ? v : typeof v === 'string' ? v.trim().split(/\s+/) : []).filter(Boolean).map((t) => {
+    const x = String(t).toLowerCase().replace(/^([a-g])s/, '$1#');
+    return NOTE_TOKEN.test(x) ? x : x === '_' ? '_' : '.';
+  });
+  const lead = tokens(score.lead);
+  const bass = tokens(score.bass);
+  const has = (l) => l.some((t) => NOTE_TOKEN.test(t));
+  if (!has(lead) && !has(bass)) return null;
+  const bars = clamp(Math.ceil(Math.max(lead.length, bass.length) / steps), 1, SCORE_MAX_BARS);
+  const fit = (l) => {
+    const out = [...l.slice(0, bars * steps), ...Array(Math.max(0, bars * steps - l.length)).fill('.')];
+    if (out[0] === '_') out[0] = '.';
+    return has(out) ? out : null;
+  };
+  return { lead: fit(lead), bass: fit(bass), bars };
+}
+
 // Patterns written in the brief (LLM path): one character per step, one or
 // two bars. Close misses are padded or cut, others dropped.
 function cleanPattern(raw, steps, alphabet, mustHave) {
@@ -394,7 +418,8 @@ export function validateBrief(input) {
   if (!METERS[b.meter]) b.meter = Object.keys(style.meter)[0];
   const [lo, hi] = style.tempo;
   const tempo = Number(b.tempo) || (lo + hi) / 2;
-  b.tempo = Math.round(clamp(tempo, lo * 0.85, hi * 1.15));
+  // an interpretation keeps the work's own tempo
+  b.tempo = Math.round(b.interpretation ? clamp(tempo, 50, 220) : clamp(tempo, lo * 0.85, hi * 1.15));
   if (b.tempo !== Math.round(tempo)) repairs.push(`tempo ${tempo} -> ${b.tempo}`);
   b.keyRoot = ((Math.round(Number(b.keyRoot)) % 12) + 12) % 12 || 0;
   if (!SCALES[b.mode]) { repairs.push(`mode ${b.mode} -> aeolian`); b.mode = 'aeolian'; }
@@ -428,6 +453,14 @@ export function validateBrief(input) {
     const kind = KIND_OF[s.type];
     let bars = Math.round(Number(s.bars) || 8);
     bars = clamp(bars % 12 === 0 ? bars : bars <= 2 ? bars : Math.round(bars / 2) * 2, 1, 32);
+    // a section with notes from a score is as long as its notes
+    if (s.score !== undefined) {
+      const score = cleanScore(s.score, steps);
+      if (score) bars = score.bars;
+      else { repairs.push(`${s.type}: score not usable`); }
+      if (score) s.score = { lead: score.lead, bass: score.bass, ...(s.score.from ? { from: String(s.score.from).slice(0, 80) } : {}) };
+      else delete s.score;
+    }
     if (bars !== s.bars) repairs.push(`${s.type} bars ${s.bars} -> ${bars}`);
     s.bars = bars;
     total += bars;
@@ -518,6 +551,24 @@ function customGroove(rows, base) {
   };
 }
 
+const NOTE_PC = { c: 0, d: 2, e: 4, f: 5, g: 7, a: 9, b: 11 };
+export function noteMidi(t) {
+  const m = /^([a-g])(#|b)?(-?\d)$/.exec(t);
+  return m ? (Number(m[3]) + 1) * 12 + NOTE_PC[m[1]] + (m[2] === '#' ? 1 : m[2] === 'b' ? -1 : 0) : null;
+}
+// Octaves to add so the median note sits between lo and hi, without the
+// extreme note crossing limit (a top limit when shifting up the lead's
+// ceiling, a floor for the bass)
+function octaveShift(sections, line, lo, hi, limit) {
+  const notes = sections.flatMap((s) => (s.score?.[line] || []).map(noteMidi).filter((n) => n !== null)).sort((a, b) => a - b);
+  if (!notes.length) return 0;
+  const median = notes[Math.floor(notes.length / 2)];
+  let shift = 0;
+  while (median + shift > hi && notes[0] + shift - 12 >= (line === 'bass' ? limit : 36)) shift -= 12;
+  while (median + shift < lo && notes[notes.length - 1] + shift + 12 <= (line === 'lead' ? limit : 60)) shift += 12;
+  return shift;
+}
+
 export function planFromBrief(brief, seedKey) {
   const style = blendStyles(brief.style, brief.blend?.style, brief.blend?.amount || 0);
   const meter = METERS[brief.meter];
@@ -554,6 +605,9 @@ export function planFromBrief(brief, seedKey) {
     bar += s.bars;
   }
   for (const s of sections) s.lastOccurrence = s.occurrence === counts[s.type];
+  // notes from a score move by whole octaves into the SID's
+  // ranges, the same shift for the whole song so the line stays connected
+  const scoreShift = { lead: octaveShift(sections, 'lead', 60, 84, 100), bass: octaveShift(sections, 'bass', 33, 47, 24) };
   // Echo: the lead's delayed copy, an eighth note (or a dotted
   // eighth) later; `fill` puts it on voices left silent under the lead.
   const echoRng = new Rng(seedKey, GENERATOR_VERSION, 'echo');
@@ -585,6 +639,7 @@ export function planFromBrief(brief, seedKey) {
     palette: brief.palette,
     sound: brief.sound || null,
     themes: brief.themes || {},
+    scoreShift,
     echo,
     sections,
     totalBars: bar,

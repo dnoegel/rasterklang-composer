@@ -59,3 +59,47 @@ async function chatOnce({ url, key, model, system, user, turns = [], schemaName,
   if (!answer || typeof answer !== 'object') throw new Error(`no JSON object (${why})`);
   return { answer, usage: data.usage || null };
 }
+
+// One step of a tool-calling conversation: returns the
+// assistant message (content and/or tool_calls) to append.
+export async function chatStep({ url, key, model, messages, tools, toolChoice = 'auto', temperature = 0.3, maxTokens = 4000, timeoutMs = 60000, plugins = null, reasoning = null }) {
+  const res = await fetch(`${url}/chat/completions`, {
+    method: 'POST',
+    headers: { authorization: `Bearer ${key}`, 'content-type': 'application/json', 'x-title': 'Rasterklang Compose' },
+    body: JSON.stringify({
+      model,
+      temperature,
+      max_tokens: maxTokens,
+      messages,
+      ...(tools ? { tools, tool_choice: toolChoice } : {}),
+      ...(plugins ? { plugins } : {}),
+      ...(reasoning ? { reasoning } : {}),
+      usage: { include: true },
+    }),
+    signal: AbortSignal.timeout(timeoutMs),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(`OpenRouter ${res.status}: ${data?.error?.message || 'error'}`);
+  if (data?.error) throw new Error(`OpenRouter: ${data.error.message || 'error'}`);
+  const message = data.choices?.[0]?.message;
+  if (!message) throw new Error('empty answer');
+  return { message, usage: data.usage || null };
+}
+
+// Web search through OpenRouter's web plugin: a small model reads the
+// results and lists what matters, with the URLs it found.
+export async function webSearch({ url, key, model, query, timeoutMs = 30000 }) {
+  const { message, usage } = await chatStep({
+    url, key, model, timeoutMs, maxTokens: 1200, temperature: 0.1,
+    plugins: [{ id: 'web', max_results: 6 }],
+    reasoning: { enabled: false },
+    messages: [
+      { role: 'system', content: 'Answer from the web results only. Be short and factual. List useful pages with their full URLs, especially direct links to MIDI (.mid), MusicXML (.mxl, .musicxml, .xml) or ABC (.abc) files.' },
+      { role: 'user', content: query },
+    ],
+  });
+  const text = Array.isArray(message.content) ? message.content.map((c) => c.text || '').join('') : String(message.content || '');
+  const links = (message.annotations || []).filter((a) => a.type === 'url_citation')
+    .map((a) => `${a.url_citation.url} | ${a.url_citation.title || ''} | ${String(a.url_citation.content || '').replace(/\s+/g, ' ').slice(0, 300)}`);
+  return { text: `${text.slice(0, 3000)}${links.length ? `\nSources:\n${[...new Set(links)].slice(0, 10).join('\n')}` : ''}`, usage };
+}

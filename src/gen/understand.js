@@ -17,7 +17,7 @@ export function understandSchema() {
   return {
     type: 'object',
     additionalProperties: false,
-    required: ['genres', 'moods', 'energy', 'valence', 'tension', 'sid_idiom', 'arc', 'fixed', 'reference'],
+    required: ['genres', 'moods', 'energy', 'valence', 'tension', 'sid_idiom', 'arc', 'fixed', 'reference', 'interpretation'],
     properties: {
       genres: {
         type: 'array',
@@ -37,6 +37,12 @@ export function understandSchema() {
       },
       fixed: { type: 'array', items: en(FIXABLE) },
       reference: { type: 'string' },
+      interpretation: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['kind', 'work', 'by'],
+        properties: { kind: en(['none', 'work', 'artist']), work: { type: 'string' }, by: { type: 'string' } },
+      },
     },
   };
 }
@@ -51,6 +57,7 @@ export function understandSystemPrompt() {
 - arc: only if the prompt tells a sequence (first this, then that; starts ... ends ...; suddenly ...): its 2 to 4 phases in order, each with a mood, an energy 0 to 1 and its share of the song (shares sum to 1). Empty if the prompt describes one state.
 - fixed: only what the prompt states explicitly: style (a genre, artist or song is named), tempo (slow, fast, a bpm), form, lead (a lead instrument or sound is named), bass, drums, arp. Empty if the prompt states none of them.
 - reference: the song or artist the prompt names, else "".
+- interpretation: whether the prompt asks to play an existing piece itself, its real melody, as a cover, version or interpretation. kind "work" when it names a piece ("Vivaldi's Autumn as a C64 tune", "Für Elise im SID-Sound", "a chiptune cover of Billie Jean", "spiel Greensleeves"); "artist" when it asks for the music of a composer or artist itself without naming a piece ("Vivaldi interpreted on the C64", "play some Bach"). "none" when a piece or artist only describes a sound or style ("sounds like Depeche Mode", "in the style of Rob Hubbard", "epic like a film score") or nothing is named. work: the title as commonly known in English, with the movement if the prompt names one ("The Four Seasons: Autumn"), else ""; by: composer or artist, else "".
 
 Styles: ${styles}
 Moods: ${Object.keys(MOODS).join(', ')}`;
@@ -94,7 +101,18 @@ export function cleanUnderstanding(answer) {
     arc: cleanArc(answer?.arc),
     fixed: [...new Set((Array.isArray(answer?.fixed) ? answer.fixed : []).filter((f) => FIXABLE.includes(f)))],
     reference: typeof answer?.reference === 'string' ? answer.reference.slice(0, 120) : '',
+    interpretation: cleanInterpretation(answer?.interpretation),
   };
+}
+
+// "play this piece": null unless the prompt asks for one
+export function cleanInterpretation(x) {
+  if (!x || !['work', 'artist'].includes(x.kind)) return null;
+  const work = typeof x.work === 'string' ? x.work.trim().slice(0, 120) : '';
+  const by = typeof x.by === 'string' ? x.by.trim().slice(0, 80) : '';
+  if (x.kind === 'work' && !work) return null;
+  if (x.kind === 'artist' && !by) return null;
+  return { kind: x.kind, work, by };
 }
 
 // A radio stop already carries style and moods chosen by code.
@@ -110,5 +128,6 @@ export function understandingFromStop(stop) {
     arc: [],
     fixed: ['style'],
     reference: '',
+    interpretation: null,
   };
 }
