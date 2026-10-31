@@ -70,6 +70,79 @@ export const CELL_VARIANTS = Object.fromEntries(Object.entries(CELLS).map(([mete
   }))];
 }));
 
+// Rhythm figures the cells above lacked, by meter and feel.
+// Kept apart so the melody engine can draw them from a stream of their own
+// and songs that do not draw one keep their rhythms. Same notation.
+export const FIGURES = {
+  '4/4': {
+    // Lombard rhythm (scotch snap): 16th + dotted 8th, the reverse of dotted
+    dotted: ['xx__x___xx__x___', 'x___xx__x___xx__', 'xx__xx__x_x_x___'],
+    // Afro-Cuban timelines (son clave 3-2 and 2-3, rumba clave, bossa
+    // clave; tresillo twice is already a cell variant), 3 against 4 (a
+    // chain of dotted 8ths), the 16th-8th-16th syncopation and funk entries
+    // on the 16th after the beat
+    syncopated: ['x__x__x___x_x___', '..x_x___x__x__x_', 'x__x___x__x_x___', 'x__x__x___x__x__',
+      'x__x__x__x__x__x', 'xx_xx___xx_xx___', '.x__x___.x__x_x_'],
+    // gallop and reverse gallop mixed in one beat pair, both orders
+    riff: ['x_xxxxx_x_xxx___', 'xxx_x_xxxxx_x___'],
+    // cinquillo: 8th-16th-8th-16th-8th, the habanera's busy cousin
+    running: ['x_xx_xx_x_xx_xx_'],
+    // a long note pushed onto the last eighth, tied into the next bar
+    long: ['x_____x_______x_'],
+  },
+  '3/4': {
+    // polonaise (8th + two 16ths, then eighths), gallop on the downbeat
+    running: ['x_xxx_x_x_x_', 'x_xxx___x___'],
+    // an entry after the downbeat (hemiola inside the bar and the
+    // sarabande step already come from the cell variants)
+    long: ['..x___x___x_'],
+    // Lombard rhythm on the downbeat and on beat two
+    dotted: ['xx__x___x___', 'x___xx__x___'],
+    // the second eighth of beat one tied over beat two
+    straight: ['x_x___x___x_'],
+  },
+  '6/8': {
+    // hemiola: three quarters against two dotted quarters
+    straight: ['x___x___x___', 'x___x___x_x_'],
+    // Lombard rhythm in compound time
+    dotted: ['xx__x_xx__x_'],
+    // tarantella: 8th + two 16ths + 8th on both beats
+    running: ['x_xxx_x_xxx_'],
+  },
+  '12/8': {
+    // two against three (quarters across dotted-quarter beats) and the
+    // West African standard bell pattern
+    running: ['x_x_x_x_x_x_', 'x_x_xx_x_x_x'],
+    long: ['x_x_x_______'],
+  },
+};
+
+// Figures derived from every cell: a pair of eighths on a beat
+// dotted (8th. + 16th), snapped (16th + 8th.) or turned into a reverse
+// gallop (two 16ths + 8th), a quarter on a beat turned into a gallop
+// (8th + two 16ths). Only meters with a 16th grid; first match per cell.
+function figureVariants(cell, beat) {
+  const out = [];
+  const n = cell.length;
+  const on = [...cell].filter((c) => c === 'x').length;
+  const at = (pat) => { for (let i = 0; i + 4 <= n; i += beat) if (cell.slice(i, i + 4) === pat) return i; return -1; };
+  const put = (i, v) => cell.slice(0, i) + v + cell.slice(i + 4);
+  const pair = at('x_x_');
+  if (pair >= 0) out.push(put(pair, 'x__x'), put(pair, 'xx__'), ...(on < 10 ? [put(pair, 'xxx_')] : []));
+  const quarter = at('x___');
+  if (quarter >= 0 && on < 10) out.push(put(quarter, 'x_xx'));
+  return out;
+}
+
+// beat step for the derivations: a quarter in 4/4 and 3/4, an eighth pair
+// inside the dotted beat in 6/8; 12/8 steps are triplet eighths, so none
+const FIGURE_BEAT = { '4/4': 4, '3/4': 4, '6/8': 6 };
+export const FIGURE_VARIANTS = Object.fromEntries(Object.entries(CELLS).map(([meter, feels]) => {
+  const known = new Set([...Object.values(feels).flat(), ...Object.values(CELL_VARIANTS[meter]).flat(), ...Object.values(FIGURES[meter] || {}).flat()]);
+  return [meter, Object.fromEntries(Object.entries(feels).map(([feel, cells]) => [feel,
+    FIGURE_BEAT[meter] ? [...new Set(cells.flatMap((c) => figureVariants(c, FIGURE_BEAT[meter])))].filter((v) => !known.has(v)) : []]))];
+}));
+
 export const FEELS = ['straight', 'riff', 'long', 'syncopated', 'dotted', 'running', 'shuffle', 'sid'];
 
 // Chord rhythm for the arpeggio voice, by meter, from calm to busy.

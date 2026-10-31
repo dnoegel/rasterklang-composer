@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { compose, composeBrief } from '../src/gen/compose.js';
 import { answerToBrief, briefSchema, briefToAnswer, themeExampleFor, userPrompt } from '../src/gen/menu.js';
 import { validateBrief } from '../src/gen/brief.js';
-import { CELLS, CELL_VARIANTS } from '../src/gen/library/cells.js';
+import { CELLS, CELL_VARIANTS, FIGURES, FIGURE_VARIANTS } from '../src/gen/library/cells.js';
 import { METERS } from '../src/gen/library/meters.js';
 import { fingerprint, jaccard } from '../src/gen/variety.js';
 
@@ -30,6 +30,22 @@ describe('melody variety', () => {
           expect(c).toHaveLength(METERS[meter].steps);
           expect(lib.has(c)).toBe(false);
           expect(c).toMatch(/^[x.][x_.]*$/);
+        }
+      }
+    }
+  });
+
+  it('keeps the added rhythm figures apart from the cells, on the meter grid', () => {
+    for (const source of [FIGURES, FIGURE_VARIANTS]) {
+      for (const [meter, feels] of Object.entries(source)) {
+        const lib = new Set([...Object.values(CELLS[meter]).flat(), ...Object.values(CELL_VARIANTS[meter]).flat()]);
+        for (const [feel, cells] of Object.entries(feels)) {
+          expect(CELLS[meter][feel], `${meter} ${feel}`).toBeDefined();
+          for (const c of cells) {
+            expect(c).toHaveLength(METERS[meter].steps);
+            expect(lib.has(c), c).toBe(false);
+            expect(c).toMatch(/^[x.][x_.]*$/);
+          }
         }
       }
     }

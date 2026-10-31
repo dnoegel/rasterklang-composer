@@ -12,7 +12,7 @@
 
 import { SCALES, nearestIndex, noteName } from './theory.js';
 import { Rng } from './prng.js';
-import { CELLS, CELL_VARIANTS } from './library/cells.js';
+import { CELLS, CELL_VARIANTS, FIGURES, FIGURE_VARIANTS } from './library/cells.js';
 import { HVSC_CELLS } from './library/hvsc-rhythms.js';
 import { SECTION_ENERGY } from './library/forms.js';
 
@@ -144,12 +144,43 @@ function withHvsc(meterId, feel, bank) {
 
 // pool: [cell, weight]; derived cell variants weigh less than the library's.
 // The density window widens with the pool, so bigger pools are used.
-function pickCell(pool, density, rng, exclude) {
-  const sorted = [...pool].sort((a, b) => onsetsOf(a[0]).length - onsetsOf(b[0]).length);
+const onsetCounts = new Map();
+function onsetCount(cell) {
+  if (!onsetCounts.has(cell)) onsetCounts.set(cell, onsetsOf(cell).length);
+  return onsetCounts.get(cell);
+}
+function densityWeights(pool, density, exclude) {
+  const sorted = pool.map((e) => [e, onsetCount(e[0])]).sort((a, b) => a[1] - b[1]).map(([e]) => e);
   const center = density * (sorted.length - 1);
   const sigma = Math.max(1.1, sorted.length / 6);
-  const weights = sorted.map(([c, w], i) => [c, (c === exclude ? 0.05 : 1) * w * Math.exp(-((i - center) ** 2) / (2 * sigma * sigma))]);
-  return rng.weighted(weights);
+  return sorted.map(([c, w], i) => [c, (c === exclude ? 0.05 : 1) * w * Math.exp(-((i - center) ** 2) / (2 * sigma * sigma))]);
+}
+function pickCell(pool, density, rng, exclude) {
+  return rng.weighted(densityWeights(pool, density, exclude));
+}
+
+// Rhythm figures added later are a mixture component: the cell
+// is picked from the old pool as before, then a stream of its own swaps in
+// a figure with the figures' share of the combined pool at this density.
+// Songs where no swap fires keep their rhythms. Figures weigh FIGURE_SHARE
+// of the hand-written bank in total.
+const FIGURE_SHARE = 0.35;
+function pickWithFigures(pool, figures, density, rng, side, exclude) {
+  const cell = pickCell(pool, density, rng, exclude);
+  if (!figures.length) return cell;
+  const fig = new Set(figures.map(([c]) => c));
+  const weights = densityWeights([...pool, ...figures], density, exclude);
+  const total = weights.reduce((a, [, w]) => a + w, 0);
+  const own = weights.filter(([c]) => fig.has(c));
+  const share = own.reduce((a, [, w]) => a + w, 0) / (total || 1);
+  return side.chance(share) ? side.weighted(own) : cell;
+}
+function figurePool(meterId, feels, pool, bankWeight) {
+  const seen = new Set(pool.map(([c]) => c));
+  const list = feels.flatMap((f) => [...(FIGURES[meterId]?.[f] || []).map((c) => [c, 1]), ...(FIGURE_VARIANTS[meterId]?.[f] || []).map((c) => [c, 0.5])]);
+  const uniq = [...new Map(list.filter(([c]) => !seen.has(c))).entries()];
+  const sum = uniq.reduce((a, [, w]) => a + w, 0);
+  return sum ? uniq.map(([c, w]) => [c, (w * FIGURE_SHARE * bankWeight) / sum]) : [];
 }
 
 // --- motif development ------------------------------------------------------
@@ -310,11 +341,15 @@ function motifSet(material, section, plan, rng, memory) {
   const energy = material === section.type ? section.energy : Math.min(1, (SECTION_ENERGY[material] || 0.6) + target.energyBias * 0.7);
   const density = Math.max(0, Math.min(1, energy * 0.9 + (material === 'solo' ? 0.3 : 0) - target.legato * 0.15 - (material === 'chorus' ? 0.15 : 0)));
   const feel = CELLS[plan.meterId][section.feel] ? section.feel : Object.keys(CELLS[plan.meterId])[0];
-  const cellsOf = (f) => withHvsc(plan.meterId, f, [...(CELLS[plan.meterId][f] || []).map((c) => [c, 1]), ...(CELL_VARIANTS[plan.meterId][f] || []).map((c) => [c, 0.5])]);
-  const pool = material === 'solo' ? [...cellsOf(feel), ...(feel === 'running' ? [] : cellsOf('running'))] : cellsOf(feel);
-  const cellA = pickCell(pool, density, rng);
-  const cellB = pickCell(pool, density, rng, cellA);
-  const cellC = pickCell(pool, Math.min(1, density + 0.15), rng, cellA);
+  const bankOf = (f) => [...(CELLS[plan.meterId][f] || []).map((c) => [c, 1]), ...(CELL_VARIANTS[plan.meterId][f] || []).map((c) => [c, 0.5])];
+  const cellsOf = (f) => withHvsc(plan.meterId, f, bankOf(f));
+  const feels = material === 'solo' && feel !== 'running' ? [feel, 'running'] : [feel];
+  const pool = feels.flatMap(cellsOf);
+  const figures = figurePool(plan.meterId, feels, pool, feels.flatMap(bankOf).reduce((a, [, w]) => a + w, 0));
+  const side = new Rng(...rng.labels, 'figures', material);
+  const cellA = pickWithFigures(pool, figures, density, rng, side);
+  const cellB = pickWithFigures(pool, figures, density, rng, side, cellA);
+  const cellC = pickWithFigures(pool, figures, Math.min(1, density + 0.15), rng, side, cellA);
   const templates = TEMPLATES[section.bars >= 8 ? 8 : section.bars >= 4 ? 4 : 2];
   const names = Object.keys(templates);
   let tplName = rng.pick(names);

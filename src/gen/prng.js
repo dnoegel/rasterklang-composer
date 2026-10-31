@@ -26,6 +26,7 @@ function mulberry32(a) {
 
 export class Rng {
   constructor(...labels) {
+    this.labels = labels;
     this.next = mulberry32(hash(labels.join('|')));
   }
 
