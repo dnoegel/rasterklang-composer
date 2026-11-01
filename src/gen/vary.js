@@ -50,6 +50,7 @@ export function varyBrief(brief, prompt, seed) {
   const swapped = new Set();
   const newChords = {};
   const keepPattern = {};
+  const leadMap = leadPlan(brief.sections, (s) => (byType[s.type] || fallback).lead, rng);
   out.sections.forEach((s, i) => {
     const own = byType[s.type];
     const d = own || fallback;
@@ -62,8 +63,7 @@ export function varyBrief(brief, prompt, seed) {
     }
     // a section kind the draw lacks keeps the model's texture and chords
     if (own) s.texture = own.texture;
-    // the chorus keeps its lead so the hook keeps its colour, mostly
-    if (s.type !== 'chorus' || rng.chance(0.4)) s.lead = d.lead;
+    s.lead = leadMap[s.lead];
     delete s.bassSound;
     // the model's own patterns stay now and then (per section kind)
     for (const f of ['drumPattern', 'bassPattern', 'arpPattern']) {
@@ -93,4 +93,27 @@ export function varyBrief(brief, prompt, seed) {
   if (dropped.length) changed.push(`new ${dropped.join(', ')} melody`);
   out.variant = { seed, changed };
   return { brief: out, changed };
+}
+
+// The model's lead plan stays: each lead it used is redrawn once for the
+// whole song, so sections that shared a colour (verse and its repeat, the
+// chorus and the outro) still share one and a song has no more leads than
+// the model gave it. The chorus lead keeps the hook's colour 60 % of the
+// time. A lead's new colour comes from the chorus or verse it plays in,
+// else from its first section; a colour already taken keeps the model's.
+const LEAD_SOURCE = ['chorus', 'verse'];
+
+function leadPlan(sections, drawnLead, rng) {
+  const keepChorus = rng.chance(0.6);
+  const chorusLeads = new Set(sections.filter((s) => s.type === 'chorus').map((s) => s.lead));
+  const map = {};
+  for (const lead of new Set([...chorusLeads, ...sections.map((s) => s.lead)])) {
+    const own = sections.filter((s) => s.lead === lead);
+    if (keepChorus && chorusLeads.has(lead)) { map[lead] = lead; continue; }
+    const from = LEAD_SOURCE.map((t) => own.find((s) => s.type === t)).find(Boolean) || own[0];
+    const taken = new Set(Object.values(map));
+    const next = drawnLead(from);
+    map[lead] = !taken.has(next) ? next : !taken.has(lead) ? lead : next;
+  }
+  return map;
 }
