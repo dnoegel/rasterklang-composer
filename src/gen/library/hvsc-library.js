@@ -327,30 +327,30 @@ export const LEADS = {
   pw 290!2 324 358
   loop wave 3 gate 3 pw 3
 ` },
-  // pulse (2 frames), saw (8 frames); fixed width; AD 01 SR C4
-  lead6: { tags: ["wave sequence","gate timer"], body: `
-  adsr 0 1 12 4
-  wave pulse!2 saw!9 saw+pulse+noise
-  pw 2048!12
-  loop wave 11 pw 11
-  gate -1
-` },
   // pulse, triangle; fixed width; AD 02 SR 9B
-  lead7: { tags: ["hard restart","wave sequence","gate timer"], body: `
+  lead6: { tags: ["hard restart","wave sequence","gate timer"], body: `
   adsr 0 2 9 11
   wave pulse triangle
   pw 128!2
   loop wave 1 pw 1
   gate -2
 ` },
-  // pulse +1, triangle (9 frames); fixed width; AD 01 SR A4
-  lead8: { tags: ["hard restart","wave sequence","gate timer"], body: `
-  adsr 0 1 10 4
-  wave pulse triangle!13 saw+pulse+noise
-  arp 1 0!14
-  pw 2048!16
-  loop wave 14 arp 14 pw 15
-  gate -1
+  // pulse, noise C#6, pulse +24 (4 frames); fast width sweep; AD 00 SR A9
+  lead7: { tags: ["pulse sweep","wave sequence","noise attack"], body: `
+  adsr 0 0 10 9
+  wave pulse noise pulse!4
+  arp 0 =85 24 12 0 24
+  gate 1!2 0!4
+  pw 2208!2 ramp 2368..2688 step 160 over 3 2784
+  loop wave 3 arp 3 gate 3 pw 3
+` },
+  // triangle+pulse, pulse; fast width sweep; AD 02 SR 8A
+  lead8: { tags: ["hard restart","pulse sweep","wave sequence","gate timer"], body: `
+  adsr 0 2 8 10
+  wave triangle+pulse pulse
+  pw 64!2 ramp 112..2032 step 48 over 41 ramp 1984..256 step -48 over 37 ramp 304..2032 step 48 over 37
+  loop wave 1 pw 43
+  gate -2
 ` },
 };
 
