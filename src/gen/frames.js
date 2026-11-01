@@ -1,8 +1,12 @@
 // DSL -> per-frame register writes, computed once. Playback, seeking,
 // WAV and SID export all read from this one array.
+//
+// V2 compiles with score 0.1.2 too: score 0.2.0 plays each
+// `insts` instrument's own envelope, and the instrument bank was balanced by
+// ear under 0.1.2, where every note took its voice's default envelope.
 
-import { evaluateSongSource } from 'rasterklang-score/compiler/evaluateSong.js';
-import { compile, framesForCycles } from 'rasterklang-score/compiler/compile.js';
+import { evaluateSongSource } from 'rasterklang-score-v1/compiler/evaluateSong.js';
+import { compile, framesForCycles } from 'rasterklang-score-v1/compiler/compile.js';
 
 export function renderFrames(dsl, totalBars) {
   const song = evaluateSongSource(dsl);
