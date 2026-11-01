@@ -71,7 +71,7 @@ describe('HVSC inventory data', () => {
   it('songs use C64-style kits, sounds, echoes and bends, and still fit a .sid', () => {
     const tunes = [1, 2, 3, 4, 5, 6].flatMap((s) => ['happy platformer level', 'melancholic rainy night synthwave'].map((p) => compose(p, s)));
     expect(tunes.some((t) => t.plan.palette.kit && t.plan.palette.kit !== 'std')).toBe(true);
-    const kitSong = tunes.find((t) => t.plan.palette.kit && t.plan.palette.kit !== 'std');
+    const kitSong = tunes.find((t) => HVSC_KITS[t.plan.palette.kit]);
     expect(kitSong.dsl).toContain(`instrument ${HVSC_KITS[kitSong.plan.palette.kit].kick}`);
     expect(tunes.some((t) => /instrument \w+echo\b/.test(t.dsl))).toBe(true);
     expect(tunes.some((t) => /instrument \w+bend\b/.test(t.dsl))).toBe(true);

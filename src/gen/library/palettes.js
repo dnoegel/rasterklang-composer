@@ -1,8 +1,11 @@
 // Sound choices per role (instrument names from instruments.js).
 
 import { HVSC_KITS, HVSC_BASSES, HVSC_LEADS } from './hvsc-instruments.js';
+import { STANDARD_BASSES, STANDARD_LEADS, STANDARD_KITS } from './standard.js';
 
 const named = (obj) => Object.fromEntries(Object.entries(obj).map(([id, v]) => [id, `${v.name} (HVSC)`]));
+// standard library sounds that passed the mix gate
+const standard = (obj) => Object.fromEntries(Object.entries(obj).map(([id, v]) => [id, `${v.description} (HVSC standard)`]));
 
 export const LEADS = {
   lead: 'pulse lead with pulse-width modulation', saw: 'sawtooth lead', brass: 'soft brass', bell: 'bell',
@@ -11,12 +14,14 @@ export const LEADS = {
   reed: 'nasal narrow pulse (oboe, clarinet)', warble: 'warbling octave arpeggio lead (classic C64)',
   ring: 'ring-modulated bell-metal lead moving with the bass (classic C64)', sync: 'hard-synced saw lead, growling with the bass (classic C64)',
   ...named(HVSC_LEADS),
+  ...standard(STANDARD_LEADS),
 };
 // 'custom' is the lead designed in the brief's `sound` (LLM path only).
 export const CUSTOM_LEAD = 'custom';
 export const BASSES = { bass: 'pulse bass with click', sub: 'round sub bass', slap: 'slap bass', acid: 'acid sawtooth', drone: 'drone sawtooth',
   chipbass: 'punchy square bass', slidebass: 'sub bass gliding between notes (808, 303)', growl: 'growling pulse-sweep bass',
   ...named(HVSC_BASSES),
+  ...standard(STANDARD_BASSES),
 };
 export const SNARES = { snare: 'noise snare', snare2: 'tonal rock snare', clap: 'clap' };
 
@@ -55,6 +60,7 @@ export const ARP_POOLS = {
 export const KITS = {
   std: { name: 'the bank\'s own kit: noise-click kick, noise snare, short hat', kick: 'kick', snare: null, hat: 'hat' },
   ...Object.fromEntries(Object.entries(HVSC_KITS).map(([id, k]) => [id, { ...k, name: `${k.name} (HVSC)` }])),
+  ...Object.fromEntries(Object.entries(STANDARD_KITS).map(([id, k]) => [id, { ...k, name: `${k.name} (HVSC standard)` }])),
 };
 
 // C64-style sounds join a style's pools by family with these weights, next to
@@ -90,3 +96,6 @@ export const HVSC_POOLS = {
   ambient: { kit: { round: 0.4 }, bass: {}, lead: { vibra: 0.4, chime: 0.4 } },
 };
 export const hvscPool = (style, role) => HVSC_POOLS[style.family]?.[role] || {};
+// Families whose songs may draw the standard library sounds: the
+// SID band ones, not the acoustic and soft families.
+export const STANDARD_FAMILIES = ['game', 'synth', 'dance', 'rock', 'metal', 'pop', 'funk'];

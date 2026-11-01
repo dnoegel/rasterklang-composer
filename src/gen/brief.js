@@ -15,7 +15,8 @@ import { CELLS } from './library/cells.js';
 import { PROGRESSIONS } from './library/progressions.js';
 import { TEXTURES, KIND_OF, TRANSITIONS, FILTER_SHAPES, ECHO_CHANCE, ECHO_DEFAULT } from './library/textures.js';
 import { FORMS, SECTION_ENERGY } from './library/forms.js';
-import { LEADS, BASSES, SNARES, KITS, ARPS, ARP_POOLS, CUSTOM_LEAD, hvscPool } from './library/palettes.js';
+import { LEADS, BASSES, SNARES, KITS, ARPS, ARP_POOLS, CUSTOM_LEAD, hvscPool, STANDARD_FAMILIES } from './library/palettes.js';
+import { STANDARD_BASSES, STANDARD_LEADS, STANDARD_KITS } from './library/standard.js';
 import { styleHint, nudgeModes, loopToRomans } from './hvsc-data.js';
 import { ARTISTS } from './library/hvsc.js';
 import { HVSC_BASS_ROWS } from './library/hvsc-rhythms.js';
@@ -274,6 +275,15 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
   const choruses = sections.filter((s) => s.type === 'chorus');
   if (choruses.length >= 2 && rng.chance((style.keyChange || 0) + Math.max(0, target.energyBias) * 0.2)) choruses[choruses.length - 1].transpose = 2;
 
+  const palette = {
+    bass: pickWeighted(rng, { ...hvscPool(style, 'bass'), ...style.palette.bass }) || 'bass',
+    snare: pickWeighted(rng, style.palette.snare) || 'snare',
+    chords: style.palette.chords,
+    kit: pickWeighted(rng, { std: 1, ...hvscPool(style, 'kit') }) || 'std',
+    arp: pickWeighted(rng, alongIdiom(ARP_POOLS[style.family] || { pwm: 1 }, idiom, (a) => C64_ARPS.includes(a), C64_ARPS, 0.8)) || 'pwm',
+  };
+  standardSounds(palette, sections, style, idiom, seedKey);
+
   const [tLo, tHi] = style.tempo;
   return {
     version: 1,
@@ -290,17 +300,29 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
     meter,
     keyRoot,
     mode,
-    palette: {
-      bass: pickWeighted(rng, { ...hvscPool(style, 'bass'), ...style.palette.bass }) || 'bass',
-      snare: pickWeighted(rng, style.palette.snare) || 'snare',
-      chords: style.palette.chords,
-      kit: pickWeighted(rng, { std: 1, ...hvscPool(style, 'kit') }) || 'std',
-      arp: pickWeighted(rng, alongIdiom(ARP_POOLS[style.family] || { pwm: 1 }, idiom, (a) => C64_ARPS.includes(a), C64_ARPS, 0.8)) || 'pwm',
-    },
+    palette,
     form: formId,
     sections,
     themes: {},
   };
+}
+
+// Sounds of the standard library of HVSC sounds that passed the mix gate
+// replace the drawn bass, kit and chorus lead now and then, more
+// often the more C64-native the song (idiom), in the families where SID
+// band sounds belong. Its own random stream leaves every other choice of the
+// song as it was; a style's signature lead stays.
+function standardSounds(palette, sections, style, idiom, seedKey) {
+  if (!STANDARD_FAMILIES.includes(style.family)) return;
+  const srng = new Rng(seedKey, GENERATOR_VERSION, 'standard');
+  const chance = 0.15 + 0.35 * clamp(idiom, 0, 1);
+  const pick = (ids) => (ids.length && srng.chance(chance) ? srng.pick(ids) : null);
+  const bass = pick(Object.keys(STANDARD_BASSES));
+  if (bass) palette.bass = bass;
+  const kit = pick(Object.keys(STANDARD_KITS));
+  if (kit) palette.kit = kit;
+  const lead = style.signature?.lead ? null : pick(Object.keys(STANDARD_LEADS));
+  if (lead) for (const s of sections) if (s.type === 'chorus') s.lead = lead;
 }
 
 // Keep songs under about 2:30 (the .sid holds about that much): drop solos,

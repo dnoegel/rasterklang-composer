@@ -6,6 +6,7 @@
 
 import { customEnvelope, holdEnvelope, ECHO_RULE } from './sound/profile.js';
 import { HVSC_DRUMS, HVSC_BASSES, HVSC_LEADS } from './library/hvsc-instruments.js';
+import { CANDIDATE_DRUMS, CANDIDATE_BASSES, CANDIDATE_LEADS } from './library/standard.js';
 
 // Pulse-width bounce: up from `start` to `hi`, down to `lo`, back to start.
 // Each value is held for two frames with twice the step: same sweep speed,
@@ -71,6 +72,8 @@ const DRUMS = {
   gate -1`,
   // kits in C64 style
   ...Object.fromEntries(Object.entries(HVSC_DRUMS).map(([id, body]) => [id, body.trimEnd()])),
+  // standard library kits; all candidates compile, the palettes hold the passed ones
+  ...CANDIDATE_DRUMS,
 };
 
 const MELODIC = {
@@ -240,6 +243,8 @@ const MELODIC = {
 
   // ---- in C64 style -------------------------
   ...Object.fromEntries(Object.entries({ ...HVSC_BASSES, ...HVSC_LEADS }).map(([id, v]) => [id, v.body.trimEnd()])),
+  // ---- standard library of HVSC sounds ----------------------
+  ...Object.fromEntries(Object.entries({ ...CANDIDATE_BASSES, ...CANDIDATE_LEADS }).map(([id, v]) => [id, v.body])),
 };
 
 // Chord arpeggio instruments, one per quality: 1 frame per arp step, the
