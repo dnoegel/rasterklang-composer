@@ -63,7 +63,7 @@ export function briefFromPrompt(prompt, seed = 1) {
 }
 
 // Render any brief (rule-based or LLM) into a tune.
-export function composeBrief(rawBrief, { prompt = '', seed = 1, intent = null, candidates = 8, withLead = false, varietyWeight = 1, sound = 'legacy', tuning: tuningOverride = null } = {}) {
+export function composeBrief(rawBrief, { prompt = '', seed = 1, intent = null, candidates = 8, withLead = false, varietyWeight = 1, sound = 'tuned', tuning: tuningOverride = null } = {}) {
   // sound: 'legacy' (DSL as designed, render with score 0.1) or 'tuned' (envelopes
   // for score 0.2); tuning: a profile object instead of the stored one (tuner)
   const stored = tuningFor(sound); // throws for an unknown profile
