@@ -81,3 +81,24 @@ describe('HVSC inventory data', () => {
     }
   });
 });
+
+describe('HVSC standard library', () => {
+  it('matches its data file and every sound compiles and sounds', async () => {
+    const lib = await import('../src/gen/library/hvsc-library.js');
+    const data = JSON.parse(readFileSync('', 'utf8'));
+    const roles = ['kick', 'snare', 'hat', 'tom', 'bass', 'lead', 'arp', 'pad'];
+    const bodies = [];
+    for (const role of roles) {
+      const mod = lib[`${role.toUpperCase()}S`];
+      expect(Object.keys(mod).length).toBe(data.library[role].length);
+      bodies.push(...Object.values(mod).map((x) => x.body));
+    }
+    for (const kit of Object.values(lib.KITS)) bodies.push(kit.kick.body, kit.snare.body, kit.hat.body);
+    expect(bodies.length).toBeGreaterThan(30);
+    for (const body of bodies) {
+      const dsl = `speed 24 meter 4/4\n\ninstrument x${body.trimEnd()}\nend\n\nvoice 0 x\n  notes "c4 _ e4 _ g4 _ c5 _"\nend\n`;
+      const { frames } = renderFrames(dsl, 1);
+      expect(frames.length).toBeGreaterThan(0);
+    }
+  });
+});
