@@ -88,7 +88,8 @@ describe('llm path', () => {
     }));
     sections[0].lead = 'square';
     const answer = { ...ANSWER, sections, sound: { wave: 'pulse', attack: 0, decay: 6, sustain: 2, release: 3, vibrato: 1, pwm: 'slow', pulse_width: 'narrow', onset: 'noise', slide: 'short' } };
-    const tune = composeBrief(answerToBrief(answer, 'p'), { prompt: 'p', seed: 1 });
+    // more sounds than one cast holds, so the cast step is off here
+    const tune = composeBrief(answerToBrief(answer, 'p'), { prompt: 'p', seed: 1, cast: false });
     for (const name of ['slidebass', 'growl', 'chipbass', 'square', 'reed', 'warble', 'custom']) expect(tune.dsl).toContain(`instrument ${name}`);
     expect(tune.plan.sections[1].bassPattern[0]).toBe('R.2.4.5.8.4.2.A.');
     const { frames, barStarts } = renderFrames(tune.dsl, tune.plan.totalBars);

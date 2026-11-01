@@ -105,7 +105,8 @@ function colourChord(symbol, sevenths, rng, power) {
 }
 
 // Rule-based path: sample a full brief from the style's weights.
-export function sampleBrief(intent, seedKey, styleId, blend = null) {
+// standard: draw the standard library sounds; off only for comparisons
+export function sampleBrief(intent, seedKey, styleId, blend = null, { standard = true } = {}) {
   const base = blendStyles(styleId, blend?.style, blend?.amount || 0);
   // HVSC inventory: how C64 musicians arranged this genre (and, if named,
   // this artist) nudges modes, harmonic rhythm and textures
@@ -282,7 +283,7 @@ export function sampleBrief(intent, seedKey, styleId, blend = null) {
     kit: pickWeighted(rng, { std: 1, ...hvscPool(style, 'kit') }) || 'std',
     arp: pickWeighted(rng, alongIdiom(ARP_POOLS[style.family] || { pwm: 1 }, idiom, (a) => C64_ARPS.includes(a), C64_ARPS, 0.8)) || 'pwm',
   };
-  standardSounds(palette, sections, style, idiom, seedKey);
+  if (standard) standardSounds(palette, sections, style, idiom, seedKey);
 
   const [tLo, tHi] = style.tempo;
   return {

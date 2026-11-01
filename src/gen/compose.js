@@ -10,6 +10,7 @@ import { emitDsl } from './emit.js';
 import { measureLead } from './measure.js';
 import { roleTimeline } from './roles.js';
 import { SCORE_OF, tuningFor } from './sound/profile.js';
+import { orchestrate } from './orchestrate.js';
 import { applyHold } from './sound/hold.js';
 import { measureVariety, varietyPenalty } from './variety.js';
 import { Rng } from './prng.js';
@@ -55,15 +56,15 @@ const TITLE_KEY = { classical: 'classicalStyle', march: 'march', ragtime: 'ragti
 const seedKeyOf = (prompt, seed) => `${seed}|${prompt.trim().toLowerCase().replace(/\s+/g, ' ')}`;
 
 // Rule-based: sample the brief from the prompt.
-export function briefFromPrompt(prompt, seed = 1) {
+export function briefFromPrompt(prompt, seed = 1, { standard = true } = {}) {
   const intent = parsePrompt(prompt);
   const styleId = resolveStyle(intent);
-  const brief = sampleBrief(intent, seedKeyOf(prompt, seed), styleId, intent.blend);
+  const brief = sampleBrief(intent, seedKeyOf(prompt, seed), styleId, intent.blend, { standard });
   return { intent, brief };
 }
 
 // Render any brief (rule-based or LLM) into a tune.
-export function composeBrief(rawBrief, { prompt = '', seed = 1, intent = null, candidates = 8, withLead = false, varietyWeight = 1, sound = 'tuned', tuning: tuningOverride = null } = {}) {
+export function composeBrief(rawBrief, { prompt = '', seed = 1, intent = null, candidates = 8, withLead = false, varietyWeight = 1, sound = 'tuned', tuning: tuningOverride = null, cast: withCast = true } = {}) {
   // sound: 'legacy' (DSL as designed, render with score 0.1) or 'tuned' (envelopes
   // for score 0.2); tuning: a profile object instead of the stored one (tuner)
   const stored = tuningFor(sound); // throws for an unknown profile
@@ -74,7 +75,9 @@ export function composeBrief(rawBrief, { prompt = '', seed = 1, intent = null, c
   const varied = varyBrief(checked.brief, prompt, seed);
   const brief = varied.changed.length ? validateBrief(varied.brief).brief : checked.brief;
   const seedKey = `${seedKeyOf(prompt, seed)}|${brief.source || 'rules'}`;
-  const plan = planFromBrief(brief, seedKey);
+  // one cast per song, no section change that changes everything at once
+  const cast = withCast ? orchestrate(brief) : { brief, notes: [] };
+  const plan = planFromBrief(cast.brief, seedKey);
   plan.seedNumber = seed;
   let best = null;
   for (let k = 0; k < candidates; k += 1) {
@@ -103,6 +106,7 @@ export function composeBrief(rawBrief, { prompt = '', seed = 1, intent = null, c
     brief,
     repairs,
     errors,
+    cast: cast.notes,
     plan,
     dsl,
     // who plays what, per voice and step (mix measurement, src/eval/mix.js)
@@ -115,8 +119,8 @@ export function composeBrief(rawBrief, { prompt = '', seed = 1, intent = null, c
   };
 }
 
-export function compose(prompt, seed = 1, opts = {}) {
-  const { intent, brief } = briefFromPrompt(prompt, seed);
+export function compose(prompt, seed = 1, { standard = true, ...opts } = {}) {
+  const { intent, brief } = briefFromPrompt(prompt, seed, { standard });
   return composeBrief(brief, { prompt, seed, intent, ...opts });
 }
 
