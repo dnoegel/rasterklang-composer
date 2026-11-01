@@ -4,6 +4,7 @@
 // Pulse sweeps stay within pw >= 768 and small steps: narrower or faster
 // sweeps alias into hiss in the emulator (launchpad known issue).
 
+import { customEnvelope, holdEnvelope, ECHO_RULE } from './sound/profile.js';
 import { HVSC_DRUMS, HVSC_BASSES, HVSC_LEADS } from './library/hvsc-instruments.js';
 
 // Pulse-width bounce: up from `start` to `hi`, down to `lo`, back to start.
@@ -286,8 +287,9 @@ const ARP_SOUNDS = {
   pad: ['triangle', 2, null, '4 10 11 9'],
   wide: ['pulse', 1, [1536, 768, 2560, 16], '0 9 8 5'],
 };
-function arpInstrument(shape, kind) {
-  const [wave, frames, pw, adsr] = ARP_SOUNDS[kind] || ARP_SOUNDS.pwm;
+function arpInstrument(shape, kind, tuning) {
+  const [wave, frames, pw, designed] = ARP_SOUNDS[kind] || ARP_SOUNDS.pwm;
+  const adsr = tuning?.arp?.[kind] ? tuning.arp[kind].join(' ') : designed;
   const notes = kind === 'wide' ? [...shape, 12] : shape;
   const lines = [`  wave ${wave}`, `  arp ${notes.map((x) => (frames > 1 ? `${x}!${frames}` : x)).join(' ')}`];
   if (Array.isArray(pw)) lines.push(`  pw ${pwBounce(...pw)}`, '  loop arp 0 pw 0');
@@ -298,10 +300,11 @@ function arpInstrument(shape, kind) {
 
 // A lead sound designed in the brief: waveform, envelope,
 // vibrato depth and pulse-width movement, all clamped to safe ranges.
-export function customLeadBody(sound) {
+export function customLeadBody(sound, rule = null) {
   const wave = ['pulse', 'saw', 'triangle'].includes(sound.wave) ? sound.wave : 'pulse';
   const n = (v, lo, hi, d) => Math.max(lo, Math.min(hi, Math.round(Number.isFinite(Number(v)) ? Number(v) : d)));
-  const adsr = [n(sound.attack, 0, 12, 1), n(sound.decay, 0, 12, 9), n(sound.sustain, 0, 15, 10), n(sound.release, 0, 12, 6)];
+  const requested = [n(sound.attack, 0, 12, 1), n(sound.decay, 0, 12, 9), n(sound.sustain, 0, 15, 10), n(sound.release, 0, 12, 6)];
+  const adsr = rule ? customEnvelope(requested, rule) : requested;
   // onset: a noise click or an octave-up first frame before the tone
   const onset = sound.onset === 'noise' || sound.onset === 'octave' ? sound.onset : 'none';
   const lines = [onset === 'noise' ? `  wave noise ${wave}` : `  wave ${wave}`];
@@ -329,9 +332,10 @@ export function customLeadBody(sound) {
 // sustain (tracker echoes sit 3-6 sustain steps below their lead).
 // Pulse width stays at its first value and there is no vibrato: an echo
 // needs no movement of its own, and per-frame writes would fill the .sid.
-function echoBody(body) {
+function echoBody(body, rule = null) {
+  const { dMax, sDrop } = { ...ECHO_RULE, ...rule }; // tuned profiles move both (src/gen/sound/profile.js)
   return body
-    .replace(/adsr (\d+) (\d+) (\d+) (\d+)/, (_, a, d, s, r) => `adsr ${a} ${Math.min(Number(d), 6)} ${Math.max(0, Number(s) - 6)} ${r}`)
+    .replace(/adsr (\d+) (\d+) (\d+) (\d+)/, (_, a, d, s, r) => `adsr ${a} ${Math.min(Number(d), dMax)} ${Math.max(0, Number(s) - sDrop)} ${r}`)
     .replace(/\n {2}pw (\d+)[^\n]*/, '\n  pw $1')
     .replace(/\n {2}vib(Tri)? [^\n]*/, '');
 }
@@ -351,20 +355,32 @@ function topBody(body) {
   return body.replace(/\n {2}arp ([^\n]*)/, (_, vals) => `\n  arp ${vals.split(/\s+/).map((t) => (/^\d+(!\d+)?$/.test(t) ? t.replace(/^\d+/, (v) => String(Math.max(0, Number(v) - 12))) : t)).join(' ')}`);
 }
 
-function bodyOf(name, sound, speed, arp) {
+// `tuning` (src/gen/sound/tuned.js) replaces the ADSR of base
+// instruments, arp sounds and the custom lead; derived variants (echo, bend,
+// top) then follow their base by the rules below.
+const withAdsr = (body, adsr) => (adsr ? body.replace(/adsr \d+ \d+ \d+ \d+/, `adsr ${adsr.join(' ')}`) : body);
+
+function bodyOf(name, sound, speed, arp, tuning = null) {
   let body = DRUMS[name] || MELODIC[name];
-  if (!body && name === 'custom' && sound) body = customLeadBody(sound);
-  if (!body && ARP_QUALITY[name]) body = arpInstrument(ARP_SHAPES[ARP_QUALITY[name]], arp);
+  if (body) body = withAdsr(body, tuning?.instruments?.[name]);
+  if (!body && name === 'custom' && sound) body = customLeadBody(sound, tuning?.custom);
+  if (!body && ARP_QUALITY[name]) body = arpInstrument(ARP_SHAPES[ARP_QUALITY[name]], arp, tuning);
   if (!body && name.endsWith('echo')) {
-    const base = bodyOf(name.slice(0, -4), sound, speed, arp);
-    if (base) body = echoBody(base);
+    const base = bodyOf(name.slice(0, -4), sound, speed, arp, tuning);
+    if (base) body = echoBody(base, tuning?.echo);
+  }
+  // held variant of a lead for long notes (tuned profiles only, src/gen/sound/hold.js)
+  if (!body && name.endsWith('hold') && tuning?.hold) {
+    const base = bodyOf(name.slice(0, -4), sound, speed, arp, tuning);
+    const m = base && /adsr (\d+) (\d+) (\d+) (\d+)/.exec(base);
+    if (m) body = withAdsr(base, holdEnvelope(m.slice(1).map(Number), tuning.hold));
   }
   if (!body && name.endsWith('bend')) {
-    const base = bodyOf(name.slice(0, -4), sound, speed, arp);
+    const base = bodyOf(name.slice(0, -4), sound, speed, arp, tuning);
     if (base) body = bendBody(base, speed);
   }
   if (!body && name.endsWith('top')) {
-    const base = bodyOf(name.slice(0, -3), sound, speed, arp);
+    const base = bodyOf(name.slice(0, -3), sound, speed, arp, tuning);
     if (base) body = topBody(base);
   }
   return body;
@@ -372,15 +388,27 @@ function bodyOf(name, sound, speed, arp) {
 
 // speed: frames per beat of the song (bend variants slide in frames);
 // arp: the song's arp sound (ARP_SOUNDS).
-export function instrumentBlocks(names, sound = null, speed = 24, arp = 'pwm') {
+export function instrumentBlocks(names, sound = null, speed = 24, arp = 'pwm', tuning = null) {
   const out = [];
   for (const name of names) {
-    const body = bodyOf(name, sound, speed, arp);
+    const body = bodyOf(name, sound, speed, arp, tuning);
     if (!body) throw new Error(`unknown instrument ${name}`);
     out.push(`instrument ${name}${body}\nend`);
   }
   return out.join('\n\n');
 }
+
+// [attack, decay, sustain, release] an instrument plays with (derived
+// variants included), under a sound profile's tuning or as designed.
+export function instrumentAdsr(name, sound = null, speed = 24, arp = 'pwm', tuning = null) {
+  const m = /\n {2}adsr (\d+) (\d+) (\d+) (\d+)/.exec(bodyOf(name, sound, speed, arp, tuning) || '');
+  return m ? m.slice(1).map(Number) : null;
+}
+
+// Names the tuner may give an envelope: base instruments (bank and C64-style),
+// arp sounds; the custom lead has a rule instead.
+export const tunableInstruments = () => Object.keys({ ...DRUMS, ...MELODIC });
+export const arpSoundKinds = () => Object.keys(ARP_SOUNDS);
 
 // Highest MIDI note the SID's 16-bit frequency register holds (B7, about
 // 3.95 kHz on PAL); higher pitches wrap around into a random squeal.

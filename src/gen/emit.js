@@ -10,7 +10,8 @@ function lerp(a, b, t) {
   return Math.round(a + (b - a) * t);
 }
 
-export function emitDsl(plan, arrangement, title) {
+// `tuning`: a sound profile's envelopes (src/gen/sound/profile.js), null = as designed.
+export function emitDsl(plan, arrangement, title, tuning = null) {
   const { voices } = arrangement;
   const { style } = plan;
   const lines = [];
@@ -27,7 +28,7 @@ export function emitDsl(plan, arrangement, title) {
     return null;
   });
   for (const bars of voices) for (const bar of bars) for (const c of bar) if (c.inst) used.add(c.inst);
-  lines.push(instrumentBlocks([...used], plan.sound, plan.speed, plan.palette.arp));
+  lines.push(instrumentBlocks([...used], plan.sound, plan.speed, plan.palette.arp, tuning));
   lines.push('');
 
   const voiceLines = [];
@@ -65,7 +66,7 @@ export function emitDsl(plan, arrangement, title) {
     // ring modulation and hard sync are voice fields: on for the steps the
     // ring and sync leads play
     for (const field of ['ring', 'sync']) {
-      const uses = (inst) => inst === field || inst === `${field}bend`;
+      const uses = (inst) => { const b = inst.replace(/hold$/, ''); return b === field || b === `${field}bend`; };
       if (![...distinctInst].some(uses)) continue;
       const names = new Map();
       const order = [];

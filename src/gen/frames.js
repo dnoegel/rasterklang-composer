@@ -5,10 +5,15 @@
 // `insts` instrument's own envelope, and the instrument bank was balanced by
 // ear under 0.1.2, where every note took its voice's default envelope.
 
-import { evaluateSongSource } from 'rasterklang-score-v1/compiler/evaluateSong.js';
-import { compile, framesForCycles } from 'rasterklang-score-v1/compiler/compile.js';
+import * as score01 from 'rasterklang-score-v1/compiler/compile.js';
+import { evaluateSongSource as evaluate01 } from 'rasterklang-score-v1/compiler/evaluateSong.js';
+import * as score02 from 'rasterklang-score/compiler/compile.js';
+import { evaluateSongSource as evaluate02 } from 'rasterklang-score/compiler/evaluateSong.js';
 
-export function renderFrames(dsl, totalBars) {
+// `score` picks the compiler: '0.1' (default, score 0.1.2) or '0.2' (score
+// 0.2.0, own envelope per instrument), used by the mix measurement.
+export function renderFrames(dsl, totalBars, { score = '0.1' } = {}) {
+  const [evaluateSongSource, { compile, framesForCycles }] = score === '0.2' ? [evaluate02, score02] : [evaluate01, score01];
   const song = evaluateSongSource(dsl);
   const source = compile(song);
   const total = framesForCycles(song, totalBars);

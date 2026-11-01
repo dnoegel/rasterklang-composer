@@ -385,6 +385,7 @@ export function arrange(plan, rng, melodyRng) {
   const echoDelay = plan.echo?.delay || 2;
   let echoBars = 0;
   const bendState = { pitch: null, open: false };
+  const roleBars = [];
 
   plan.sections.forEach((section, si) => {
     const idiom = bassIdiom(section, plan);
@@ -462,6 +463,7 @@ export function arrange(plan, rng, melodyRng) {
       } else if (lastBar && section.transition === 'dropout' && !isLastSection) {
         bar = bar.map((cellsV, v) => (roles[v] === 'D' ? restBar(steps) : roles[v] === 'M' ? bass : cellsV));
       }
+      roleBars.push(roles);
       bar.forEach((cellsV, v) => voices[v].push(cellsV));
       prevLead = roles.includes('L') ? bar[roles.indexOf('L')] : restBar(steps);
       // filter routing: the bass voice and the echo (darker, further away);
@@ -475,5 +477,5 @@ export function arrange(plan, rng, melodyRng) {
     }
     prevTransition = section.transition;
   });
-  return { voices, leadNotes, routes };
+  return { voices, leadNotes, routes, roleBars };
 }

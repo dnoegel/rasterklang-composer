@@ -8,6 +8,9 @@ import { arrange } from './arrange.js';
 import { varyBrief } from './vary.js';
 import { emitDsl } from './emit.js';
 import { measureLead } from './measure.js';
+import { roleTimeline } from './roles.js';
+import { SCORE_OF, tuningFor } from './sound/profile.js';
+import { applyHold } from './sound/hold.js';
 import { measureVariety, varietyPenalty } from './variety.js';
 import { Rng } from './prng.js';
 import { KEY_NAMES } from './theory.js';
@@ -60,7 +63,11 @@ export function briefFromPrompt(prompt, seed = 1) {
 }
 
 // Render any brief (rule-based or LLM) into a tune.
-export function composeBrief(rawBrief, { prompt = '', seed = 1, intent = null, candidates = 8, withLead = false, varietyWeight = 1 } = {}) {
+export function composeBrief(rawBrief, { prompt = '', seed = 1, intent = null, candidates = 8, withLead = false, varietyWeight = 1, sound = 'legacy', tuning: tuningOverride = null } = {}) {
+  // sound: 'legacy' (DSL as designed, render with score 0.1) or 'tuned' (envelopes
+  // for score 0.2); tuning: a profile object instead of the stored one (tuner)
+  const stored = tuningFor(sound); // throws for an unknown profile
+  const tuning = stored && (tuningOverride || stored);
   const checked = validateBrief(rawBrief);
   const { repairs, errors } = checked;
   // seeds after the first draw code variants of a model brief
@@ -82,18 +89,24 @@ export function composeBrief(rawBrief, { prompt = '', seed = 1, intent = null, c
   const tr = new Rng(seedKey, GENERATOR_VERSION, 'title');
   const fam = TITLE_KEY[brief.style] || plan.style.family;
   const title = brief.title || `${tr.pick(TITLE_A[fam] || TITLE_A.synth)} ${tr.pick(TITLE_B[fam] || TITLE_B.synth)}`;
-  const dsl = emitDsl(plan, best.arrangement, title);
+  // tuned profile: long lead notes get their held variant
+  const arranged = tuning?.hold ? { ...best.arrangement, voices: applyHold(best.arrangement.voices, tuning.hold) } : best.arrangement;
+  const dsl = emitDsl(plan, arranged, title, tuning);
   return {
     title,
     prompt,
     seed,
     version: GENERATOR_VERSION,
+    sound,
+    score: SCORE_OF[sound],
     intent,
     brief,
     repairs,
     errors,
     plan,
     dsl,
+    // who plays what, per voice and step (mix measurement, src/eval/mix.js)
+    roles: roleTimeline(arranged.voices, arranged.roleBars),
     measure: best.measure,
     variety: best.variety,
     candidate: best.candidate,
