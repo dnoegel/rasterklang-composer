@@ -149,8 +149,19 @@ function onsetCount(cell) {
   if (!onsetCounts.has(cell)) onsetCounts.set(cell, onsetsOf(cell).length);
   return onsetCounts.get(cell);
 }
+// The pool in order of onset count, ties in pool order: the stable sort by
+// count, as a bucket pass (a cell has at most 16 onsets; the corpus pools
+// of are long, and this runs for every bar).
+function byOnsetCount(pool) {
+  const buckets = [];
+  for (const e of pool) (buckets[onsetCount(e[0])] ||= []).push(e);
+  return buckets.flat();
+}
+// pools are built once per meter and feels (cellPools) and keep their order
+const sortedPools = new WeakMap();
 function densityWeights(pool, density, exclude) {
-  const sorted = pool.map((e) => [e, onsetCount(e[0])]).sort((a, b) => a[1] - b[1]).map(([e]) => e);
+  if (!sortedPools.has(pool)) sortedPools.set(pool, byOnsetCount(pool));
+  const sorted = sortedPools.get(pool);
   const center = density * (sorted.length - 1);
   const sigma = Math.max(1.1, sorted.length / 6);
   return sorted.map(([c, w], i) => [c, (c === exclude ? 0.05 : 1) * w * Math.exp(-((i - center) ** 2) / (2 * sigma * sigma))]);
@@ -168,13 +179,15 @@ const FIGURE_SHARE = 0.35;
 function pickWithFigures(pool, figures, density, rng, side, exclude) {
   const cell = pickCell(pool, density, rng, exclude);
   if (!figures.length) return cell;
-  const fig = new Set(figures.map(([c]) => c));
-  const weights = densityWeights([...pool, ...figures], density, exclude);
+  if (!combinedPools.has(pool)) combinedPools.set(pool, { all: [...pool, ...figures], fig: new Set(figures.map(([c]) => c)) });
+  const { all, fig } = combinedPools.get(pool);
+  const weights = densityWeights(all, density, exclude);
   const total = weights.reduce((a, [, w]) => a + w, 0);
   const own = weights.filter(([c]) => fig.has(c));
   const share = own.reduce((a, [, w]) => a + w, 0) / (total || 1);
   return side.chance(share) ? side.weighted(own) : cell;
 }
+const combinedPools = new WeakMap();
 function figurePool(meterId, feels, pool, bankWeight) {
   const seen = new Set(pool.map(([c]) => c));
   const list = feels.flatMap((f) => [...(FIGURES[meterId]?.[f] || []).map((c) => [c, 1]), ...(FIGURE_VARIANTS[meterId]?.[f] || []).map((c) => [c, 0.5])]);
@@ -331,6 +344,20 @@ function themeMotif(bar, user = false) {
   };
 }
 
+// The cell pool and rhythm figures for a meter and feels: the same for every
+// song, so built once (the corpus part is long).
+const cellPoolCache = new Map();
+function cellPools(meterId, feels) {
+  const key = `${meterId}|${feels.join(',')}`;
+  if (!cellPoolCache.has(key)) {
+    const bankOf = (f) => [...(CELLS[meterId][f] || []).map((c) => [c, 1]), ...(CELL_VARIANTS[meterId][f] || []).map((c) => [c, 0.5])];
+    const pool = feels.flatMap((f) => withHvsc(meterId, f, bankOf(f)));
+    const figures = figurePool(meterId, feels, pool, feels.flatMap(bankOf).reduce((a, [, w]) => a + w, 0));
+    cellPoolCache.set(key, { pool, figures });
+  }
+  return cellPoolCache.get(key);
+}
+
 // Build (or reuse) the motif set for one kind of material (a section type).
 // An intro that previews the verse uses the verse's set, so the riff it
 // plays is the riff the verse will play.
@@ -341,11 +368,8 @@ function motifSet(material, section, plan, rng, memory) {
   const energy = material === section.type ? section.energy : Math.min(1, (SECTION_ENERGY[material] || 0.6) + target.energyBias * 0.7);
   const density = Math.max(0, Math.min(1, energy * 0.9 + (material === 'solo' ? 0.3 : 0) - target.legato * 0.15 - (material === 'chorus' ? 0.15 : 0)));
   const feel = CELLS[plan.meterId][section.feel] ? section.feel : Object.keys(CELLS[plan.meterId])[0];
-  const bankOf = (f) => [...(CELLS[plan.meterId][f] || []).map((c) => [c, 1]), ...(CELL_VARIANTS[plan.meterId][f] || []).map((c) => [c, 0.5])];
-  const cellsOf = (f) => withHvsc(plan.meterId, f, bankOf(f));
   const feels = material === 'solo' && feel !== 'running' ? [feel, 'running'] : [feel];
-  const pool = feels.flatMap(cellsOf);
-  const figures = figurePool(plan.meterId, feels, pool, feels.flatMap(bankOf).reduce((a, [, w]) => a + w, 0));
+  const { pool, figures } = cellPools(plan.meterId, feels);
   const side = new Rng(...rng.labels, 'figures', material);
   const cellA = pickWithFigures(pool, figures, density, rng, side);
   const cellB = pickWithFigures(pool, figures, density, rng, side, cellA);
