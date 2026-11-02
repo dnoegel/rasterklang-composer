@@ -113,11 +113,14 @@ export function emitDsl(plan, arrangement, title, tuning = null) {
     cut.push(`    < ${end} : ${expr}`);
   }
   // routing per bar from the arrangement, runs of equal bars merged
+  // route values are 0-based voices; no voice is written as 3 (no such
+  // voice): '0' routed voice 0, often the bass, until 2026-11-02
   const route = [];
   const routes = arrangement.routes;
+  const NONE = '3';
   for (let b = 0; b < routes.length; b += 1) {
-    const r = routes[b].length ? routes[b].join(' ') : '0';
-    const nextR = b + 1 < routes.length ? (routes[b + 1].length ? routes[b + 1].join(' ') : '0') : null;
+    const r = routes[b].length ? routes[b].join(' ') : NONE;
+    const nextR = b + 1 < routes.length ? (routes[b + 1].length ? routes[b + 1].join(' ') : NONE) : null;
     if (r !== nextR) route.push(`    < ${b + 1} : ${r}`);
   }
   cut[cut.length - 1] = cut[cut.length - 1].replace(/< \d+ :/, 'else :');

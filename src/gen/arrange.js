@@ -324,16 +324,24 @@ function counterBar(section, b, plan, leadNotes, prev, energy) {
 }
 
 // Bass and drums on one voice: snares/claps/toms interrupt the bass, kicks
-// fall on bass notes (the bass instrument's noise click is the kick).
+// fall on bass notes (the bass instrument's noise click is the kick). Under a
+// dense bass figure (half the steps or more, a gallop or 16ths) the kicks no
+// longer fill its rests and only the snare beats and the crash interrupt it:
+// otherwise bass and drums ran together into one stream of 16ths whose
+// figure nobody could follow.
 function multiplex(drums, bass, kit) {
+  const dense = bass.filter((c) => c.tok !== '~' && c.tok !== '_').length >= bass.length / 2;
   return drums.map((d, i) => {
     const accent = d.inst && d.inst !== kit.kick && d.inst !== kit.hat && d.inst !== 'ohat';
-    if (accent) return d;
+    if (accent && (!dense || d.inst === 'crash' || isBackbeat(i, drums.length))) return d;
     if (bass[i].tok !== '~') return bass[i];
-    if (d.inst === kit.kick) return d;
+    if (d.inst === kit.kick && !dense) return d;
     return bass[i];
   });
 }
+// the snare's beats 2 and 4 of a 4/4 bar (steps 4 and 12 of 16), or the
+// middle of shorter bars
+const isBackbeat = (i, steps) => (steps === 16 ? i === 4 || i === 12 : i === Math.floor(steps / 2));
 
 const restBar = (steps) => Array.from({ length: steps }, () => REST);
 
@@ -474,9 +482,12 @@ export function arrange(plan, rng, melodyRng) {
       // harmless), never the lead or drums alone
       const pick = (set) => [...roles].map((r, v) => (set.includes(r) ? v : -1)).filter((v) => v >= 0);
       const shape = section.filter || (section.textureDef.filter === 'open' ? 'open' : 'follow');
-      let route = pick(['open', 'close', 'wobble'].includes(shape) ? ['B', 'M', 'E'] : ['E']);
-      if (!route.length) route = pick(['A', 'C']);
-      if (!route.length) route = pick(['-']).slice(0, 1);
+      const sweeping = ['open', 'close', 'wobble'].includes(shape);
+      let route = pick(sweeping ? ['B', 'M', 'E'] : ['E']);
+      // chords and counter only under a sweep: a steady low cutoff buried
+      // the verse arp about 5 dB; else no voice is routed
+      if (!route.length && sweeping) route = pick(['A', 'C']);
+      if (!route.length && sweeping) route = pick(['-']).slice(0, 1);
       routes.push(route);
     }
     prevTransition = section.transition;

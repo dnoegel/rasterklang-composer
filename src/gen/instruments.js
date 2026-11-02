@@ -168,8 +168,8 @@ const MELODIC = {
   gate -2`,
   bell: `
   wave triangle
-  arp 24 12 0
-  loop arp 2
+  arp 12 0
+  loop arp 1
   adsr 0 10 4 8
   vibTri 3 s4 18
   gate -2`,
