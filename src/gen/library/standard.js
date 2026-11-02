@@ -1,7 +1,8 @@
 // The standard library of HVSC sounds as V2 instruments
 //: basses, leads and drum kits under their own names, `std`
-// plus role plus number (stdbass1, stdlead1, stdkit1 with stdkick1,
-// stdsnare1, stdhat1). A program that is already in the C64-style tracker
+// plus role plus a number taken from the program itself (stdlead417,
+// stdkit203 with stdkick203, stdsnare203), so a sound keeps its name when
+// the library is rebuilt from a new corpus run. A program that is already in the C64-style tracker
 // palette keeps that name instead of a copy. Every candidate
 // compiles (CANDIDATE_*); only those in STANDARD_PASSED (written by
 // scripts/standard-gate.mjs) join the palettes, the pools and the model's
@@ -13,6 +14,20 @@ import { HVSC_DRUMS, HVSC_BASSES, HVSC_LEADS, HVSC_KITS } from './hvsc-instrumen
 import { STANDARD_PASSED } from './standard-passed.js';
 
 const norm = (body) => body.trim().replace(/\s+/g, ' ');
+
+// a three-digit number from the program (FNV-1a), stable across rebuilds
+function code(text) {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < text.length; i += 1) { h ^= text.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+  return 100 + (h % 900);
+}
+// the id for a program of a role; a rare clash takes the next free number
+function idFor(role, text, taken) {
+  let n = code(norm(text));
+  while (taken.has(`std${role}${n}`)) n = n === 999 ? 100 : n + 1;
+  taken.add(`std${role}${n}`);
+  return `std${role}${n}`;
+}
 
 // Waveforms of a body's wave line in order, repeats folded (noise, pulse).
 function waves(body) {
@@ -45,10 +60,11 @@ const knownBodies = new Map(Object.entries({ ...HVSC_DRUMS, ...Object.fromEntrie
 
 function pitched(lib, role) {
   const out = {};
-  Object.values(lib).forEach((x, i) => {
-    if (knownBodies.has(norm(x.body))) return;
-    out[`std${role}${i + 1}`] = { body: x.body.trimEnd(), description: describe(role, x.body, x.tags) };
-  });
+  const taken = new Set();
+  for (const x of Object.values(lib)) {
+    if (knownBodies.has(norm(x.body))) continue;
+    out[idFor(role, x.body, taken)] = { body: x.body.trimEnd(), description: describe(role, x.body, x.tags) };
+  }
   return out;
 }
 
@@ -59,18 +75,21 @@ export const CANDIDATE_LEADS = pitched(LEADS, 'lead');
 // program already; a kit whose three drums all exist as one C64-style kit is left out.
 export const CANDIDATE_DRUMS = {};
 export const CANDIDATE_KITS = {};
-Object.values(KITS).forEach((k, i) => {
+const takenKits = new Set();
+Object.values(KITS).forEach((k) => {
   const kit = {};
   const descs = [];
+  const kitId = idFor('kit', ['kick', 'snare', 'hat'].map((p) => k[p].body).join('|'), takenKits);
+  const n = kitId.slice(6);
   for (const part of ['kick', 'snare', 'hat']) {
     const known = knownBodies.get(norm(k[part].body));
-    const id = known || `std${part}${i + 1}`;
+    const id = known || `std${part}${n}`;
     if (!known) CANDIDATE_DRUMS[id] = k[part].body.trimEnd();
     kit[part] = id;
     descs.push(`${waves(k[part].body).join('-')} ${part}`);
   }
   const same = Object.values(HVSC_KITS).some((m) => m.kick === kit.kick && m.snare === kit.snare && m.hat === kit.hat);
-  if (!same) CANDIDATE_KITS[`stdkit${i + 1}`] = { name: descs.join(', '), ...kit };
+  if (!same) CANDIDATE_KITS[kitId] = { name: descs.join(', '), ...kit };
 });
 
 const passed = new Set(STANDARD_PASSED);

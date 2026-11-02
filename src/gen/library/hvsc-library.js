@@ -8,20 +8,19 @@ export const KICKS = {
   kick1: { tags: ["wave sequence","noise attack"], body: `
   adsr 0 0 10 8
   wave triangle noise pulse!4
-  arp =12 =78 =50 =47 =42 =38
+  arp =12 =78 =50 =46 =41 =38
   gate 1!3 0!3
   pw 2048!6
   loop wave 5 arp 5 gate 5 pw 5
 ` },
-  // noise A#7, pulse F3, triangle F3-B2 (2 frames); fast width sweep; AD 0E SR 98
-  kick2: { tags: ["hard restart","pulse sweep","wave sequence","noise attack"], body: `
-  adsr 0 14 9 8
-  wave 0 noise pulse triangle!2
-  arp =106!2 =53!2 =47
-  test 1 0!4
-  gate 1!3 0!2
-  pw 16!2 2072 32 2088
-  loop wave 4 arp 4 test 4 gate 4 pw 4
+  // noise A#7, pulse G2, triangle C2; fixed width; AD 0A SR 08
+  kick2: { tags: ["hard restart","wave sequence","noise attack"], body: `
+  adsr 0 10 0 8
+  wave 0 noise pulse triangle
+  arp =106!2 =43 =36
+  test 1 0!3
+  pw 2056!4
+  loop wave 3 arp 3 test 3 pw 3
 ` },
   // noise E7, pulse D3-G#1 (4 frames); fast width sweep; AD 08 SR A8
   kick3: { tags: ["hard restart","pulse sweep","wave sequence","noise attack","gate timer"], body: `
@@ -33,17 +32,8 @@ export const KICKS = {
   pw 2048!2 ramp 2112..3584 step 64 over 24 ramp 3520..3072 step -64 over 8 ramp 3136..3584 step 64 over 8
   loop wave 5 arp 5 test 5 gate 5 pw 26
 ` },
-  // noise A#7, pulse G2, triangle C2; fixed width; AD 0A SR 08
-  kick4: { tags: ["hard restart","wave sequence","noise attack"], body: `
-  adsr 0 10 0 8
-  wave 0 noise pulse triangle
-  arp =106!2 =43 =36
-  test 1 0!3
-  pw 2056!4
-  loop wave 3 arp 3 test 3 pw 3
-` },
   // pulse F#3, triangle E3-B0 (9 frames); fixed width; AD 00 SR FA
-  kick5: { tags: ["hard restart","wave sequence","gate timer"], body: `
+  kick4: { tags: ["hard restart","wave sequence","gate timer"], body: `
   adsr 0 0 15 10
   wave 0 pulse triangle!9
   arp =54!2 =52 =48 =44 =40 =36 =32 =31 =28 =23
@@ -52,29 +42,29 @@ export const KICKS = {
   pw 2048!2
   loop wave 10 arp 10 test 10 gate 10 pw 1
 ` },
-  // triangle C0, noise C#6, triangle C0; AD 00 SR A8
+  // noise A#7, pulse F3, triangle F3-B2 (2 frames); fast width sweep; AD 0E SR 98
+  kick5: { tags: ["hard restart","pulse sweep","wave sequence","noise attack"], body: `
+  adsr 0 14 9 8
+  wave 0 noise pulse triangle!2
+  arp =106!2 =53!2 =47
+  test 1 0!4
+  gate 1!3 0!2
+  pw 16!2 2072 32 2088
+  loop wave 4 arp 4 test 4 gate 4 pw 4
+` },
+  // triangle C0, noise C6, triangle C0; AD 00 SR A8
   kick6: { tags: ["wave sequence","noise attack"], body: `
   adsr 0 0 10 8
   wave triangle noise triangle
-  arp =12 =85 =12
+  arp =12 =84 =12
   gate 1!2 0
   loop wave 2 arp 2 gate 2
 ` },
 };
 
 export const SNARES = {
-  // noise A#7, triangle C3, pulse F3, noise A#7; fixed width; AD 0F SR A7
-  snare1: { tags: ["hard restart","wave sequence","noise attack"], body: `
-  adsr 0 15 10 7
-  wave 0 noise triangle pulse noise
-  arp =106!2 =48 =53 =106
-  test 1 0!4
-  gate 1!3 0!2
-  pw 2056!5
-  loop wave 4 arp 4 test 4 gate 4 pw 4
-` },
   // noise C6, pulse G#3-C3 (2 frames), noise G#5-E5 (2 frames); fixed width; AD 00 SR F9
-  snare2: { tags: ["hard restart","wave sequence","noise attack","gate timer"], body: `
+  snare1: { tags: ["hard restart","wave sequence","noise attack","gate timer"], body: `
   adsr 0 0 15 9
   wave 0 noise pulse!2 noise!2
   arp =84!2 =56 =48 =80 =76
@@ -82,6 +72,16 @@ export const SNARES = {
   gate 1!4 0!2
   pw 2048!2
   loop wave 5 arp 5 test 5 gate 5 pw 1
+` },
+  // noise A#7, triangle C3, pulse F3, noise A#7; fixed width; AD 0F SR E9
+  snare2: { tags: ["hard restart","wave sequence","noise attack"], body: `
+  adsr 0 15 14 9
+  wave 0 noise triangle pulse noise
+  arp =106!2 =48 =53 =106
+  test 1 0!4
+  gate 1!3 0!2
+  pw 2056!5
+  loop wave 4 arp 4 test 4 gate 4 pw 4
 ` },
   // noise A#7, pulse G#3, noise A#7, pulse G#3, noise A#7 (6 frames); fixed width; AD 00 SR D5
   snare3: { tags: ["hard restart","wave sequence","noise attack"], body: `
@@ -93,18 +93,28 @@ export const SNARES = {
   pw 2048!12
   loop wave 11 arp 11 test 11 gate 11 pw 11
 ` },
-  // noise A#7, triangle D4, pulse G3, noise G5 (7 frames); fixed width; AD 00 SR D6
+  // noise A#7, triangle D4, pulse G3, noise F#5 (7 frames); fixed width; AD 00 SR D6
   snare4: { tags: ["hard restart","wave sequence","noise attack"], body: `
   adsr 0 0 13 6
   wave 0 noise triangle pulse noise!7 saw+pulse+noise
-  arp =106!2 =62 =55 =79 =76 =79 =76 =79 =76 =79!2
+  arp =106!2 =62 =55 =78 =76 =78 =76 =78 =76 =78!2
+  test 1 0!10 1
+  gate 1!3 0!9
+  pw 2048!12
+  loop wave 11 arp 11 test 11 gate 11 pw 11
+` },
+  // noise C6, pulse G3-E3 (2 frames), noise F#5, pulse A#2, noise E5, pulse A#2, noise E5, pulse A#2, noise E5; fixed width; AD 00 SR D6
+  snare5: { tags: ["hard restart","wave sequence","noise attack"], body: `
+  adsr 0 0 13 6
+  wave 0 noise pulse!2 noise pulse noise pulse noise pulse noise saw+pulse+noise
+  arp =84!2 =55 =52 =78 =46 =76 =46 =76 =46 =76!2
   test 1 0!10 1
   gate 1!3 0!9
   pw 2048!12
   loop wave 11 arp 11 test 11 gate 11 pw 11
 ` },
   // noise G#5, pulse F#3, noise G#5-F#5 (3 frames); fixed width; AD 00 SR E9
-  snare5: { tags: ["hard restart","wave sequence","noise attack","gate timer"], body: `
+  snare6: { tags: ["hard restart","wave sequence","noise attack","gate timer"], body: `
   adsr 0 0 14 9
   wave 0 noise pulse noise!3
   arp =80!2 =54 =80 =84 =78
@@ -112,16 +122,6 @@ export const SNARES = {
   gate 1!4 0!2
   pw 2048!2
   loop wave 4 arp 4 test 4 gate 4 pw 1
-` },
-  // noise C#6, pulse G3-E3 (2 frames), noise G5, pulse B2, noise E5, pulse B2, noise E5, pulse B2, noise E5; fixed width; AD 00 SR D6
-  snare6: { tags: ["hard restart","wave sequence","noise attack"], body: `
-  adsr 0 0 13 6
-  wave 0 noise pulse!2 noise pulse noise pulse noise pulse noise saw+pulse+noise
-  arp =85!2 =55 =52 =79 =47 =76 =47 =76 =47 =76!2
-  test 1 0!10 1
-  gate 1!3 0!9
-  pw 2048!12
-  loop wave 11 arp 11 test 11 gate 11 pw 11
 ` },
 };
 
@@ -152,26 +152,8 @@ export const HATS = {
   gate 1!2 0
   loop wave 2 arp 2 test 2 gate 2
 ` },
-  // noise B7; AD 04 SR 00
-  hat4: { tags: ["hard restart","gate timer"], body: `
-  adsr 0 4 0 0
-  wave 0 noise
-  arp =107!2
-  test 1 0
-  loop wave 1 arp 1 test 1
-  gate -2
-` },
-  // noise D#7 (2 frames); AD 00 SR A4
-  hat5: { tags: ["hard restart"], body: `
-  adsr 0 0 10 4
-  wave 0 noise!2
-  arp =99!3
-  test 1 0!2
-  gate 1!2 0
-  loop wave 2 arp 2 test 2 gate 2
-` },
   // noise A#7 (2 frames); AD 00 SR A4
-  hat6: { tags: ["hard restart"], body: `
+  hat4: { tags: ["hard restart"], body: `
   adsr 0 0 10 4
   wave 0 noise!2
   arp =106!3
@@ -179,27 +161,53 @@ export const HATS = {
   gate 1!2 0
   loop wave 2 arp 2 test 2 gate 2
 ` },
+  // noise A#7 (2 frames); AD 29 SR 09
+  hat5: { tags: [], body: `
+  adsr 2 9 0 9
+  wave noise!2
+  arp =106!2
+  loop wave 1 arp 1
+` },
+  // noise B7; AD 04 SR 00
+  hat6: { tags: ["hard restart","gate timer"], body: `
+  adsr 0 4 0 0
+  wave 0 noise
+  arp =107!2
+  test 1 0
+  loop wave 1 arp 1 test 1
+  gate -2
+` },
 };
 
 export const TOMS = {
-  // triangle B4, noise C#6, triangle B4; AD 00 SR A8
+  // triangle B4, noise C6, triangle B4; AD 00 SR A8
   tom1: { tags: ["wave sequence","noise attack"], body: `
   adsr 0 0 10 8
   wave triangle noise triangle
-  arp =71 =85 =71
+  arp =71 =84 =71
   gate 1!2 0
   loop wave 2 arp 2 gate 2
 ` },
-  // triangle D#5, noise C#6, triangle D#5; AD 00 SR A8
+  // triangle D#5, noise C6, triangle D#5; AD 00 SR A8
   tom2: { tags: ["wave sequence","noise attack"], body: `
   adsr 0 0 10 8
   wave triangle noise triangle
-  arp =75 =85 =75
+  arp =75 =84 =75
   gate 1!2 0
   loop wave 2 arp 2 gate 2
 ` },
-  // noise A#7, triangle B4, saw+pulse+noise B4; fixed width; AD 04 SR F1
+  // noise G5, pulse C4-B3 (3 frames); fixed width; AD 06 SR 08
   tom3: { tags: ["hard restart","wave sequence","noise attack"], body: `
+  adsr 0 6 0 8
+  wave 0 noise pulse!3
+  arp =79!2 =60!2 =59
+  test 1 0!4
+  gate 1!3 0!2
+  pw 2056!5
+  loop wave 4 arp 4 test 4 gate 4 pw 4
+` },
+  // noise A#7, triangle B4, saw+pulse+noise B4; fixed width; AD 04 SR F1
+  tom4: { tags: ["hard restart","wave sequence","noise attack"], body: `
   adsr 0 4 15 1
   wave 0 noise triangle saw+pulse+noise
   arp =106!2 =71!2
@@ -302,55 +310,56 @@ export const LEADS = {
   pw 640!2 768 896
   loop wave 3 gate 3 pw 3
 ` },
-  // pulse-+12 (6 frames); fast width sweep; AD 07 SR E7
-  lead3: { tags: ["pulse sweep"], body: `
-  adsr 0 7 14 7
-  wave pulse!6
-  arp 0 24 12 0 24 12
-  gate 1!2 0!4
-  pw 2208!2 ramp 2368..2688 step 160 over 3 2784
-  loop wave 5 arp 5 gate 5 pw 5
-` },
-  // triangle, noise C#6, triangle; AD 00 SR E8
-  lead4: { tags: ["wave sequence","noise attack"], body: `
+  // triangle, noise C6, triangle; AD 00 SR E8
+  lead3: { tags: ["wave sequence","noise attack"], body: `
   adsr 0 0 14 8
   wave triangle noise triangle
-  arp 0 =85 0
+  arp 0 =84 0
   gate 1!2 0
   loop wave 2 arp 2 gate 2
 ` },
   // triangle (3 frames), pulse; mid width sweep; AD 00 SR AE
-  lead5: { tags: ["pulse sweep","wave sequence"], body: `
+  lead4: { tags: ["pulse sweep","wave sequence"], body: `
   adsr 0 0 10 14
   wave triangle!3 pulse
   gate 1!2 0!2
   pw 290!2 324 358
   loop wave 3 gate 3 pw 3
 ` },
-  // pulse, triangle; fixed width; AD 02 SR 9B
-  lead6: { tags: ["hard restart","wave sequence","gate timer"], body: `
-  adsr 0 2 9 11
-  wave pulse triangle
-  pw 128!2
-  loop wave 1 pw 1
-  gate -2
+  // pulse-+12 (6 frames); fast width sweep; AD 00 SR A7
+  lead5: { tags: ["pulse sweep"], body: `
+  adsr 0 0 10 7
+  wave pulse!6
+  arp 0 24 12 0 24 12
+  gate 1!2 0!4
+  pw 2208!2 ramp 2368..2688 step 160 over 3 2784
+  loop wave 5 arp 5 gate 5 pw 5
 ` },
-  // pulse, noise C#6, pulse +24 (4 frames); fast width sweep; AD 00 SR A9
+  // pulse (4 frames); fast width sweep; AD 00 SR AE
+  lead6: { tags: ["pulse sweep"], body: `
+  adsr 0 0 10 14
+  wave pulse!4
+  gate 1!3 0
+  pw 835!2 899 963
+  loop wave 3 gate 3 pw 3
+` },
+  // pulse, noise C6, pulse; fast width sweep; AD 00 SR EC
   lead7: { tags: ["pulse sweep","wave sequence","noise attack"], body: `
+  adsr 0 0 14 12
+  wave pulse noise pulse
+  arp 0 =84 0
+  gate 1!2 0
+  pw 1184!2 1344
+  loop wave 2 arp 2 gate 2 pw 2
+` },
+  // pulse, noise C6, pulse +24 (4 frames); fast width sweep; AD 00 SR A9
+  lead8: { tags: ["pulse sweep","wave sequence","noise attack"], body: `
   adsr 0 0 10 9
   wave pulse noise pulse!4
-  arp 0 =85 24 12 0 24
+  arp 0 =84 24 12 0 24
   gate 1!2 0!4
   pw 2208!2 ramp 2368..2688 step 160 over 3 2784
   loop wave 3 arp 3 gate 3 pw 3
-` },
-  // triangle+pulse, pulse; fast width sweep; AD 02 SR 8A
-  lead8: { tags: ["hard restart","pulse sweep","wave sequence","gate timer"], body: `
-  adsr 0 2 8 10
-  wave triangle+pulse pulse
-  pw 64!2 ramp 112..2032 step 48 over 41 ramp 1984..256 step -48 over 37 ramp 304..2032 step 48 over 37
-  loop wave 1 pw 43
-  gate -2
 ` },
 };
 
@@ -372,8 +381,17 @@ export const ARPS = {
   loop wave 1 arp 1
   gate -2
 ` },
+  // pulse-+5 (6 frames); fast width sweep; AD 00 SR E8
+  arp3: { tags: ["pulse sweep","arpeggio 0 9 5"], body: `
+  adsr 0 0 14 8
+  wave pulse!6
+  arp 0 9 5 0 9 5
+  gate 1!2 0!4
+  pw 1152!2 1280 ramp 1408..1536 step 64 over 3
+  loop wave 3 arp 3 gate 3 pw 3
+` },
   // pulse (9 frames); fast width sweep; AD 00 SR A9
-  arp3: { tags: ["hard restart","pulse sweep","arpeggio 0 4 7","gate timer"], body: `
+  arp4: { tags: ["hard restart","pulse sweep","arpeggio 0 4 7","gate timer"], body: `
   adsr 0 0 10 9
   wave pulse!9
   arp 0!2 4!2 7!2 12!2 0
@@ -382,7 +400,7 @@ export const ARPS = {
   gate -2
 ` },
   // pulse (8 frames); fixed width; AD 00 SR 5A
-  arp4: { tags: ["arpeggio 0 7 4","gate timer"], body: `
+  arp5: { tags: ["arpeggio 0 7 4","gate timer"], body: `
   adsr 0 0 5 10
   wave pulse!8
   arp 0 12!2 7!2 4!2 0
@@ -391,22 +409,13 @@ export const ARPS = {
   gate -2
 ` },
   // pulse-+7 (5 frames); fixed width; AD 05 SR 55
-  arp5: { tags: ["hard restart","arpeggio 0 3 7","gate timer"], body: `
+  arp6: { tags: ["hard restart","arpeggio 0 3 7","gate timer"], body: `
   adsr 0 5 5 5
   wave pulse!5
   arp 0 3!2 7!2
   pw 2184!4
   loop wave 0 arp 0 pw 1
   gate -2
-` },
-  // pulse-+5 (6 frames); fast width sweep; AD 00 SR E8
-  arp6: { tags: ["pulse sweep","arpeggio 0 9 5"], body: `
-  adsr 0 0 14 8
-  wave pulse!6
-  arp 0 9 5 0 9 5
-  gate 1!2 0!4
-  pw 1152!2 1280 ramp 1408..1536 step 64 over 3
-  loop wave 3 arp 3 gate 3 pw 3
 ` },
 };
 
@@ -416,33 +425,6 @@ export const PADS = {
 // Drum kits: kick, snare and hat as real songs combine them.
 export const KITS = {
   kit1: {
-    kick: { body: `
-  adsr 0 14 9 8
-  wave 0 noise pulse triangle!2
-  arp =106!2 =53!2 =47
-  test 1 0!4
-  gate 1!3 0!2
-  pw 16!2 2072 32 2088
-  loop wave 4 arp 4 test 4 gate 4 pw 4
-` },
-    snare: { body: `
-  adsr 0 15 10 7
-  wave 0 noise triangle pulse noise
-  arp =106!2 =48 =53 =106
-  test 1 0!4
-  gate 1!3 0!2
-  pw 2056!5
-  loop wave 4 arp 4 test 4 gate 4 pw 4
-` },
-    hat: { body: `
-  adsr 0 0 1 6
-  wave 0 noise
-  arp =104!2
-  gate 1 0
-  loop wave 1 arp 1 gate 1
-` },
-  },
-  kit2: {
     kick: { body: `
   adsr 0 8 10 8
   wave 0 noise pulse!4
@@ -470,7 +452,7 @@ export const KITS = {
   loop wave 2 arp 2 test 2 gate 2
 ` },
   },
-  kit3: {
+  kit2: {
     kick: { body: `
   adsr 0 0 15 10
   wave 0 pulse triangle!9
@@ -498,22 +480,22 @@ export const KITS = {
   loop wave 2 arp 2 test 2 gate 2
 ` },
   },
-  kit4: {
+  kit3: {
     kick: { body: `
   adsr 0 0 10 8
   wave triangle noise pulse!4
-  arp =12 =78 =50 =47 =42 =38
+  arp =12 =78 =50 =46 =41 =38
   gate 1!3 0!3
   pw 2048!6
   loop wave 5 arp 5 gate 5 pw 5
 ` },
     snare: { body: `
   adsr 0 0 10 9
-  wave triangle noise pulse!2 noise!2
-  arp =12 =71 =56 =54 =78 =63
-  gate 1!3 0!3
-  pw 2048!6
-  loop wave 5 arp 5 gate 5 pw 5
+  wave triangle noise pulse!2 noise!5 triangle
+  arp =12 =70 =56 =53 =77 =63 =70 =58 =77 =55
+  gate 1!3 0!7
+  pw 2048!10
+  loop wave 9 arp 9 gate 9 pw 9
 ` },
     hat: { body: `
   adsr 0 0 1 6
@@ -523,7 +505,7 @@ export const KITS = {
   loop wave 1 arp 1 gate 1
 ` },
   },
-  kit5: {
+  kit4: {
     kick: { body: `
   adsr 0 14 14 0
   wave 0 noise pulse triangle
@@ -550,7 +532,7 @@ export const KITS = {
   loop wave 1 arp 1 gate 1
 ` },
   },
-  kit6: {
+  kit5: {
     kick: { body: `
   adsr 0 0 14 8
   wave 0 noise pulse!6
@@ -568,6 +550,32 @@ export const KITS = {
   gate 1!4 0!2
   pw 2048!2
   loop wave 5 arp 5 test 5 gate 5 pw 1
+` },
+    hat: { body: `
+  adsr 0 0 1 6
+  wave 0 noise
+  arp =104!2
+  gate 1 0
+  loop wave 1 arp 1 gate 1
+` },
+  },
+  kit6: {
+    kick: { body: `
+  adsr 0 10 0 8
+  wave 0 noise pulse triangle
+  arp =106!2 =43 =36
+  test 1 0!3
+  pw 2056!4
+  loop wave 3 arp 3 test 3 pw 3
+` },
+    snare: { body: `
+  adsr 0 9 10 8
+  wave 0 noise triangle pulse noise!4 triangle
+  arp =106!2 =48 =53 =106 =76 =63 =58 =53
+  test 1 0!8
+  gate 1!3 0!6
+  pw 2056!9
+  loop wave 8 arp 8 test 8 gate 8 pw 8
 ` },
     hat: { body: `
   adsr 0 0 1 6

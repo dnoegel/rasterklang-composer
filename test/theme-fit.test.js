@@ -4,9 +4,10 @@ import { answerToBrief } from '../src/gen/menu.js';
 import { validateBrief } from '../src/gen/brief.js';
 import { themeFit, themeFitText, themeFollowUp, THEME_FIT_GATE } from '../src/eval/theme-fit.js';
 
-// A daily brief whose themes clash with their chords (song 64 % chord tones
-// on strong beats) and the same answer without themes (generated melody).
-const daily = JSON.parse(readFileSync(new URL('../data/daily-briefs/d-2026-10-28-a3.json', import.meta.url), 'utf8'));
+// A daily brief whose themes clash with their chords (song 61 % chord tones
+// on strong beats; d-2026-10-28-a3 moved to 71 % with the rhythms of the
+// 2026-11-01 corpus run) and the same answer without themes (generated melody).
+const daily = JSON.parse(readFileSync(new URL('../data/daily-briefs/d-2026-10-27-a2.json', import.meta.url), 'utf8'));
 const CLASH = daily.answer;
 const PROMPT = daily.prompt;
 const FITS = { ...CLASH, themes: [] };
