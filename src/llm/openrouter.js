@@ -2,6 +2,21 @@
 // scripts (scripts/intent-models.mjs compares models with the exact request
 // the server sends).
 
+import { AsyncLocalStorage } from 'node:async_hooks';
+
+// What the model calls of one request cost (API clients): run the
+// request inside costMeter.run({ usd: 0, calls: 0 }, ...) and every call
+// below adds OpenRouter's reported cost. Without a reported cost the tokens
+// are priced like Sonnet, so the meter errs on the high side.
+export const costMeter = new AsyncLocalStorage();
+export const usageCost = (u) => (Number.isFinite(u?.cost) ? u.cost : ((u?.prompt_tokens || 0) * 3 + (u?.completion_tokens || 0) * 15) / 1e6);
+function meter(usage) {
+  const m = costMeter.getStore();
+  if (!m) return;
+  m.usd += usageCost(usage);
+  m.calls += 1;
+}
+
 // Some models cannot switch reasoning off; they get the lowest effort instead.
 export async function chatJson(opts) {
   try {
@@ -43,6 +58,7 @@ async function chatOnce({ url, key, model, system, user, turns = [], schemaName,
   // OpenRouter keeps slow requests alive with whitespace and then reports a
   // provider failure in the body of a 200 response
   if (data?.error) throw new Error(`OpenRouter: ${data.error.message || 'error'}${data.error.code ? ` (${data.error.code})` : ''}${data.error.metadata?.provider_name ? `, ${data.error.metadata.provider_name}` : ''}`);
+  meter(data.usage);
   const choice = data.choices?.[0];
   const content = choice?.message?.content;
   const text = Array.isArray(content) ? content.map((c) => c.text || '').join('') : content;
@@ -81,6 +97,7 @@ export async function chatStep({ url, key, model, messages, tools, toolChoice = 
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(`OpenRouter ${res.status}: ${data?.error?.message || 'error'}`);
   if (data?.error) throw new Error(`OpenRouter: ${data.error.message || 'error'}`);
+  meter(data.usage);
   const message = data.choices?.[0]?.message;
   if (!message) throw new Error('empty answer');
   return { message, usage: data.usage || null };
