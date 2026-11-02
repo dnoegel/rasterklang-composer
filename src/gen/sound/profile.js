@@ -44,3 +44,13 @@ export function holdEnvelope([a, d, s, r], rule) {
   const q = { ...HOLD_RULE, ...rule };
   return [a, Math.max(d, q.dMin), Math.max(s, q.sMin), Math.max(r, q.rMin)];
 }
+
+// Bass rule: every bass instrument except the
+// listed percussive ones sustains at least sMin, applied after the profile's
+// own envelope. The bank's basses decay to sustain 5-10, which put the app's
+// low end about 3 dB under the HVSC; the tuner keeps bass levels inside the
+// legacy band, so it could not lift them. No rule = as designed.
+export function bassEnvelope(name, [a, d, s, r], rule) {
+  if (!rule || (rule.except || []).includes(name)) return [a, d, s, r];
+  return [a, d, Math.max(s, rule.sMin ?? 0), r];
+}

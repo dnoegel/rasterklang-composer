@@ -320,5 +320,11 @@
   "dMin": 0,
   "sMin": 11,
   "rMin": 10
+ },
+ "bass": {
+  "sMin": 13,
+  "except": [
+   "slap"
+  ]
  }
 }

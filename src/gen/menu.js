@@ -137,7 +137,7 @@ ${textures}
 ## Transitions (end of a section)
 ${transitions}
 
-## Filter shapes over a section (the low-pass on the bass voice)
+## Filter shapes over a section (the SID low-pass)
 ${lines(FILTER_SHAPES, (v) => v)}
 
 ## Example forms (for orientation, you may write your own)

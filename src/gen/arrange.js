@@ -466,11 +466,15 @@ export function arrange(plan, rng, melodyRng) {
       roleBars.push(roles);
       bar.forEach((cellsV, v) => voices[v].push(cellsV));
       prevLead = roles.includes('L') ? bar[roles.indexOf('L')] : restBar(steps);
-      // filter routing: the bass voice and the echo (darker, further away);
-      // without them the chords; else a silent voice (routing it is
+      // filter routing: the echo (darker, further away), and the bass only
+      // when the section sweeps it (open, close, wobble): a routed voice
+      // loses about half its level even with the filter open, which left
+      // the low end about 3 dB under the HVSC.
+      // Without them the chords; else a silent voice (routing it is
       // harmless), never the lead or drums alone
       const pick = (set) => [...roles].map((r, v) => (set.includes(r) ? v : -1)).filter((v) => v >= 0);
-      let route = pick(['B', 'M', 'E']);
+      const shape = section.filter || (section.textureDef.filter === 'open' ? 'open' : 'follow');
+      let route = pick(['open', 'close', 'wobble'].includes(shape) ? ['B', 'M', 'E'] : ['E']);
       if (!route.length) route = pick(['A', 'C']);
       if (!route.length) route = pick(['-']).slice(0, 1);
       routes.push(route);

@@ -54,9 +54,11 @@ export const KIND_OF = {
 };
 
 // Filter shape over a section: follow the energy curve, open up, close
-// down, wobble once per bar, or stay put.
+// down, wobble once per bar, or stay put. Only open, close and wobble route
+// the bass through the filter; follow and steady filter the echo or the
+// chords and leave the bass its full low end.
 export const FILTER_SHAPES = {
-  follow: 'follows the energy', open: 'opens up', close: 'closes down', wobble: 'pulses every bar', steady: 'stays put',
+  follow: 'follows the energy, on the echo or the chords', open: 'opens up, a sweep on the bass', close: 'closes down, a sweep on the bass', wobble: 'pulses every bar, on the bass', steady: 'stays put, on the echo or the chords',
 };
 
 // Transitions at the end of a section.

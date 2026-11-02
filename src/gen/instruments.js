@@ -4,7 +4,8 @@
 // Pulse sweeps stay within pw >= 768 and small steps: narrower or faster
 // sweeps alias into hiss in the emulator (launchpad known issue).
 
-import { customEnvelope, holdEnvelope, ECHO_RULE } from './sound/profile.js';
+import { customEnvelope, holdEnvelope, bassEnvelope, ECHO_RULE } from './sound/profile.js';
+import { BASSES } from './library/palettes.js';
 import { HVSC_DRUMS, HVSC_BASSES, HVSC_LEADS } from './library/hvsc-instruments.js';
 import { CANDIDATE_DRUMS, CANDIDATE_BASSES, CANDIDATE_LEADS } from './library/standard.js';
 
@@ -368,6 +369,11 @@ const withAdsr = (body, adsr) => (adsr ? body.replace(/adsr \d+ \d+ \d+ \d+/, `a
 function bodyOf(name, sound, speed, arp, tuning = null) {
   let body = DRUMS[name] || MELODIC[name];
   if (body) body = withAdsr(body, tuning?.instruments?.[name]);
+  // bass rule of the profile: a sustain floor for the basses (src/gen/sound/profile.js)
+  if (body && BASSES[name] && tuning?.bass) {
+    const m = /adsr (\d+) (\d+) (\d+) (\d+)/.exec(body);
+    if (m) body = withAdsr(body, bassEnvelope(name, m.slice(1).map(Number), tuning.bass));
+  }
   if (!body && name === 'custom' && sound) body = customLeadBody(sound, tuning?.custom);
   if (!body && ARP_QUALITY[name]) body = arpInstrument(ARP_SHAPES[ARP_QUALITY[name]], arp, tuning);
   if (!body && name.endsWith('echo')) {
