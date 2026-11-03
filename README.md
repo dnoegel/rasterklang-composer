@@ -8,6 +8,7 @@ https://github.com/user-attachments/assets/80d4df37-2e61-4b8b-8eaf-e0d9ff2b4cde
 git clone https://github.com/dnoegel/rasterklang-composer.git && cd rasterklang-composer
 npm install && npm link
 
+export OPENROUTER_API_KEY=...
 rk-composer "cracktro for a lost floppy disk, fast and cocky" 
 ```
 
