@@ -1,6 +1,5 @@
-// One structured chat call to OpenRouter, shared by the server and the
-// scripts (scripts/intent-models.mjs compares models with the exact request
-// the server sends).
+// OpenRouter calls: one structured chat call (chatJson), one step of a
+// tool-calling conversation (chatStep) and a web search (webSearch). Node only.
 
 import { AsyncLocalStorage } from 'node:async_hooks';
 
@@ -9,6 +8,11 @@ import { AsyncLocalStorage } from 'node:async_hooks';
 // below adds OpenRouter's reported cost. Without a reported cost the tokens
 // are priced like Sonnet, so the meter errs on the high side.
 export const costMeter = new AsyncLocalStorage();
+// the app name OpenRouter shows for these requests
+let appTitle = 'rasterklang-composer';
+export function configure({ title } = {}) {
+  if (title) appTitle = title;
+}
 export const usageCost = (u) => (Number.isFinite(u?.cost) ? u.cost : ((u?.prompt_tokens || 0) * 3 + (u?.completion_tokens || 0) * 15) / 1e6);
 function meter(usage) {
   const m = costMeter.getStore();
@@ -35,7 +39,7 @@ async function chatOnce({ url, key, model, system, user, turns = [], schemaName,
     headers: {
       authorization: `Bearer ${key}`,
       'content-type': 'application/json',
-      'x-title': 'Rasterklang Compose',
+      'x-title': appTitle,
     },
     body: JSON.stringify({
       model,
@@ -81,7 +85,7 @@ async function chatOnce({ url, key, model, system, user, turns = [], schemaName,
 export async function chatStep({ url, key, model, messages, tools, toolChoice = 'auto', temperature = 0.3, maxTokens = 4000, timeoutMs = 60000, plugins = null, reasoning = null }) {
   const res = await fetch(`${url}/chat/completions`, {
     method: 'POST',
-    headers: { authorization: `Bearer ${key}`, 'content-type': 'application/json', 'x-title': 'Rasterklang Compose' },
+    headers: { authorization: `Bearer ${key}`, 'content-type': 'application/json', 'x-title': appTitle },
     body: JSON.stringify({
       model,
       temperature,

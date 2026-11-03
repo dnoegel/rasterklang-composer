@@ -16,7 +16,7 @@ const giveUp = [
   [{ name: 'search_scores', args: { query: 'monoton und minimal' } }, { name: 'web_search', args: { query: 'monoton und minimal midi' } }],
   [{ name: 'no_score_found', args: { reason: 'No MIDI, MusicXML or ABC of the song exists in the sources.' } }],
 ];
-vi.mock('../tools/openrouter.mjs', () => ({
+vi.mock('../src/llm/openrouter.js', () => ({
   chatStep: async ({ messages }) => {
     seen.push(messages[messages.length - 1]);
     const turn = script.length ? script.shift() : giveUp.shift();
@@ -24,7 +24,7 @@ vi.mock('../tools/openrouter.mjs', () => ({
   },
   webSearch: async () => ({ text: 'none' }),
 }));
-vi.mock('../scores.mjs', async () => {
+vi.mock('../src/research/scores.js', async () => {
   const { reduceScore } = await import('../src/score/reduce.js');
   const notes = Array.from({ length: 8 }, (_, i) => ({ pitch: 72 + (i % 3), start: i * 480, dur: 480 }));
   const bass = Array.from({ length: 2 }, (_, i) => ({ pitch: 48, start: i * 1920, dur: 1920 }));
@@ -36,7 +36,7 @@ vi.mock('../scores.mjs', async () => {
 
 describe('research loop', () => {
   it('runs the tools, answers a bad submission and returns the material', async () => {
-    const { research } = await import('../research.mjs');
+    const { research } = await import('../src/research/research.js');
     const m = await research({ prompt: 'vivaldi autumn c64', interpretation: { kind: 'work', work: 'Autumn', by: 'Vivaldi' }, url: 'x', key: 'k', model: 'm', searchModel: 's' });
     expect(m.work).toBe('Autumn');
     expect(m.segments[0]).toMatchObject({ id: 'A', bars: 2 });
@@ -49,7 +49,7 @@ describe('research loop', () => {
   });
 
   it('reports no score instead of guessing, but only after a real search', async () => {
-    const { research } = await import('../research.mjs');
+    const { research } = await import('../src/research/research.js');
     seen.length = 0;
     const r = await research({ prompt: 'monoton und minimal c64', interpretation: { kind: 'work', work: 'Monoton und Minimal', by: 'Welle:Erdball' }, url: 'x', key: 'k', model: 'm', searchModel: 's' });
     expect(r.notFound).toBe(true);

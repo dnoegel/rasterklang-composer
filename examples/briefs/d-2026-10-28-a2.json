@@ -1,0 +1,248 @@
+{
+  "prompt": "funk heist in a velvet casino, cool groove that never breaks a sweat",
+  "constraints": [
+    "Let one section build its energy from low to high within itself.",
+    "End the song with layers dropping out one by one.",
+    "Play in the key of Eb, unless the prompt, a reference song or a melody clearly needs another key.",
+    "Start directly with the first verse or the chorus: no intro section.",
+    "Set the tempo in the middle of the chosen style's tempo band.",
+    "Form: a through-composed journey: every section new, only the chorus hook returns.",
+    "Use the texture counter for the first chorus.",
+    "Give the chorus the lead sound saw; other sections may use other leads.",
+    "If the song is in 4/4, use this bass figure from real C64 tunes as the verse bass_pattern: \"........RRRRRRRR\"."
+  ],
+  "answer": {
+    "reasoning": "Funk in Eb dorian at a relaxed 111 bpm, mid-band, so the groove struts instead of sweating: ghosted 16th hats, a slap bass that lays back and a minor-seventh vamp with a velvet natural sixth. sid_idiom sits at 0.35: the genre stays faithful, but the heist gets C64 colour from the creeping 16th bass figure in the verse, a ring-mod lead for the safe-cracking bridge and a multiplexed breakdown. The form is a single through-composed caper (verse, rising pre, chorus, bridge, breakdown, chorus) where only the cool saw hook returns, and the crew slips out as the layers drop away one by one.",
+    "title": "Velvet Rope Getaway",
+    "imagery": "Tuxedoed thieves gliding past the roulette tables while the vault door swings open behind a red velvet curtain.",
+    "liner_note": "A heist planned to the second and played at half a heartbeat. Nobody runs; the crew just strolls out with the chips.",
+    "style": "funk",
+    "blend_style": "none",
+    "blend_amount": 0,
+    "sid_idiom": 0.35,
+    "moods": [
+      {
+        "mood": "mysterious",
+        "weight": 0.45
+      },
+      {
+        "mood": "playful",
+        "weight": 0.35
+      },
+      {
+        "mood": "tense",
+        "weight": 0.2
+      }
+    ],
+    "tempo": 111,
+    "meter": "4/4",
+    "key": "Eb",
+    "mode": "dorian",
+    "palette": {
+      "bass": "slap",
+      "snare": "snare",
+      "chords": "triad",
+      "kit": "tight"
+    },
+    "sound": {
+      "wave": "pulse",
+      "attack": 0,
+      "decay": 6,
+      "sustain": 4,
+      "release": 3,
+      "vibrato": 1,
+      "pwm": "slow",
+      "pulse_width": "narrow",
+      "onset": "noise",
+      "slide": "short"
+    },
+    "sections": [
+      {
+        "filter": "close",
+        "drums_pattern": "k.h.s.hkh.hks.h.",
+        "bass_pattern": "........RRRRRRRR",
+        "bass_sound": "sub",
+        "arp_pattern": ".x.x..x..x.x..x.",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 2,
+        "transition": "none",
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.45,
+        "energy_end": 0.5,
+        "texture": "multiplex",
+        "groove": "funk",
+        "bass": "funk_16ths",
+        "feel": "syncopated",
+        "lead": "custom",
+        "chords": [
+          "i7",
+          "IV7"
+        ]
+      },
+      {
+        "filter": "open",
+        "drums_pattern": "k.hhs.hkh.hks.hs",
+        "bass_pattern": "R.5.8.R.b.5.4.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "stop",
+        "type": "pre",
+        "bars": 4,
+        "energy": 0.35,
+        "energy_end": 0.8,
+        "texture": "build_up_band",
+        "groove": "funk",
+        "bass": "motown",
+        "feel": "dotted",
+        "lead": "scoop",
+        "chords": [
+          "iv7",
+          "bVII",
+          "bIII",
+          "V"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "k.hoshh.k.hos.ho",
+        "bass_pattern": "R..R..8.R.b.5.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "fill",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.75,
+        "energy_end": 0.8,
+        "texture": "counter",
+        "groove": "disco",
+        "bass": "funk_16ths",
+        "feel": "syncopated",
+        "lead": "saw",
+        "chords": [
+          "i7",
+          "IV7",
+          "bVII",
+          "i7"
+        ]
+      },
+      {
+        "filter": "wobble",
+        "drums_pattern": "k..hs.h.k.k.s.hh",
+        "bass_pattern": "R..8..R.5..8..5.",
+        "bass_sound": "chipbass",
+        "arp_pattern": "x..x..x.x..x..x.",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 2,
+        "transition": "none",
+        "type": "bridge",
+        "bars": 8,
+        "energy": 0.5,
+        "energy_end": 0.6,
+        "texture": "call_response",
+        "groove": "funk",
+        "bass": "sync_bass",
+        "feel": "riff",
+        "lead": "ring",
+        "chords": [
+          "bVI",
+          "bVII",
+          "iv7",
+          "V"
+        ]
+      },
+      {
+        "filter": "steady",
+        "drums_pattern": "",
+        "bass_pattern": "R..R.8.RR.b..5A.",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "dropout",
+        "type": "breakdown",
+        "bars": 4,
+        "energy": 0.3,
+        "energy_end": 0.45,
+        "texture": "bass_alone",
+        "groove": "funk",
+        "bass": "funk_16ths",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "i7",
+          "IV7"
+        ]
+      },
+      {
+        "filter": "open",
+        "drums_pattern": "k.hoshh.k.hos.hok.hoshhkk.hos.ss",
+        "bass_pattern": "R..R..8.R.b.5.A.R..R..8.R8b85.A.",
+        "bass_sound": "slap",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "answer",
+        "chord_bars": 1,
+        "transition": "none",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.85,
+        "energy_end": 0.9,
+        "texture": "full",
+        "groove": "disco",
+        "bass": "funk_16ths",
+        "feel": "syncopated",
+        "lead": "saw",
+        "chords": [
+          "i7",
+          "IV7",
+          "bVII",
+          "i7"
+        ]
+      },
+      {
+        "filter": "close",
+        "drums_pattern": "k.h.s.hkh.hks.h.",
+        "bass_pattern": "........RRRRRRRR",
+        "bass_sound": "sub",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "none",
+        "type": "outro",
+        "bars": 4,
+        "energy": 0.5,
+        "energy_end": 0.15,
+        "texture": "fade_layers",
+        "groove": "funk",
+        "bass": "funk_16ths",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "i7",
+          "IV7"
+        ]
+      }
+    ],
+    "themes": [
+      {
+        "section": "verse",
+        "notes": ". . 1 _ 3 . 4 . 5 _ _ 3 _ _ . . . . 1 _ 3 . 4 . 6 _ 5 _ 3 _ 1 _"
+      },
+      {
+        "section": "chorus",
+        "notes": ". 5 _ 7 . 5 _ 4 3 _ . 1 _ _ . . . 5 _ 7 . 8 _ 9 _ _ 8 _ 7 _ 5 _"
+      }
+    ]
+  }
+}

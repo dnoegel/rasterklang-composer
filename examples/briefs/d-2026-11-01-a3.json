@@ -1,0 +1,321 @@
+{
+  "prompt": "pop rock anthem for a joystick that finally wins the championship",
+  "constraints": [
+    "Use a key change up a whole step on the last chorus.",
+    "Give every repeat of the chorus a different variation, ending with the octave.",
+    "Play in the key of F#, unless the prompt, a reference song or a melody clearly needs another key.",
+    "Start directly with the first verse or the chorus: no intro section.",
+    "Set the tempo in the upper third of the chosen style's tempo band.",
+    "Form: one long build: start sparse, add a layer every section, peak at the end.",
+    "Use the texture multiplex for the first chorus.",
+    "Give the chorus the lead sound sharp; other sections may use other leads.",
+    "If the song is in 4/4, use this bass figure from real C64 tunes as the verse bass_pattern: \"R___R___R___R___\".",
+    "Sounds: palette.arp pluck, palette.bass bass, palette.kit std.",
+    "Custom lead (sound): a breathy sound, wave triangle, attack 4, decay 6, sustain 8, release 9, vibrato 1, onset noise, slide none.",
+    "If the song is in 4/4, give the chorus the melody feel dotted and, where the chord arpeggio plays, the arp_pattern \"xxxxxxxxxxxxxxxx\"."
+  ],
+  "answer": {
+    "reasoning": "Pop-rock at 146 bpm (upper third of the band) in bright F# ionian: a straight rock backbeat, driving 8th-note bass and a chorus that climbs IV-V-I so every chorus lands like a trophy lift. The form is one long build as drawn: no intro, a sparse breathy verse over held quarter-note bass that lets the band in bar by bar, a rising ii-iii-IV-V pre, then three choruses that each add something (multiplexed pluck arps, a counter-melody with an answer phrase, finally a whole-step key change with the hook an octave up). sid_idiom sits at 0.5: the joystick and the arcade championship pull towards the chip (sharp HVSC lead, 16th-note arps, an octave-roll bass in the last chorus, a warbling bridge), but the anthem's backbeat and power-pop harmony stay in front. The drawn arrangement is kept; the bridge borrows bVI-bVII for the classic victory lift into the final chorus.",
+    "title": "Fire Button Glory",
+    "imagery": "A battered joystick with a worn red fire button, held aloft under arcade lights as the final scoreboard flips to its name and confetti rains on the cabinet.",
+    "liner_note": "Years of waggling, broken microswitches and near misses, all for this one round. Press fire and hold it high.",
+    "style": "poprock",
+    "blend_style": "none",
+    "blend_amount": 0,
+    "sid_idiom": 0.5,
+    "moods": [
+      {
+        "mood": "triumphant",
+        "weight": 0.5
+      },
+      {
+        "mood": "hopeful",
+        "weight": 0.3
+      },
+      {
+        "mood": "epic",
+        "weight": 0.2
+      }
+    ],
+    "tempo": 146,
+    "meter": "4/4",
+    "key": "F#",
+    "mode": "ionian",
+    "palette": {
+      "bass": "bass",
+      "snare": "snare2",
+      "chords": "power",
+      "kit": "std",
+      "arp": "pluck"
+    },
+    "sound": {
+      "wave": "triangle",
+      "attack": 4,
+      "decay": 6,
+      "sustain": 8,
+      "release": 9,
+      "vibrato": 1,
+      "pwm": "none",
+      "pulse_width": "medium",
+      "onset": "noise",
+      "slide": "none"
+    },
+    "sections": [
+      {
+        "filter": "follow",
+        "drums_pattern": "k.......s.......k.....k.s.......",
+        "bass_pattern": "R___R___R___R___",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "none",
+        "mode": "song",
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.35,
+        "energy_end": 0.45,
+        "texture": "build_up_band",
+        "groove": "rock",
+        "bass": "half_note",
+        "feel": "straight",
+        "lead": "custom",
+        "chords": [
+          "I",
+          "bVII",
+          "IV",
+          "I"
+        ]
+      },
+      {
+        "filter": "open",
+        "drums_pattern": "k.h.s.h.k.h.s.h.k.h.s.h.k.s.ssss",
+        "bass_pattern": "R.R.R.R.R.R.R.RA",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "stop",
+        "mode": "song",
+        "type": "pre",
+        "bars": 4,
+        "energy": 0.5,
+        "energy_end": 0.62,
+        "texture": "full",
+        "groove": "rock",
+        "bass": "driving_8ths",
+        "feel": "straight",
+        "lead": "brass",
+        "chords": [
+          "ii",
+          "iii",
+          "IV",
+          "V"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "x.h.s.hhk.k.s.hhk.h.s.hhk.k.sTss",
+        "bass_pattern": "R.R.8.R.R.R.8.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "xxxxxxxxxxxxxxxx",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "fill",
+        "mode": "song",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.68,
+        "energy_end": 0.74,
+        "texture": "multiplex",
+        "groove": "rock",
+        "bass": "root_8ths",
+        "feel": "dotted",
+        "lead": "sharp",
+        "chords": [
+          "IV",
+          "V",
+          "I",
+          "vi"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "k...s...k.k.s...k...s...k.k.s.hh",
+        "bass_pattern": "R___R___R___R___",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "ornament",
+        "chord_bars": 1,
+        "transition": "none",
+        "mode": "song",
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.7,
+        "energy_end": 0.74,
+        "texture": "echo_lead",
+        "groove": "rock",
+        "bass": "half_note",
+        "feel": "straight",
+        "lead": "custom",
+        "chords": [
+          "I",
+          "bVII",
+          "IV",
+          "I"
+        ]
+      },
+      {
+        "filter": "open",
+        "drums_pattern": "k.h.s.hhk.h.s.hhk.h.s.hhkksTssss",
+        "bass_pattern": "R.R.R.R.R.R.R.RA",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "stop",
+        "mode": "song",
+        "type": "pre",
+        "bars": 4,
+        "energy": 0.75,
+        "energy_end": 0.84,
+        "texture": "counter",
+        "groove": "rock",
+        "bass": "driving_8ths",
+        "feel": "straight",
+        "lead": "brass",
+        "chords": [
+          "ii",
+          "iii",
+          "IV",
+          "V"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "x.h.s.hhk.k.s.hhk.h.s.hhk.k.sTss",
+        "bass_pattern": "R.R.8.R.R.R.8.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "answer",
+        "chord_bars": 1,
+        "transition": "fill",
+        "mode": "song",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.84,
+        "energy_end": 0.88,
+        "texture": "counter",
+        "groove": "rock",
+        "bass": "root_8ths",
+        "feel": "dotted",
+        "lead": "sharp",
+        "chords": [
+          "IV",
+          "V",
+          "I",
+          "vi"
+        ]
+      },
+      {
+        "filter": "open",
+        "drums_pattern": "",
+        "bass_pattern": "R..8..R.5..8..A.",
+        "bass_sound": "palette",
+        "arp_pattern": "xxxxxxxxxxxxxxxx",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "fill",
+        "mode": "song",
+        "type": "bridge",
+        "bars": 8,
+        "energy": 0.82,
+        "energy_end": 0.92,
+        "texture": "call_response",
+        "groove": "sid_drive",
+        "bass": "sync_bass",
+        "feel": "long",
+        "lead": "warble",
+        "chords": [
+          "vi",
+          "iii",
+          "IV",
+          "I",
+          "vi",
+          "iii",
+          "bVI",
+          "bVII"
+        ]
+      },
+      {
+        "filter": "open",
+        "drums_pattern": "x.h.s.hhk.k.s.hhk.h.s.hhk.k.sTss",
+        "bass_pattern": "RR8RRR8RRR8R8R8A",
+        "bass_sound": "palette",
+        "arp_pattern": "xxxxxxxxxxxxxxxx",
+        "transpose": 2,
+        "variation": "octave",
+        "chord_bars": 1,
+        "transition": "none",
+        "mode": "song",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.94,
+        "energy_end": 1,
+        "texture": "multiplex",
+        "groove": "rock",
+        "bass": "octave_roll",
+        "feel": "dotted",
+        "lead": "sharp",
+        "chords": [
+          "IV",
+          "V",
+          "I",
+          "vi"
+        ]
+      },
+      {
+        "filter": "steady",
+        "drums_pattern": "x.h.s.hhk.k.sTssk...............",
+        "bass_pattern": "",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 2,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "none",
+        "mode": "song",
+        "type": "outro",
+        "bars": 2,
+        "energy": 0.95,
+        "energy_end": 0.6,
+        "texture": "final_hit",
+        "groove": "rock",
+        "bass": "half_note",
+        "feel": "long",
+        "lead": "sharp",
+        "chords": [
+          "V",
+          "I"
+        ]
+      }
+    ],
+    "themes": [
+      {
+        "section": "verse",
+        "notes": "1 . . 3 . . 5 _ _ _ 4 . 3 . 2 . 4 _ _ . 2 . 4 . 5 _ _ _ . . . . 6 . . 6 . 5 4 . 6 _ _ _ 8 _ . . 5 _ _ 3 . . 2 . 1 _ _ _ . . . ."
+      },
+      {
+        "section": "chorus",
+        "notes": "4 _ _ 6 _ _ 8 _ _ 8 _ _ 6 _ 8 _ 9 _ _ 7 _ _ 5 _ _ 7 _ _ 9 _ 10 _ 12 _ _ 10 _ _ 8 _ _ 10 _ _ 8 _ 5 _ 6 _ _ 8 _ _ 10 _ _ _ _ _ . . . ."
+      }
+    ]
+  }
+}

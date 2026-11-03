@@ -1,0 +1,224 @@
+{
+  "prompt": "film score for a lone icebreaker crossing a frozen sea, vast and slow-building",
+  "constraints": [
+    "Design a custom lead sound that fits the imagery and use it for the main theme.",
+    "End the song with layers dropping out one by one.",
+    "Play in the key of A, unless the prompt, a reference song or a melody clearly needs another key.",
+    "Open with an intro of texture drum_groove.",
+    "Set the tempo in the middle of the chosen style's tempo band.",
+    "Form: short and direct: verse and chorus twice, a short outro.",
+    "Use the texture full for the first chorus.",
+    "Give the chorus the lead sound ring; other sections may use other leads.",
+    "If the song is in 4/4, use this bass figure from real C64 tunes as the verse bass_pattern: \"..R_....R_....R_\"."
+  ],
+  "answer": {
+    "reasoning": "A cinematic score in A aeolian at 102 bpm, the middle of the band: the minor mode and two-bar chords give the cold, wide horizon, and the energy climbs from a lone tom pulse (the ship's engine) to a full march-like chorus. sid_idiom sits at 0.3 because this is a film cue, so the chip is mostly the orchestra, with only the ring-modulated chorus lead and some arps giving C64 metal-on-ice colour. The verse sings a slow frosted-glass custom lead over the sparse offbeat C64 bass figure, the chorus lifts through bVI bIII bVII to i with a rising sequenced hook, the second chorus steps up a whole tone, and the outro lets the layers drop away like the ship vanishing into white.",
+    "title": "Hull Against the White",
+    "imagery": "A single icebreaker grinding a black channel through an endless frozen sea under a low, pale sun.",
+    "liner_note": "The engine thuds alone at first, then the sea opens ahead of the bow one crack at a time. By the end the channel is wide and the ship is only a speck on the horizon.",
+    "style": "cinematic",
+    "blend_style": "none",
+    "blend_amount": 0,
+    "sid_idiom": 0.3,
+    "moods": [
+      {
+        "mood": "epic",
+        "weight": 0.45
+      },
+      {
+        "mood": "melancholic",
+        "weight": 0.3
+      },
+      {
+        "mood": "mysterious",
+        "weight": 0.25
+      }
+    ],
+    "tempo": 102,
+    "meter": "4/4",
+    "key": "A",
+    "mode": "aeolian",
+    "palette": {
+      "bass": "sub",
+      "snare": "snare2",
+      "chords": "triad",
+      "kit": "boom"
+    },
+    "sound": {
+      "wave": "pulse",
+      "attack": 4,
+      "decay": 8,
+      "sustain": 10,
+      "release": 10,
+      "vibrato": 1,
+      "pwm": "slow",
+      "pulse_width": "narrow",
+      "onset": "none",
+      "slide": "short"
+    },
+    "sections": [
+      {
+        "filter": "open",
+        "drums_pattern": "t.......t.t.....t.......t.t...T.",
+        "bass_pattern": "",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 2,
+        "transition": "none",
+        "type": "intro",
+        "bars": 4,
+        "energy": 0.2,
+        "energy_end": 0.35,
+        "texture": "drum_groove",
+        "groove": "tom_pulse",
+        "bass": "whole_note",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "i",
+          "bVI"
+        ]
+      },
+      {
+        "filter": "steady",
+        "drums_pattern": "k.......t...t...k.......t.t.T...",
+        "bass_pattern": "..R_....R_....R_",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 2,
+        "transition": "fill",
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.4,
+        "energy_end": 0.55,
+        "texture": "echo_lead",
+        "groove": "tom_pulse",
+        "bass": "whole_note",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "i",
+          "bVI",
+          "iv",
+          "v"
+        ]
+      },
+      {
+        "filter": "open",
+        "drums_pattern": "k.t.s.t.k.TTs.t.k.t.s.t.kkTTs.TT",
+        "bass_pattern": "R_R_R_8_R_R_5_R_",
+        "bass_sound": "growl",
+        "arp_pattern": "x_x.x_x.x_x.x___",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "none",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.75,
+        "energy_end": 0.85,
+        "texture": "full",
+        "groove": "tom_pulse",
+        "bass": "pedal_16ths",
+        "feel": "long",
+        "lead": "ring",
+        "chords": [
+          "bVI",
+          "bIII",
+          "bVII",
+          "i"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "k...t...k.t.T...k...t...k.t.TTs.",
+        "bass_pattern": "..R_....R_....R_",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "ornament",
+        "chord_bars": 2,
+        "transition": "fill",
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.5,
+        "energy_end": 0.65,
+        "texture": "counter",
+        "groove": "tom_pulse",
+        "bass": "whole_note",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "i",
+          "bVI",
+          "iv",
+          "v"
+        ]
+      },
+      {
+        "filter": "open",
+        "drums_pattern": "x.t.s.t.k.TTs.t.k.t.s.t.kkTTsTTT",
+        "bass_pattern": "RRR_RRR_RRR_8_5_",
+        "bass_sound": "growl",
+        "arp_pattern": "x.x.x_x.x.x.x_x.",
+        "transpose": 2,
+        "variation": "answer",
+        "chord_bars": 1,
+        "transition": "none",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.9,
+        "energy_end": 1,
+        "texture": "multiplex",
+        "groove": "march",
+        "bass": "pedal_16ths",
+        "feel": "long",
+        "lead": "ring",
+        "chords": [
+          "bVI",
+          "bIII",
+          "bVII",
+          "i"
+        ]
+      },
+      {
+        "filter": "close",
+        "drums_pattern": "t.......t.t.....",
+        "bass_pattern": "",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 2,
+        "transition": "none",
+        "type": "outro",
+        "bars": 4,
+        "energy": 0.4,
+        "energy_end": 0.05,
+        "texture": "fade_layers",
+        "groove": "tom_pulse",
+        "bass": "sustained",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "i",
+          "bVI"
+        ]
+      }
+    ],
+    "themes": [
+      {
+        "section": "verse",
+        "notes": "1 _ _ _ _ _ _ _ 5 _ _ _ 4 _ 3 _ 2 _ _ _ _ _ _ _ _ _ _ _ . . . . 1 _ _ _ _ _ _ _ 5 _ _ _ 6 _ 5 _ 8 _ _ _ _ _ _ _ 7 _ 5 _ _ _ _ _"
+      },
+      {
+        "section": "chorus",
+        "notes": "3 _ _ _ 1 _ 3 _ 6 _ _ _ 5 _ 3 _ 5 _ _ _ _ _ 7 _ 10 _ _ _ _ _ _ _ 9 _ _ _ 7 _ 9 _ 11 _ _ _ 9 _ 7 _ 8 _ _ _ _ _ _ _ _ _ _ _ . . . ."
+      }
+    ]
+  }
+}

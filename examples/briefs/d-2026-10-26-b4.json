@@ -1,0 +1,347 @@
+{
+  "prompt": "underwater hip hop for a crab with attitude",
+  "constraints": [
+    "Use a pre-chorus that builds tension before every chorus.",
+    "Write a theme of four bars for the chorus.",
+    "Play in the key of C#, unless the prompt, a reference song or a melody clearly needs another key.",
+    "Open with an intro of texture countin.",
+    "Set the tempo in the middle of the chosen style's tempo band.",
+    "Form: verse and chorus with a contrasting bridge before the last chorus.",
+    "Use the texture full for the first chorus.",
+    "Give the chorus the lead sound fiddle; other sections may use other leads."
+  ],
+  "answer": {
+    "reasoning": "Hip-hop at 84 bpm in C# dorian gives a head-nodding boom bap swagger with a cheeky raised sixth, and an 808 slide bass plus a wobbling filter puts the whole thing underwater. The verse rides a bubbly custom triangle pluck in a low, rap-like rhythm, while the chorus hands the hook to the fiddle, a nod to the fiddler crab, with a pinching repeated-note motif that sequences up a fourth to a high point. Short hi-hat-roll pre-choruses squeeze the tension before each chorus, and a glassy halftime bridge sinks deeper before the last chorus snaps back.",
+    "title": "Sideways Swagger",
+    "imagery": "A red crab strutting sideways across the seabed, claws clicking to the beat as bubbles rise through green light.",
+    "liner_note": "A boom bap strut from the bottom of the reef. Listen for the pinching fiddle hook and the bass that slides like sand under the tide.",
+    "style": "hiphop",
+    "blend_style": "none",
+    "blend_amount": 0,
+    "moods": [
+      {
+        "mood": "playful",
+        "weight": 0.5
+      },
+      {
+        "mood": "aggressive",
+        "weight": 0.3
+      },
+      {
+        "mood": "mysterious",
+        "weight": 0.2
+      }
+    ],
+    "tempo": 84,
+    "meter": "4/4",
+    "key": "C#",
+    "mode": "dorian",
+    "palette": {
+      "bass": "slidebass",
+      "snare": "clap",
+      "chords": "triad"
+    },
+    "sound": {
+      "wave": "triangle",
+      "attack": 0,
+      "decay": 6,
+      "sustain": 2,
+      "release": 3,
+      "vibrato": 2,
+      "pwm": "none",
+      "pulse_width": "medium",
+      "onset": "none",
+      "slide": "short"
+    },
+    "sections": [
+      {
+        "type": "intro",
+        "bars": 2,
+        "energy": 0.3,
+        "energy_end": 0.45,
+        "filter": "wobble",
+        "texture": "countin",
+        "transition": "none",
+        "groove": "boombap",
+        "drums_pattern": "k..hs..h.kk.s..h",
+        "bass": "trap808",
+        "bass_pattern": "R_____.R..8_R.b.",
+        "bass_sound": "palette",
+        "arp_pattern": "x..x..x.x..x.x..",
+        "feel": "syncopated",
+        "lead": "custom",
+        "chords": [
+          "i7",
+          "IV"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.5,
+        "energy_end": 0.55,
+        "filter": "wobble",
+        "texture": "counter",
+        "transition": "none",
+        "groove": "boombap",
+        "drums_pattern": "k..hs..h.kk.s..h",
+        "bass": "trap808",
+        "bass_pattern": "R_____.R..8_R.b.",
+        "bass_sound": "palette",
+        "arp_pattern": "x..x..x.x..x.x..",
+        "feel": "syncopated",
+        "lead": "custom",
+        "chords": [
+          "i7",
+          "IV",
+          "i7",
+          "bVII"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "pre",
+        "bars": 2,
+        "energy": 0.6,
+        "energy_end": 0.8,
+        "filter": "open",
+        "texture": "build_up_band",
+        "transition": "stop",
+        "groove": "trap",
+        "drums_pattern": "k.hhshhhk.hhshhh",
+        "bass": "trap808",
+        "bass_pattern": "R.R.R.R.RRRRAAAA",
+        "bass_sound": "growl",
+        "arp_pattern": "x.x.x.x.xxxxxxxx",
+        "feel": "straight",
+        "lead": "pluck",
+        "chords": [
+          "bVI",
+          "bVII"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.85,
+        "energy_end": 0.85,
+        "filter": "follow",
+        "texture": "full",
+        "transition": "fill",
+        "groove": "trap",
+        "drums_pattern": "k.hhs.hkk.hhs.ht",
+        "bass": "trap808",
+        "bass_pattern": "R..R..8_..R.5_A.",
+        "bass_sound": "palette",
+        "arp_pattern": "x..x..x.x..x.x..",
+        "feel": "syncopated",
+        "lead": "fiddle",
+        "chords": [
+          "i7",
+          "bIII",
+          "IV",
+          "bVII"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "verse",
+        "bars": 4,
+        "energy": 0.5,
+        "energy_end": 0.6,
+        "filter": "wobble",
+        "texture": "call_response",
+        "transition": "none",
+        "groove": "boombap",
+        "drums_pattern": "k..hs..h.kk.s..h",
+        "bass": "trap808",
+        "bass_pattern": "R_____.R..8_R.b.",
+        "bass_sound": "sub",
+        "arp_pattern": "x..x..x.x..x.x..",
+        "feel": "syncopated",
+        "lead": "custom",
+        "chords": [
+          "i7",
+          "IV",
+          "i7",
+          "bVII"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "ornament"
+      },
+      {
+        "type": "pre",
+        "bars": 2,
+        "energy": 0.6,
+        "energy_end": 0.8,
+        "filter": "open",
+        "texture": "build_up_band",
+        "transition": "stop",
+        "groove": "trap",
+        "drums_pattern": "k.hhshhhk.hhshhh",
+        "bass": "trap808",
+        "bass_pattern": "R.R.R.R.RRRRAAAA",
+        "bass_sound": "growl",
+        "arp_pattern": "x.x.x.x.xxxxxxxx",
+        "feel": "straight",
+        "lead": "pluck",
+        "chords": [
+          "bVI",
+          "bVII"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.85,
+        "energy_end": 0.9,
+        "filter": "follow",
+        "texture": "counter",
+        "transition": "dropout",
+        "groove": "trap",
+        "drums_pattern": "k.hhs.hkk.hhs.ht",
+        "bass": "trap808",
+        "bass_pattern": "R..R..8_..R.5_A.",
+        "bass_sound": "palette",
+        "arp_pattern": "x..x..x.x..x.x..",
+        "feel": "syncopated",
+        "lead": "fiddle",
+        "chords": [
+          "i7",
+          "bIII",
+          "IV",
+          "bVII"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "answer"
+      },
+      {
+        "type": "bridge",
+        "bars": 4,
+        "energy": 0.35,
+        "energy_end": 0.45,
+        "filter": "close",
+        "texture": "halftime_break",
+        "transition": "none",
+        "groove": "halftime",
+        "drums_pattern": "k.......s.......",
+        "bass": "sustained",
+        "bass_pattern": "R_______5___A___",
+        "bass_sound": "sub",
+        "arp_pattern": "x_______x___x___",
+        "feel": "long",
+        "lead": "glide",
+        "chords": [
+          "bVIM7",
+          "bVII"
+        ],
+        "chord_bars": 2,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "pre",
+        "bars": 2,
+        "energy": 0.6,
+        "energy_end": 0.85,
+        "filter": "open",
+        "texture": "build_up_band",
+        "transition": "stop",
+        "groove": "trap",
+        "drums_pattern": "k.hhshhhk.hhshhh",
+        "bass": "trap808",
+        "bass_pattern": "R.R.R.R.RRRRAAAA",
+        "bass_sound": "growl",
+        "arp_pattern": "x.x.x.x.xxxxxxxx",
+        "feel": "straight",
+        "lead": "pluck",
+        "chords": [
+          "bVI",
+          "bVII"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.9,
+        "energy_end": 0.95,
+        "filter": "follow",
+        "texture": "full",
+        "transition": "fill",
+        "groove": "trap",
+        "drums_pattern": "k.hhs.hkk.hhs.ht",
+        "bass": "trap808",
+        "bass_pattern": "R..R..8_..R.5_A.",
+        "bass_sound": "growl",
+        "arp_pattern": "x..x..x.x..x.x..",
+        "feel": "syncopated",
+        "lead": "fiddle",
+        "chords": [
+          "i7",
+          "bIII",
+          "IV",
+          "bVII"
+        ],
+        "chord_bars": 1,
+        "transpose": 2,
+        "variation": "octave"
+      },
+      {
+        "type": "outro",
+        "bars": 2,
+        "energy": 0.5,
+        "energy_end": 0.2,
+        "filter": "close",
+        "texture": "riff_out",
+        "transition": "none",
+        "groove": "boombap",
+        "drums_pattern": "k..hs..h.kk.s..h",
+        "bass": "trap808",
+        "bass_pattern": "R_____.R..8_R.b.",
+        "bass_sound": "palette",
+        "arp_pattern": "x..x..x.x..x.x..",
+        "feel": "syncopated",
+        "lead": "fiddle",
+        "chords": [
+          "i7",
+          "i7"
+        ],
+        "chord_bars": 1,
+        "transpose": 2,
+        "variation": "exact"
+      }
+    ],
+    "themes": [
+      {
+        "section": "chorus",
+        "notes": "1 . . 1 3 . 4 . 5 _ 6 _ 5 . . . 1 . . 1 3 . 4 . 5 _ 3 _ 1 . . . 4 . . 4 6 . 7 . 8 _ 10 _ 8 . 7 . 6 _ 5 . 4 . 3 _ _ _ 1 _ _ _ . ."
+      },
+      {
+        "section": "verse",
+        "notes": "5 . . 5 . 3 . . 4 3 1 . . . . . 5 . . 5 . 6 . . 5 3 4 _ 3 _ . ."
+      },
+      {
+        "section": "bridge",
+        "notes": "3 _ _ _ 5 _ _ _ 6 _ 5 _ 3 _ _ _ 2 _ _ _ 4 _ 3 _ 1 _ _ _ . . . ."
+      }
+    ]
+  }
+}

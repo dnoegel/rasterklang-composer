@@ -1,0 +1,282 @@
+{
+  "prompt": "new wave dance night in an abandoned shopping mall",
+  "constraints": [
+    "Keep the verse sparse and let the chorus explode in energy.",
+    "Write your own drums_pattern and bass_pattern for the chorus.",
+    "Play in the key of Ab, unless the prompt, a reference song or a melody clearly needs another key.",
+    "Open with an intro of texture staggered.",
+    "Set the tempo in the middle of the chosen style's tempo band.",
+    "Form: AABA: the A section carries the hook, B contrasts in harmony and texture.",
+    "Use the texture multiplex for the first chorus.",
+    "Give the chorus the lead sound saw; other sections may use other leads."
+  ],
+  "answer": {
+    "reasoning": "New wave lives in a gated backbeat, octave bass and a minor key, so this is Ab aeolian at 124 bpm with a cold, echoing verse where only a thin pulse lead and a ticking bass wander the empty corridors. The chorus explodes into a four-on-the-floor with open hats, a pumping octave bass and a bright saw hook that leaps to the high tonic like the lights flickering back on. In the AABA form the bridge drops the drums and turns to iv and bII for a stranger, dusty colour before the last dance a whole step higher.",
+    "title": "Escalator Ballroom",
+    "imagery": "Dead escalators and a cracked fountain lit by one buzzing neon sign as shadows dance between the shuttered stores.",
+    "liner_note": "A midnight party in a mall that closed years ago. The verses drift through echoing halls, then the chorus switches every light back on.",
+    "style": "newwave",
+    "blend_style": "none",
+    "blend_amount": 0,
+    "moods": [
+      {
+        "mood": "nostalgic",
+        "weight": 0.4
+      },
+      {
+        "mood": "mysterious",
+        "weight": 0.3
+      },
+      {
+        "mood": "happy",
+        "weight": 0.3
+      }
+    ],
+    "tempo": 124,
+    "meter": "4/4",
+    "key": "Ab",
+    "mode": "aeolian",
+    "palette": {
+      "bass": "bass",
+      "snare": "clap",
+      "chords": "triad",
+      "kit": "tight"
+    },
+    "sound": {
+      "wave": "pulse",
+      "attack": 0,
+      "decay": 6,
+      "sustain": 5,
+      "release": 5,
+      "vibrato": 1,
+      "pwm": "slow",
+      "pulse_width": "narrow",
+      "onset": "none",
+      "slide": "none"
+    },
+    "sections": [
+      {
+        "type": "intro",
+        "bars": 4,
+        "energy": 0.25,
+        "energy_end": 0.45,
+        "filter": "open",
+        "texture": "staggered",
+        "transition": "none",
+        "groove": "synth_gated",
+        "drums_pattern": "",
+        "bass": "octave_8ths",
+        "bass_pattern": "R.......8.......",
+        "bass_sound": "palette",
+        "arp_pattern": "x_..x_..x_..x_..",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "i",
+          "bVI",
+          "bIII",
+          "bVII"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.35,
+        "energy_end": 0.45,
+        "filter": "steady",
+        "texture": "echo_lead",
+        "transition": "none",
+        "groove": "synth_gated",
+        "drums_pattern": "k.......s...h...",
+        "bass": "octave_8ths",
+        "bass_pattern": "R_......8_....R.",
+        "bass_sound": "sub",
+        "arp_pattern": "",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "i",
+          "bVI",
+          "bIII",
+          "bVII"
+        ],
+        "chord_bars": 2,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.9,
+        "energy_end": 0.95,
+        "filter": "open",
+        "texture": "multiplex",
+        "transition": "stop",
+        "groove": "four_floor",
+        "drums_pattern": "k.o.s.ohk.o.s.ohk.o.s.ohkko.c.ss",
+        "bass": "octave_16th",
+        "bass_pattern": "R8.8R8.8R8.85.A.",
+        "bass_sound": "chipbass",
+        "arp_pattern": "x.x.x.x.x.x.x.x.",
+        "feel": "syncopated",
+        "lead": "saw",
+        "chords": [
+          "i",
+          "bIII",
+          "bVII",
+          "bVI"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.35,
+        "energy_end": 0.5,
+        "filter": "steady",
+        "texture": "echo_lead",
+        "transition": "dropout",
+        "groove": "synth_gated",
+        "drums_pattern": "k.......s...h...",
+        "bass": "octave_8ths",
+        "bass_pattern": "R_......8_....R.",
+        "bass_sound": "sub",
+        "arp_pattern": "",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "i",
+          "bVI",
+          "bIII",
+          "bVII"
+        ],
+        "chord_bars": 2,
+        "transpose": 0,
+        "variation": "ornament"
+      },
+      {
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.9,
+        "energy_end": 0.95,
+        "filter": "follow",
+        "texture": "full",
+        "transition": "fill",
+        "groove": "four_floor",
+        "drums_pattern": "k.o.s.ohk.o.s.ohk.o.s.ohkko.c.ss",
+        "bass": "octave_16th",
+        "bass_pattern": "R8.8R8.8R8.85.A.",
+        "bass_sound": "chipbass",
+        "arp_pattern": "",
+        "feel": "syncopated",
+        "lead": "saw",
+        "chords": [
+          "i",
+          "bIII",
+          "bVII",
+          "bVI"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "sequence"
+      },
+      {
+        "type": "bridge",
+        "bars": 8,
+        "energy": 0.45,
+        "energy_end": 0.6,
+        "filter": "wobble",
+        "texture": "counter_nodrums",
+        "transition": "fill",
+        "groove": "synth_gated",
+        "drums_pattern": "",
+        "bass": "driving_8ths",
+        "bass_pattern": "R_R_..R_5_..R_A_",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "long",
+        "lead": "reed",
+        "chords": [
+          "iv",
+          "bVI",
+          "bII",
+          "bVII"
+        ],
+        "chord_bars": 2,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.9,
+        "energy_end": 1,
+        "filter": "open",
+        "texture": "full",
+        "transition": "none",
+        "groove": "four_floor",
+        "drums_pattern": "k.o.s.ohk.o.s.ohk.o.s.ohkko.c.ss",
+        "bass": "octave_16th",
+        "bass_pattern": "R8.8R8.8R8.85.A.",
+        "bass_sound": "chipbass",
+        "arp_pattern": "",
+        "feel": "syncopated",
+        "lead": "saw",
+        "chords": [
+          "i",
+          "bIII",
+          "bVII",
+          "bVI"
+        ],
+        "chord_bars": 1,
+        "transpose": 2,
+        "variation": "octave"
+      },
+      {
+        "type": "outro",
+        "bars": 4,
+        "energy": 0.4,
+        "energy_end": 0.1,
+        "filter": "close",
+        "texture": "arp_out",
+        "transition": "none",
+        "groove": "synth_gated",
+        "drums_pattern": "",
+        "bass": "octave_8ths",
+        "bass_pattern": "R_______8_______",
+        "bass_sound": "palette",
+        "arp_pattern": "x_x_x_x_x___x___",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "i",
+          "bVI",
+          "bVII",
+          "i"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto"
+      }
+    ],
+    "themes": [
+      {
+        "section": "chorus",
+        "notes": "8 _ . 8 7 _ 5 _ . 5 6 _ 5 _ 3 _ 8 _ . 8 9 _ 10 _ . 9 8 _ 5 _ 8 _"
+      },
+      {
+        "section": "verse",
+        "notes": "1 _ _ _ . . . . 3 _ . 5 _ _ _ _ 4 _ _ _ . . . . 3 _ 2 _ 1 _ _ _"
+      },
+      {
+        "section": "bridge",
+        "notes": "6 _ _ _ 5 _ 4 _ 3 _ _ _ . . . . 4 _ _ _ 5 _ 6 _ 5 _ _ _ _ _ _ _"
+      }
+    ]
+  }
+}

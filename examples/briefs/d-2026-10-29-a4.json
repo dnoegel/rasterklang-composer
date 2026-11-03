@@ -1,0 +1,383 @@
+{
+  "prompt": "a small-town indie band at its first gig, shaky start, glowing finish",
+  "constraints": [
+    "Use a pre-chorus that builds tension before every chorus.",
+    "Include a breakdown where the drums drop out.",
+    "Play in the key of D, unless the prompt, a reference song or a melody clearly needs another key.",
+    "Open with an intro of texture drum_groove.",
+    "Set the tempo in the lower third of the chosen style's tempo band.",
+    "Form: verse and chorus with a contrasting bridge before the last chorus.",
+    "Use the texture multiplex for the first chorus.",
+    "Let the verse chords last two bars each (chord_bars 2).",
+    "Give the chorus the lead sound octave; other sections may use other leads.",
+    "If the song is in 4/4, use this bass figure from real C64 tunes as the verse bass_pattern: \"..R_R_..R_R_..R_\"."
+  ],
+  "answer": {
+    "reasoning": "Indie at 120 bpm, the lower third of the band, in D major so the finish can glow: the verse sits on vi with the hesitant off-beat C64 bass figure and a sparse, slightly late-sounding rock beat, as if the band is still finding its feet. Each pre-chorus brings the band in layer by layer over ii-IV-V, and the chorus switches to a post-punk disco beat with driving octave bass and a bright octave lead climbing to the high third. sid_idiom sits at 0.35: a guitar-band picture first, with C64 colour in the multiplexed first chorus, the chord arps and the echoing breakdown; the bridge borrows bVII before the last chorus lifts an octave.",
+    "title": "Saturday at the Legion Hall",
+    "imagery": "A nervous four-piece on a plywood stage under one warm bulb, the room slowly turning toward them until everyone is singing.",
+    "liner_note": "The first verse wobbles and the drummer rushes a little. By the last chorus the whole hall is in on it and nobody wants them to stop.",
+    "style": "indie",
+    "blend_style": "none",
+    "blend_amount": 0,
+    "sid_idiom": 0.35,
+    "moods": [
+      {
+        "mood": "hopeful",
+        "weight": 0.45
+      },
+      {
+        "mood": "happy",
+        "weight": 0.3
+      },
+      {
+        "mood": "nostalgic",
+        "weight": 0.25
+      }
+    ],
+    "tempo": 120,
+    "meter": "4/4",
+    "key": "D",
+    "mode": "ionian",
+    "palette": {
+      "bass": "bass",
+      "snare": "snare2",
+      "chords": "triad",
+      "kit": "tight"
+    },
+    "sound": {
+      "wave": "pulse",
+      "attack": 0,
+      "decay": 7,
+      "sustain": 9,
+      "release": 5,
+      "vibrato": 2,
+      "pwm": "slow",
+      "pulse_width": "medium",
+      "onset": "noise",
+      "slide": "short"
+    },
+    "sections": [
+      {
+        "filter": "open",
+        "drums_pattern": "k...h...s...h...k...h...s..h.T.t",
+        "bass_pattern": "",
+        "bass_sound": "sub",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "none",
+        "type": "intro",
+        "bars": 4,
+        "energy": 0.25,
+        "energy_end": 0.4,
+        "texture": "drum_groove",
+        "groove": "rock",
+        "bass": "driving_8ths",
+        "feel": "straight",
+        "lead": "custom",
+        "chords": [
+          "I",
+          "IV"
+        ]
+      },
+      {
+        "filter": "close",
+        "drums_pattern": "k...h...s...h.h.k.k.h...s...h...",
+        "bass_pattern": "..R_R_..R_R_..R_",
+        "bass_sound": "sub",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 2,
+        "transition": "none",
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.4,
+        "energy_end": 0.5,
+        "texture": "full",
+        "groove": "rock",
+        "bass": "driving_8ths",
+        "feel": "syncopated",
+        "lead": "custom",
+        "chords": [
+          "vi",
+          "IV",
+          "I",
+          "V"
+        ]
+      },
+      {
+        "filter": "open",
+        "drums_pattern": "k.h.s.h.k.h.s.hhk.h.s.h.k.k.s.ss",
+        "bass_pattern": "R.R.R.R.R.R.8.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "fill",
+        "type": "pre",
+        "bars": 4,
+        "energy": 0.55,
+        "energy_end": 0.75,
+        "texture": "build_up_band",
+        "groove": "rock",
+        "bass": "motown",
+        "feel": "straight",
+        "lead": "pluck",
+        "chords": [
+          "ii",
+          "IV",
+          "V",
+          "V"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "k.o.s.okk.o.s.o.k.o.s.okk.o.s.oh",
+        "bass_pattern": "R.R.8.R.R.5.8.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "x.x.x_x.x.x.x_x.",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "dropout",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.8,
+        "energy_end": 0.85,
+        "texture": "multiplex",
+        "groove": "disco",
+        "bass": "driving_8ths",
+        "feel": "riff",
+        "lead": "octave",
+        "chords": [
+          "I",
+          "iii",
+          "IV",
+          "V"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "k...h...s...h.h.k.k.h...s...h...",
+        "bass_pattern": "..R_R_..R_R_..R_",
+        "bass_sound": "sub",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "ornament",
+        "chord_bars": 2,
+        "transition": "none",
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.45,
+        "energy_end": 0.55,
+        "texture": "full",
+        "groove": "rock",
+        "bass": "driving_8ths",
+        "feel": "syncopated",
+        "lead": "custom",
+        "chords": [
+          "vi",
+          "IV",
+          "I",
+          "V"
+        ]
+      },
+      {
+        "filter": "open",
+        "drums_pattern": "k.h.s.h.k.h.s.hhk.h.s.h.k.k.s.ss",
+        "bass_pattern": "R.R.R.R.R.R.8.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "fill",
+        "type": "pre",
+        "bars": 4,
+        "energy": 0.6,
+        "energy_end": 0.8,
+        "texture": "build_up_band",
+        "groove": "rock",
+        "bass": "motown",
+        "feel": "straight",
+        "lead": "pluck",
+        "chords": [
+          "ii",
+          "IV",
+          "V",
+          "V"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "k.o.s.okk.o.s.o.k.o.s.okk.o.s.oh",
+        "bass_pattern": "R.R.8.R.R.5.8.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "answer",
+        "chord_bars": 1,
+        "transition": "stop",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.85,
+        "energy_end": 0.9,
+        "texture": "full",
+        "groove": "disco",
+        "bass": "driving_8ths",
+        "feel": "riff",
+        "lead": "octave",
+        "chords": [
+          "I",
+          "iii",
+          "IV",
+          "V"
+        ]
+      },
+      {
+        "filter": "close",
+        "drums_pattern": "",
+        "bass_pattern": "R_______R___5___",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "none",
+        "type": "breakdown",
+        "bars": 4,
+        "energy": 0.3,
+        "energy_end": 0.4,
+        "texture": "echo_break",
+        "groove": "halftime",
+        "bass": "sustained",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "vi",
+          "IV"
+        ]
+      },
+      {
+        "filter": "wobble",
+        "drums_pattern": "k...h.k.s...h...k.k.h...s...h.h.",
+        "bass_pattern": "R.5.8.R.6.5.3.A.",
+        "bass_sound": "gtbass",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "fill",
+        "type": "bridge",
+        "bars": 8,
+        "energy": 0.5,
+        "energy_end": 0.65,
+        "texture": "counter",
+        "groove": "rock",
+        "bass": "motown",
+        "feel": "dotted",
+        "lead": "vibra",
+        "chords": [
+          "IV",
+          "vi",
+          "bVII",
+          "V"
+        ]
+      },
+      {
+        "filter": "open",
+        "drums_pattern": "k.h.s.h.k.h.s.hhk.h.s.h.k.k.s.ss",
+        "bass_pattern": "R.R.R.R.R.R.8.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "fill",
+        "type": "pre",
+        "bars": 4,
+        "energy": 0.65,
+        "energy_end": 0.85,
+        "texture": "build_up_band",
+        "groove": "rock",
+        "bass": "motown",
+        "feel": "straight",
+        "lead": "pluck",
+        "chords": [
+          "ii",
+          "IV",
+          "V",
+          "V"
+        ]
+      },
+      {
+        "filter": "open",
+        "drums_pattern": "k.o.s.okk.o.s.o.k.o.s.okk.o.s.oh",
+        "bass_pattern": "R.R.8.R.R.5.8.R.8.R.8.R.5.R.8.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "octave",
+        "chord_bars": 1,
+        "transition": "none",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.9,
+        "energy_end": 1.0,
+        "texture": "full",
+        "groove": "disco",
+        "bass": "driving_8ths",
+        "feel": "riff",
+        "lead": "octave",
+        "chords": [
+          "I",
+          "iii",
+          "IV",
+          "V"
+        ]
+      },
+      {
+        "filter": "close",
+        "drums_pattern": "k.o.s.o.k.o.s.o.",
+        "bass_pattern": "",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 2,
+        "transition": "none",
+        "type": "outro",
+        "bars": 4,
+        "energy": 0.6,
+        "energy_end": 0.3,
+        "texture": "riff_out",
+        "groove": "disco",
+        "bass": "driving_8ths",
+        "feel": "long",
+        "lead": "octave",
+        "chords": [
+          "IV",
+          "I"
+        ]
+      }
+    ],
+    "themes": [
+      {
+        "section": "verse",
+        "notes": "5 . 5 . 6 _ 5 . . . 3 _ 2 _ . . 3 . 3 . 5 _ 3 . 2 _ 1 _ _ _ . ."
+      },
+      {
+        "section": "pre",
+        "notes": "2 _ 3 _ 4 _ . 4 5 _ 4 _ 3 _ . . 4 _ 5 _ 6 _ . 6 7 _ _ _ 5 _ _ _"
+      },
+      {
+        "section": "chorus",
+        "notes": "5 _ 8 _ _ _ 7 8 9 _ 8 _ 5 _ _ _ 6 _ 8 _ _ _ 7 8 10 _ 9 _ 8 _ _ _"
+      }
+    ]
+  }
+}

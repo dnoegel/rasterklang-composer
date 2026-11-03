@@ -1,0 +1,310 @@
+{
+  "prompt": "shepherd's folk tune on a windy hill, warming as the sun appears",
+  "constraints": [
+    "Let the chorus theme open with a leap of a fourth or more, then fall back by steps.",
+    "Include a breakdown where the drums drop out.",
+    "Play in the key of E, unless the prompt, a reference song or a melody clearly needs another key.",
+    "Open with an intro of texture riff_solo.",
+    "Set the tempo in the middle of the chosen style's tempo band.",
+    "Form: one long build: start sparse, add a layer every section, peak at the end.",
+    "Use the texture counter for the first chorus.",
+    "Give the chorus the lead sound brass; other sections may use other leads."
+  ],
+  "answer": {
+    "reasoning": "A plain 4/4 folk air in E mixolydian at a walking 101 bpm: the flat seventh gives the old, open-air shepherd colour, and a breathy triangle pipe with a chiff and wavering vibrato plays alone at first, like a tune blown against the wind. The song is one long build: pipe alone, then bass and a second pipe line, then soft drums, a windy drumless lull before the sun breaks, and brass choruses that swell to a final whole-step lift as the warmth arrives. The brass chorus hook leaps up a fifth and walks back down by steps, like a call sent across the valley.",
+    "title": "The Hill Wakes Warm",
+    "imagery": "A lone shepherd pipes into a cold gusting wind on a grey hilltop until the clouds tear open and gold light spills over the grazing flock.",
+    "liner_note": "It starts as one thin pipe in the wind and gathers a whole band by sunrise. Listen for the brass call that leaps up and climbs back down, a step higher at the end.",
+    "style": "folk",
+    "blend_style": "none",
+    "blend_amount": 0,
+    "moods": [
+      {
+        "mood": "hopeful",
+        "weight": 0.5
+      },
+      {
+        "mood": "calm",
+        "weight": 0.3
+      },
+      {
+        "mood": "nostalgic",
+        "weight": 0.2
+      }
+    ],
+    "tempo": 101,
+    "meter": "4/4",
+    "key": "E",
+    "mode": "mixolydian",
+    "palette": {
+      "bass": "sub",
+      "snare": "snare",
+      "chords": "triad",
+      "kit": "std"
+    },
+    "sound": {
+      "wave": "triangle",
+      "attack": 2,
+      "decay": 6,
+      "sustain": 10,
+      "release": 6,
+      "vibrato": 2,
+      "pwm": "none",
+      "pulse_width": "medium",
+      "onset": "noise",
+      "slide": "short"
+    },
+    "sections": [
+      {
+        "type": "intro",
+        "bars": 4,
+        "energy": 0.2,
+        "energy_end": 0.3,
+        "filter": "wobble",
+        "texture": "riff_solo",
+        "transition": "none",
+        "groove": "platform_light",
+        "drums_pattern": "",
+        "bass": "half_note",
+        "bass_pattern": "",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "I",
+          "bVII"
+        ],
+        "chord_bars": 2,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.35,
+        "energy_end": 0.45,
+        "filter": "wobble",
+        "texture": "counter_nodrums",
+        "transition": "none",
+        "groove": "platform_light",
+        "drums_pattern": "",
+        "bass": "oom_pah",
+        "bass_pattern": "R...5...R.3.5..A",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "I",
+          "bVII",
+          "IV",
+          "I"
+        ],
+        "chord_bars": 2,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.55,
+        "energy_end": 0.6,
+        "filter": "follow",
+        "texture": "counter",
+        "transition": "dropout",
+        "groove": "platform_light",
+        "drums_pattern": "k...h.h.s...h.hh",
+        "bass": "oom_pah",
+        "bass_pattern": "R..5..8.R..5.3A.",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "dotted",
+        "lead": "brass",
+        "chords": [
+          "IV",
+          "I",
+          "bVII",
+          "I",
+          "IV",
+          "vi",
+          "bVII",
+          "I"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "breakdown",
+        "bars": 4,
+        "energy": 0.3,
+        "energy_end": 0.35,
+        "filter": "wobble",
+        "texture": "duet",
+        "transition": "none",
+        "groove": "platform_light",
+        "drums_pattern": "",
+        "bass": "half_note",
+        "bass_pattern": "R_______5_______",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "long",
+        "lead": "whistle",
+        "chords": [
+          "vi",
+          "IV"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "build",
+        "bars": 4,
+        "energy": 0.5,
+        "energy_end": 0.8,
+        "filter": "open",
+        "texture": "snare_build",
+        "transition": "fill",
+        "groove": "platform_light",
+        "drums_pattern": "k.s.k.s.k.s.ssss",
+        "bass": "oom_pah",
+        "bass_pattern": "R.R.5.5.R.R.5.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "x.x.x.x.x.x.xxxx",
+        "feel": "running",
+        "lead": "whistle",
+        "chords": [
+          "ii",
+          "IV",
+          "bVII",
+          "bVII"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.6,
+        "energy_end": 0.7,
+        "filter": "follow",
+        "texture": "build_up_band",
+        "transition": "none",
+        "groove": "platform_light",
+        "drums_pattern": "k..kh.h.s..kh.h.",
+        "bass": "oom_pah",
+        "bass_pattern": "R..R5...R.3.5.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "x_x.x_x.x_x.x_x.",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "I",
+          "bVII",
+          "IV",
+          "I"
+        ],
+        "chord_bars": 2,
+        "transpose": 0,
+        "variation": "ornament"
+      },
+      {
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.8,
+        "energy_end": 0.88,
+        "filter": "follow",
+        "texture": "full",
+        "transition": "fill",
+        "groove": "platform_light",
+        "drums_pattern": "k.h.k.s.k.hks.ho",
+        "bass": "bouncy",
+        "bass_pattern": "R.5.8.5.R.3.5.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "dotted",
+        "lead": "brass",
+        "chords": [
+          "IV",
+          "I",
+          "bVII",
+          "I",
+          "IV",
+          "vi",
+          "bVII",
+          "I"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "answer"
+      },
+      {
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.9,
+        "energy_end": 1,
+        "filter": "open",
+        "texture": "full",
+        "transition": "none",
+        "groove": "platform_light",
+        "drums_pattern": "k.h.k.s.k.hks.ho",
+        "bass": "bouncy",
+        "bass_pattern": "R.5.8.5.R.3.5.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "dotted",
+        "lead": "brass",
+        "chords": [
+          "IV",
+          "I",
+          "bVII",
+          "I",
+          "IV",
+          "vi",
+          "bVII",
+          "I"
+        ],
+        "chord_bars": 1,
+        "transpose": 2,
+        "variation": "octave"
+      },
+      {
+        "type": "outro",
+        "bars": 2,
+        "energy": 0.85,
+        "energy_end": 0.8,
+        "filter": "steady",
+        "texture": "riff_out",
+        "transition": "none",
+        "groove": "platform_light",
+        "drums_pattern": "",
+        "bass": "half_note",
+        "bass_pattern": "",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "long",
+        "lead": "brass",
+        "chords": [
+          "bVII",
+          "I"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto"
+      }
+    ],
+    "themes": [
+      {
+        "section": "chorus",
+        "notes": "1 _ 5 _ _ _ 4 3 2 _ _ _ 3 _ 1 _ 2 _ 6 _ _ _ 5 4 3 _ _ _ 4 _ 2 _ 3 _ 8 _ _ _ 7 6 5 _ 6 _ 7 _ 8 _ 7 _ 6 _ 5 _ 3 _ 2 _ _ _ 1 _ _ _"
+      },
+      {
+        "section": "verse",
+        "notes": "5 _ _ _ _ _ 6 5 3 _ _ _ 2 _ _ _ 1 _ _ _ 2 _ 3 _ 5 _ _ _ _ _ . . 6 _ _ _ _ _ 7 6 5 _ _ _ 3 _ _ _ 2 _ 3 _ 2 _ 1 _ -7 _ _ _ 1 _ _ _"
+      }
+    ]
+  }
+}

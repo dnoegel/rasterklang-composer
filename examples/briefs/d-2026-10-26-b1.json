@@ -1,0 +1,266 @@
+{
+  "prompt": "a sleepy lighthouse keeper waltzing with the fog",
+  "constraints": [
+    "Let one section build its energy from low to high within itself.",
+    "End the song with layers dropping out one by one.",
+    "Play in the key of Eb, unless the prompt, a reference song or a melody clearly needs another key.",
+    "Open with an intro of texture arp_swell.",
+    "Set the tempo in the upper third of the chosen style's tempo band.",
+    "Form: a through-composed journey: every section new, only the chorus hook returns.",
+    "Use the texture counter for the first chorus.",
+    "Let the verse chords last two bars each (chord_bars 2).",
+    "Give the chorus the lead sound pluck; other sections may use other leads."
+  ],
+  "answer": {
+    "reasoning": "A 3/4 waltz in Eb lydian: the raised fourth gives the hazy, floating brightness of fog lit by a lamp, while the soft swelling triangle lead and held waltz bass keep the keeper drowsy. The pluck chorus hook sweeps up like the lighthouse beam (5 to 8, then 5 to 9) and settles each time, and a snare build lets the fog dance pick up speed before a final chorus a whole step higher. The song then sinks back to sleep as the layers drop out one by one.",
+    "title": "Waltz for the Fog Bell",
+    "imagery": "An old keeper in slippers turns slow circles on the gallery while the beam sweeps through drifting grey fog.",
+    "liner_note": "A drowsy lighthouse waltz where the fog is the dance partner. Listen for the beam-like chorus hook that returns brighter each time.",
+    "style": "waltz",
+    "blend_style": "none",
+    "blend_amount": 0,
+    "moods": [
+      {
+        "mood": "dreamy",
+        "weight": 0.5
+      },
+      {
+        "mood": "calm",
+        "weight": 0.3
+      },
+      {
+        "mood": "nostalgic",
+        "weight": 0.2
+      }
+    ],
+    "tempo": 144,
+    "meter": "3/4",
+    "key": "Eb",
+    "mode": "lydian",
+    "palette": {
+      "bass": "sub",
+      "snare": "snare",
+      "chords": "triad"
+    },
+    "sound": {
+      "wave": "triangle",
+      "attack": 6,
+      "decay": 9,
+      "sustain": 12,
+      "release": 9,
+      "vibrato": 1,
+      "pwm": "none",
+      "pulse_width": "medium",
+      "onset": "none",
+      "slide": "short"
+    },
+    "sections": [
+      {
+        "type": "intro",
+        "bars": 4,
+        "energy": 0.2,
+        "energy_end": 0.35,
+        "filter": "open",
+        "texture": "arp_swell",
+        "transition": "none",
+        "groove": "waltz",
+        "drums_pattern": "",
+        "bass": "waltz_bass",
+        "bass_pattern": "",
+        "bass_sound": "palette",
+        "arp_pattern": "x_x_x_x_x_x_",
+        "feel": "long",
+        "lead": "bell",
+        "chords": [
+          "I",
+          "II"
+        ],
+        "chord_bars": 2,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "verse",
+        "bars": 16,
+        "energy": 0.4,
+        "energy_end": 0.5,
+        "filter": "follow",
+        "texture": "no_drums",
+        "transition": "none",
+        "groove": "waltz",
+        "drums_pattern": "",
+        "bass": "waltz_fifth",
+        "bass_pattern": "R_______5___R___3___5___",
+        "bass_sound": "palette",
+        "arp_pattern": "x...x_..x_..",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "I",
+          "vi",
+          "II",
+          "V"
+        ],
+        "chord_bars": 2,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.65,
+        "energy_end": 0.72,
+        "filter": "follow",
+        "texture": "counter",
+        "transition": "fill",
+        "groove": "waltz",
+        "drums_pattern": "k...h...h...k...s...h.h.",
+        "bass": "waltz_fifth",
+        "bass_pattern": "R...8...5...R...3...5.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "straight",
+        "lead": "pluck",
+        "chords": [
+          "I",
+          "II",
+          "V",
+          "IM7",
+          "I",
+          "II",
+          "V",
+          "I"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "bridge",
+        "bars": 8,
+        "energy": 0.4,
+        "energy_end": 0.45,
+        "filter": "wobble",
+        "texture": "counter_nodrums",
+        "transition": "none",
+        "groove": "waltz",
+        "drums_pattern": "",
+        "bass": "waltz_bass",
+        "bass_pattern": "R___________R_______5___",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "long",
+        "lead": "reed",
+        "chords": [
+          "vi",
+          "iii",
+          "II",
+          "V"
+        ],
+        "chord_bars": 2,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "build",
+        "bars": 8,
+        "energy": 0.3,
+        "energy_end": 0.85,
+        "filter": "open",
+        "texture": "snare_build",
+        "transition": "fill",
+        "groove": "waltz",
+        "drums_pattern": "k...h...h...k...s...s.s.",
+        "bass": "waltz_fifth",
+        "bass_pattern": "R...5...5...R...3...A...",
+        "bass_sound": "palette",
+        "arp_pattern": "x.x.x.x.x.x.",
+        "feel": "running",
+        "lead": "whistle",
+        "chords": [
+          "vi",
+          "II",
+          "iii",
+          "II",
+          "vi",
+          "II",
+          "V",
+          "V"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.85,
+        "energy_end": 0.9,
+        "filter": "follow",
+        "texture": "full",
+        "transition": "stop",
+        "groove": "waltz",
+        "drums_pattern": "k...h...s...k...h.h.s.h.",
+        "bass": "waltz_fifth",
+        "bass_pattern": "R...5...8...R...3...5.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "straight",
+        "lead": "pluck",
+        "chords": [
+          "I",
+          "II",
+          "V",
+          "IM7",
+          "I",
+          "II",
+          "V",
+          "I"
+        ],
+        "chord_bars": 1,
+        "transpose": 2,
+        "variation": "ornament"
+      },
+      {
+        "type": "outro",
+        "bars": 8,
+        "energy": 0.45,
+        "energy_end": 0.1,
+        "filter": "close",
+        "texture": "fade_layers",
+        "transition": "none",
+        "groove": "waltz",
+        "drums_pattern": "",
+        "bass": "waltz_bass",
+        "bass_pattern": "R___________5___________",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "I",
+          "II",
+          "IM7",
+          "I"
+        ],
+        "chord_bars": 2,
+        "transpose": 0,
+        "variation": "auto"
+      }
+    ],
+    "themes": [
+      {
+        "section": "chorus",
+        "notes": "5 _ _ 6 8 _ _ _ 7 _ _ _ 6 _ _ _ _ _ 4 _ _ _ 2 _ 5 _ _ 6 9 _ _ _ 8 _ _ _ 7 _ _ _ 5 _ _ _ 3 _ _ _"
+      },
+      {
+        "section": "verse",
+        "notes": "3 _ _ _ _ _ 2 _ 1 _ _ _ 2 _ _ _ 3 _ _ _ 5 _ _ _ 4 _ _ _ _ _ 3 _ 2 _ _ _ 1 _ _ _ _ _ _ _ . . . ."
+      },
+      {
+        "section": "bridge",
+        "notes": "3 _ 4 _ 5 _ 6 _ _ _ 5 _ 4 _ 3 _ 2 _ 1 _ _ _ . ."
+      }
+    ]
+  }
+}

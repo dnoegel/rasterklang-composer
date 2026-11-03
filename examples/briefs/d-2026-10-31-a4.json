@@ -1,0 +1,303 @@
+{
+  "prompt": "bubbly pop for a dancing skeleton on its first trick or treat night",
+  "constraints": [
+    "Use a stop-time transition right before the last chorus.",
+    "Let the bridge move to a different tonal colour (relative major or minor, or a borrowed chord).",
+    "Play in the key of F, unless the prompt, a reference song or a melody clearly needs another key.",
+    "Open with an intro of texture staggered.",
+    "Set the tempo in the lower third of the chosen style's tempo band.",
+    "Form: verse and chorus with a contrasting bridge before the last chorus.",
+    "Use the texture call_response for the first chorus.",
+    "Give the chorus the lead sound vibra; other sections may use other leads.",
+    "If the song is in 4/4, use this bass figure from real C64 tunes as the verse bass_pattern: \"R___R___R___R___\".",
+    "Sounds: palette.arp pwm, palette.bass sub, palette.kit thin.",
+    "Custom lead (sound): a percussive sound, wave saw, attack 0, decay 4, sustain 0, release 4, vibrato 0, onset octave, slide none.",
+    "If the song is in 4/4, give the chorus the melody feel sid and, where the chord arpeggio plays, the arp_pattern \"x.x.x.x.x.x.x.x.\"."
+  ],
+  "answer": {
+    "reasoning": "Bubbly pop at 102 bpm in F major, the lower third of the pop band, so the skeleton struts rather than sprints: a disco hi-hat verse over the hopping C64 quarter-note bass, and a four-on-the-floor chorus whose octave bass and clap bounce like rattling ribs. The verse lead is a dry percussive saw with an octave blip, a xylophone played on its own bones, and the chorus answers with the vibrato-swept vibra lead and pwm arps in 8ths taking turns with the hook. The chorus winks at Halloween with a borrowed iv at its end, the bridge slips into D minor for a moment of graveyard nerves before a stop-time freeze, then the last chorus jumps a whole step up as the skeleton finds its nerve. sid_idiom sits at 0.45: the genre is plain pop, but candy-coloured chip arps, a thin HVSC kit and a ticking tom make it sound like a Halloween game on a cassette.",
+    "title": "Rattle for a Treat",
+    "imagery": "A small skeleton in a too-big witch hat tap-dancing on a porch step, ribs clicking like a xylophone while the candy bowl wobbles.",
+    "liner_note": "First night out, and every doorbell is a drum cue. Listen for the bones in the verse and the shiver in the bridge before the final strut.",
+    "style": "pop",
+    "blend_style": "none",
+    "blend_amount": 0,
+    "sid_idiom": 0.45,
+    "moods": [
+      {
+        "mood": "playful",
+        "weight": 0.6
+      },
+      {
+        "mood": "happy",
+        "weight": 0.25
+      },
+      {
+        "mood": "mysterious",
+        "weight": 0.15
+      }
+    ],
+    "tempo": 102,
+    "meter": "4/4",
+    "key": "F",
+    "mode": "ionian",
+    "palette": {
+      "bass": "sub",
+      "snare": "clap",
+      "chords": "triad",
+      "kit": "thin",
+      "arp": "pwm"
+    },
+    "sound": {
+      "wave": "saw",
+      "attack": 0,
+      "decay": 4,
+      "sustain": 0,
+      "release": 4,
+      "vibrato": 0,
+      "pwm": "none",
+      "pulse_width": "medium",
+      "onset": "octave",
+      "slide": "none"
+    },
+    "sections": [
+      {
+        "type": "intro",
+        "bars": 4,
+        "energy": 0.3,
+        "energy_end": 0.5,
+        "filter": "open",
+        "texture": "staggered",
+        "transition": "fill",
+        "groove": "disco",
+        "drums_pattern": "k..hc.hTk.khc.hT",
+        "bass": "octave_8ths",
+        "bass_pattern": "R___R___R___R_A_",
+        "bass_sound": "palette",
+        "arp_pattern": "x.x.x.x.x.x.x.x.",
+        "feel": "straight",
+        "lead": "custom",
+        "chords": [
+          "I",
+          "V"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "mode": "song",
+        "variation": "auto"
+      },
+      {
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.5,
+        "energy_end": 0.6,
+        "filter": "follow",
+        "texture": "full",
+        "transition": "none",
+        "groove": "disco",
+        "drums_pattern": "k..hc.hTk.khc.hT",
+        "bass": "quarter_stab",
+        "bass_pattern": "R___R___R___R___",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "dotted",
+        "lead": "custom",
+        "chords": [
+          "I",
+          "vi",
+          "ii7",
+          "V"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "mode": "song",
+        "variation": "auto"
+      },
+      {
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.8,
+        "energy_end": 0.85,
+        "filter": "open",
+        "texture": "call_response",
+        "transition": "fill",
+        "groove": "four_floor",
+        "drums_pattern": "k.h.c.hkk.hTc.ho",
+        "bass": "octave_8ths",
+        "bass_pattern": "R.8.R.8.5.8.R8.A",
+        "bass_sound": "palette",
+        "arp_pattern": "x.x.x.x.x.x.x.x.",
+        "feel": "sid",
+        "lead": "vibra",
+        "chords": [
+          "I",
+          "iii",
+          "IV",
+          "V",
+          "I",
+          "iii",
+          "IV",
+          "iv"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "mode": "song",
+        "variation": "auto"
+      },
+      {
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.55,
+        "energy_end": 0.65,
+        "filter": "wobble",
+        "texture": "multiplex",
+        "transition": "fill",
+        "groove": "disco",
+        "drums_pattern": "k..hc.hTk.khc.hT",
+        "bass": "quarter_stab",
+        "bass_pattern": "R___R___R___R___",
+        "bass_sound": "palette",
+        "arp_pattern": "x.x_x.x_x.x_x.x_",
+        "feel": "dotted",
+        "lead": "custom",
+        "chords": [
+          "I",
+          "vi",
+          "ii7",
+          "V"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "mode": "song",
+        "variation": "ornament"
+      },
+      {
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.85,
+        "energy_end": 0.9,
+        "filter": "open",
+        "texture": "full",
+        "transition": "fill",
+        "groove": "four_floor",
+        "drums_pattern": "k.h.c.hkk.hTc.ho",
+        "bass": "octave_8ths",
+        "bass_pattern": "R.8.R.8.5.8.R8.A",
+        "bass_sound": "palette",
+        "arp_pattern": "x.x.x.x.x.x.x.x.",
+        "feel": "sid",
+        "lead": "vibra",
+        "chords": [
+          "I",
+          "iii",
+          "IV",
+          "V",
+          "I",
+          "iii",
+          "IV",
+          "iv"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "mode": "song",
+        "variation": "sequence"
+      },
+      {
+        "type": "bridge",
+        "bars": 8,
+        "energy": 0.4,
+        "energy_end": 0.65,
+        "filter": "close",
+        "texture": "counter_nodrums",
+        "transition": "stop",
+        "groove": "disco",
+        "drums_pattern": "",
+        "bass": "syncopated_push",
+        "bass_pattern": "R__5..R_8__5..A_",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "long",
+        "lead": "reed",
+        "chords": [
+          "i",
+          "iv",
+          "bVI",
+          "bVII"
+        ],
+        "chord_bars": 1,
+        "transpose": -3,
+        "mode": "aeolian",
+        "variation": "auto"
+      },
+      {
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.9,
+        "energy_end": 1,
+        "filter": "open",
+        "texture": "full",
+        "transition": "none",
+        "groove": "four_floor",
+        "drums_pattern": "k.h.c.hkk.hTc.ho",
+        "bass": "octave_8ths",
+        "bass_pattern": "R.8.R.8.5.8.R8.A",
+        "bass_sound": "chipbass",
+        "arp_pattern": "x.x.x.x.x.x.x.x.",
+        "feel": "sid",
+        "lead": "vibra",
+        "chords": [
+          "I",
+          "iii",
+          "IV",
+          "V",
+          "I",
+          "iii",
+          "IV",
+          "iv"
+        ],
+        "chord_bars": 1,
+        "transpose": 2,
+        "mode": "song",
+        "variation": "octave"
+      },
+      {
+        "type": "outro",
+        "bars": 2,
+        "energy": 0.7,
+        "energy_end": 0.3,
+        "filter": "close",
+        "texture": "final_hit",
+        "transition": "none",
+        "groove": "four_floor",
+        "drums_pattern": "",
+        "bass": "octave_8ths",
+        "bass_pattern": "",
+        "bass_sound": "palette",
+        "arp_pattern": "x.x.x.x.x.x.x.x.",
+        "feel": "straight",
+        "lead": "custom",
+        "chords": [
+          "I"
+        ],
+        "chord_bars": 1,
+        "transpose": 2,
+        "mode": "song",
+        "variation": "auto"
+      }
+    ],
+    "themes": [
+      {
+        "section": "verse",
+        "notes": "1 . 3 5 . 3 1 . 2 . 4 6 . 4 2 . 3 . 5 8 . 7 6 5 4 . 2 . 1 _ . ."
+      },
+      {
+        "section": "chorus",
+        "notes": "5 _ 6 5 . 3 . 5 8 _ . 7 6 _ 5 _ 4 _ 5 4 . 2 . 4 7 _ . 6 5 _ 4 _ 3 _ 4 3 . 1 . 3 6 _ . 8 10 _ 9 _ 8 _ 7 _ 6 . 5 . 2 . 3 . 5 _ _ ."
+      },
+      {
+        "section": "bridge",
+        "notes": "1 _ _ 3 5 _ _ 3 4 _ 3 _ 2 _ _ . 1 _ _ 3 5 _ _ 8 7 _ 6 _ 5 _ _ ."
+      }
+    ]
+  }
+}

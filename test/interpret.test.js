@@ -156,7 +156,7 @@ describe('interpretation path', () => {
     expect(interpretationUserPrompt('vivaldi autumn c64', material)).toMatch(/key F ionian, meter 4\/4/);
   });
 
-  const daily = JSON.parse(readFileSync(new URL('../data/daily-briefs/d-2026-10-26-a1.json', import.meta.url)));
+  const daily = JSON.parse(readFileSync(new URL('../examples/briefs/d-2026-10-26-a1.json', import.meta.url)));
   const answer = structuredClone(daily.answer);
   answer.key = 'C#';
   answer.meter = '6/8';

@@ -1,0 +1,224 @@
+{
+  "prompt": "cool jazz in a rainy taxi at midnight, brushed drums, unhurried",
+  "constraints": [
+    "Write the chorus hook as a sequence: a short figure, then the same figure a step higher or lower.",
+    "Write a theme for the chorus whose highest note falls on the third beat.",
+    "Play in the key of F, unless the prompt, a reference song or a melody clearly needs another key.",
+    "Open with an intro of texture staggered.",
+    "Set the tempo in the lower third of the chosen style's tempo band.",
+    "Form: AABA: the A section carries the hook, B contrasts in harmony and texture.",
+    "Use the texture counter for the first chorus.",
+    "Give the chorus the lead sound scoop; other sections may use other leads.",
+    "If the song is in 4/4, use this bass figure from real C64 tunes as the verse bass_pattern: \"R_R_....R_R_....\"."
+  ],
+  "answer": {
+    "reasoning": "Cool jazz wants a faithful, unhurried 12/8 swing, so the song sits low at sid_idiom 0.15: an 84 bpm brushed swing ride with soft noise-snare sweeps on two and four, a walking bass and F dorian minor-seventh harmony; the only chip colour is the scooping pulse lead and the counter-melody sharing a voice with the brushes. The AABA form puts the hook in every A: a rising Fm7 arpeggio that peaks on the third beat, then the same figure a step lower over Ebmaj7, settling home through Bb7. The bridge drops the drums for a breathy custom horn and its echo over slower major-seventh chords, like rain streaking the window between streetlights.",
+    "title": "Meter Running, Wipers Slow",
+    "imagery": "A cab idles at a red light at midnight, rain beading on the glass while neon smears across the wet street.",
+    "liner_note": "A late fare through a wet city, the driver in no hurry. Brushes, a walking bass and a muted horn keep him company until the last light turns green.",
+    "style": "jazz",
+    "blend_style": "none",
+    "blend_amount": 0,
+    "sid_idiom": 0.15,
+    "moods": [
+      {
+        "mood": "melancholic",
+        "weight": 0.45
+      },
+      {
+        "mood": "calm",
+        "weight": 0.35
+      },
+      {
+        "mood": "nostalgic",
+        "weight": 0.2
+      }
+    ],
+    "tempo": 84,
+    "meter": "12/8",
+    "key": "F",
+    "mode": "dorian",
+    "palette": {
+      "bass": "sub",
+      "snare": "snare",
+      "chords": "triad",
+      "kit": "std"
+    },
+    "sound": {
+      "wave": "pulse",
+      "attack": 3,
+      "decay": 8,
+      "sustain": 9,
+      "release": 8,
+      "vibrato": 1,
+      "pwm": "slow",
+      "pulse_width": "narrow",
+      "onset": "noise",
+      "slide": "short"
+    },
+    "sections": [
+      {
+        "filter": "open",
+        "drums_pattern": "k..h.hh..h.h",
+        "bass_pattern": "R.....5..A..",
+        "bass_sound": "palette",
+        "arp_pattern": "x_....x_....",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "none",
+        "type": "intro",
+        "bars": 4,
+        "energy": 0.15,
+        "energy_end": 0.3,
+        "texture": "staggered",
+        "groove": "swing_ride",
+        "bass": "walk12",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "i7",
+          "IV7"
+        ]
+      },
+      {
+        "filter": "steady",
+        "drums_pattern": "h..s.hh..s.hk..h.hh..s.h",
+        "bass_pattern": "R..5..6..A..R..8..b..A..",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "none",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.45,
+        "energy_end": 0.5,
+        "texture": "counter",
+        "groove": "swing_ride",
+        "bass": "walk12",
+        "feel": "shuffle",
+        "lead": "scoop",
+        "chords": [
+          "i7",
+          "bVIIM7",
+          "IV7",
+          "i7"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "h..s.hh..s.hk..h.hh..s.h",
+        "bass_pattern": "R..3..5..A..R..5..b..A..",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "ornament",
+        "chord_bars": 1,
+        "transition": "dropout",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.5,
+        "energy_end": 0.55,
+        "texture": "full",
+        "groove": "swing_ride",
+        "bass": "walk12",
+        "feel": "shuffle",
+        "lead": "scoop",
+        "chords": [
+          "i7",
+          "bVIIM7",
+          "IV7",
+          "i7"
+        ]
+      },
+      {
+        "filter": "close",
+        "drums_pattern": "",
+        "bass_pattern": "R.....5..A..",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 2,
+        "transition": "fill",
+        "type": "bridge",
+        "bars": 8,
+        "energy": 0.3,
+        "energy_end": 0.4,
+        "texture": "echo_break",
+        "groove": "swing_ride",
+        "bass": "walk12",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "bIIIM7",
+          "bVIIM7",
+          "ii7",
+          "v7"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "h..s.hh..s.hk..h.hh..s.h",
+        "bass_pattern": "R..5..6..A..R..8..b..A..",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "answer",
+        "chord_bars": 1,
+        "transition": "stop",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.55,
+        "energy_end": 0.6,
+        "texture": "full",
+        "groove": "swing_ride",
+        "bass": "walk12",
+        "feel": "shuffle",
+        "lead": "scoop",
+        "chords": [
+          "i7",
+          "bVIIM7",
+          "IV7",
+          "i7"
+        ]
+      },
+      {
+        "filter": "close",
+        "drums_pattern": "",
+        "bass_pattern": "R___________",
+        "bass_sound": "palette",
+        "arp_pattern": "x_....x_____",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 2,
+        "transition": "none",
+        "type": "outro",
+        "bars": 4,
+        "energy": 0.3,
+        "energy_end": 0.1,
+        "texture": "arp_out",
+        "groove": "swing_ride",
+        "bass": "walk12",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "IV7",
+          "i7"
+        ]
+      }
+    ],
+    "themes": [
+      {
+        "section": "chorus",
+        "notes": "3 _ 5 7 _ _ 10 _ _ _ _ 9 2 _ 4 6 _ _ 9 _ _ _ _ 8 6 _ _ 4 _ _ 8 _ _ 6 _ 5 5 _ _ 3 _ _ 1 _ _ _ _ _"
+      },
+      {
+        "section": "bridge",
+        "notes": "5 _ _ _ _ _ 7 _ 6 5 _ _ 4 _ _ _ _ _ 2 _ 3 4 _ _"
+      }
+    ]
+  }
+}

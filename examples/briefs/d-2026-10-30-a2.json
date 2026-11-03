@@ -1,0 +1,274 @@
+{
+  "prompt": "slow Delta blues on a creaky porch, heat haze and a lazy slide",
+  "constraints": [
+    "Let the chorus theme open with a leap of a fourth or more, then fall back by steps.",
+    "Use a pre-chorus that builds tension before every chorus.",
+    "Play in the key of D, unless the prompt, a reference song or a melody clearly needs another key.",
+    "Open with an intro of texture twin_lead.",
+    "Set the tempo in the middle of the chosen style's tempo band.",
+    "Form: one long build: start sparse, add a layer every section, peak at the end.",
+    "Use the texture counter for the first chorus.",
+    "Give the chorus the lead sound chime; other sections may use other leads.",
+    "If the song is in 4/4, use this bass figure from real C64 tunes as the verse bass_pattern: \"R___8___....R___\"."
+  ],
+  "answer": {
+    "reasoning": "Delta blues is a faithful, acoustic idiom, so the song sits at sid_idiom 0.1: a slow 80 bpm 12/8 slow-blues drag in D mixolydian over the twelve-bar quick-change form, the chip only the instrument. The lazy slide is a custom saw lead with a picked noise onset, long portamento and wide vibrato, sliding into every note like a bottleneck. As one long build, the porch starts with just the guitar and chords, the walking bass sits down for the verse, the drums creep in through a pre-chorus that hangs on the V7, and the band swells to a boogie peak at the very end; the chorus hook leaps a fourth up to the tonic and sags back down by steps like the heat.",
+    "title": "Bottleneck in the Haze",
+    "imagery": "A rocking chair creaks on sun-bleached boards while a bottle-neck slide drags across a guitar and the cotton field shimmers in the heat.",
+    "liner_note": "Noon on the porch, nothing moving but the slide. It starts as one man and his guitar and ends with the whole Delta stomping the floorboards.",
+    "style": "blues",
+    "blend_style": "none",
+    "blend_amount": 0,
+    "sid_idiom": 0.1,
+    "moods": [
+      {
+        "mood": "melancholic",
+        "weight": 0.45
+      },
+      {
+        "mood": "calm",
+        "weight": 0.3
+      },
+      {
+        "mood": "nostalgic",
+        "weight": 0.25
+      }
+    ],
+    "tempo": 80,
+    "meter": "12/8",
+    "key": "D",
+    "mode": "mixolydian",
+    "palette": {
+      "bass": "sub",
+      "snare": "snare",
+      "chords": "triad",
+      "kit": "std"
+    },
+    "sound": {
+      "wave": "saw",
+      "attack": 1,
+      "decay": 7,
+      "sustain": 10,
+      "release": 8,
+      "vibrato": 2,
+      "pwm": "none",
+      "pulse_width": "medium",
+      "onset": "noise",
+      "slide": "long"
+    },
+    "sections": [
+      {
+        "filter": "open",
+        "drums_pattern": "",
+        "bass_pattern": "",
+        "bass_sound": "palette",
+        "arp_pattern": "x_____x_____",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "none",
+        "type": "intro",
+        "bars": 2,
+        "energy": 0.12,
+        "energy_end": 0.2,
+        "texture": "twin_lead",
+        "groove": "slow_blues",
+        "bass": "walk12",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "I7",
+          "V7"
+        ]
+      },
+      {
+        "filter": "steady",
+        "drums_pattern": "",
+        "bass_pattern": "R.....5..6..R..3..5..A..",
+        "bass_sound": "palette",
+        "arp_pattern": "x__.x__.x__.",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "none",
+        "type": "verse",
+        "bars": 12,
+        "energy": 0.25,
+        "energy_end": 0.38,
+        "texture": "no_drums",
+        "groove": "slow_blues",
+        "bass": "walk12",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "I7",
+          "IV7",
+          "I7",
+          "I7",
+          "IV7",
+          "IV7",
+          "I7",
+          "I7",
+          "V7",
+          "IV7",
+          "I7",
+          "V7"
+        ]
+      },
+      {
+        "filter": "open",
+        "drums_pattern": "k.....s.....k..k..s..h.h",
+        "bass_pattern": "R.RR.RR.RR.A",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "stop",
+        "type": "pre",
+        "bars": 4,
+        "energy": 0.45,
+        "energy_end": 0.62,
+        "texture": "build_up_band",
+        "groove": "slow_blues",
+        "bass": "shuffle_root",
+        "feel": "shuffle",
+        "lead": "custom",
+        "chords": [
+          "IV7",
+          "IV7",
+          "V7",
+          "V7"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "k.hs.hk.hs.hk.hs.hk.hs.k",
+        "bass_pattern": "R..3..5..6..R..b..6..A..",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "fill",
+        "type": "chorus",
+        "bars": 12,
+        "energy": 0.62,
+        "energy_end": 0.72,
+        "texture": "counter",
+        "groove": "slow_blues",
+        "bass": "walk12",
+        "feel": "shuffle",
+        "lead": "chime",
+        "chords": [
+          "I7",
+          "IV7",
+          "I7",
+          "I7",
+          "IV7",
+          "IV7",
+          "I7",
+          "I7",
+          "V7",
+          "IV7",
+          "I7",
+          "V7"
+        ]
+      },
+      {
+        "filter": "open",
+        "drums_pattern": "k.hs.hk.hs.hk.hk.hs.hT.T",
+        "bass_pattern": "R.RR.RR.R5.A",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "stop",
+        "type": "pre",
+        "bars": 4,
+        "energy": 0.7,
+        "energy_end": 0.85,
+        "texture": "groove_chords",
+        "groove": "shuffle",
+        "bass": "shuffle_root",
+        "feel": "shuffle",
+        "lead": "custom",
+        "chords": [
+          "IV7",
+          "IV7",
+          "V7",
+          "V7"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "k.hs.hk.hs.hk.hs.hkks.hT",
+        "bass_pattern": "R.R3.35.56.5R.8b.6.5.3.A",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "ornament",
+        "chord_bars": 1,
+        "transition": "none",
+        "type": "chorus",
+        "bars": 12,
+        "energy": 0.85,
+        "energy_end": 0.95,
+        "texture": "multiplex",
+        "groove": "shuffle",
+        "bass": "boogie12",
+        "feel": "shuffle",
+        "lead": "chime",
+        "chords": [
+          "I7",
+          "IV7",
+          "I7",
+          "I7",
+          "IV7",
+          "IV7",
+          "I7",
+          "I7",
+          "V7",
+          "IV7",
+          "I7",
+          "V7"
+        ]
+      },
+      {
+        "filter": "steady",
+        "drums_pattern": "",
+        "bass_pattern": "",
+        "bass_sound": "palette",
+        "arp_pattern": "x_____x_____",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "none",
+        "type": "outro",
+        "bars": 2,
+        "energy": 0.95,
+        "energy_end": 0.8,
+        "texture": "final_hit",
+        "groove": "shuffle",
+        "bass": "boogie12",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "IV7",
+          "I7"
+        ]
+      }
+    ],
+    "themes": [
+      {
+        "section": "chorus",
+        "notes": "5 _ _ 8 _ _ _ _ 7 6 _ 5 4 _ _ _ _ _ 2 _ _ 1 _ _ 5 _ _ 10 _ _ _ _ 9 8 _ 7 6 _ _ _ _ 5 1 _ _ _ _ _"
+      },
+      {
+        "section": "verse",
+        "notes": "1 _ _ _ _ _ _ _ 5 6 _ _ 7 _ _ _ _ 6 5 _ _ _ _ _"
+      }
+    ]
+  }
+}

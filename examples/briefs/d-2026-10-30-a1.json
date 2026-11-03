@@ -1,0 +1,277 @@
+{
+  "prompt": "a hard rock pinball table at full tilt, loud, cocky, all bumpers lit",
+  "constraints": [
+    "Write a theme for the chorus whose highest note falls on the third beat.",
+    "Design a custom lead sound that fits the imagery and use it for the main theme.",
+    "Play in the key of F, unless the prompt, a reference song or a melody clearly needs another key.",
+    "Open with an intro of texture staggered.",
+    "Set the tempo in the upper third of the chosen style's tempo band.",
+    "Form: a through-composed journey: every section new, only the chorus hook returns.",
+    "Use the texture full for the first chorus.",
+    "Give the chorus the lead sound sharp; other sections may use other leads.",
+    "If the song is in 4/4, use this bass figure from real C64 tunes as the verse bass_pattern: \"..R_..R_..R_....\"."
+  ],
+  "answer": {
+    "reasoning": "Hard rock at 152 bpm in F mixolydian: the flat seventh (Eb) gives the swagger, a straight rock backbeat with kick pickups and a rock'n'roll bass carry the chorus, and the I bVII IV I hook leaps up to a high C on beat three like a ball slammed into the top bumpers. sid_idiom sits at 0.6 because a pinball table is a machine full of bells and lights: the verse struts over the offbeat C64 bass figure, the bridge rattles through the bumpers with a ring-mod lead over sid_drive and a 16th root-fifth run, and the solo rolls octaves at full tilt, while the chorus stays plain loud hard rock. Through-composed, every section is new ground on the playfield; only the chorus hook comes back, a whole step higher for the final multiball.",
+    "title": "Tilt Is For Losers",
+    "imagery": "A chrome ball tears up the ramps of a roaring rock-and-roll table, every bumper lit and the score reels spinning while the player leans in and never lets it drain.",
+    "liner_note": "Two flippers, one ball, no mercy. Crank it, nudge it, and do not you dare tilt.",
+    "style": "hardrock",
+    "blend_style": "none",
+    "blend_amount": 0,
+    "sid_idiom": 0.6,
+    "moods": [
+      {
+        "mood": "aggressive",
+        "weight": 0.4
+      },
+      {
+        "mood": "triumphant",
+        "weight": 0.35
+      },
+      {
+        "mood": "playful",
+        "weight": 0.25
+      }
+    ],
+    "tempo": 152,
+    "meter": "4/4",
+    "key": "F",
+    "mode": "mixolydian",
+    "palette": {
+      "bass": "gtbass",
+      "snare": "snare2",
+      "chords": "power",
+      "kit": "boom"
+    },
+    "sound": {
+      "wave": "saw",
+      "attack": 0,
+      "decay": 6,
+      "sustain": 10,
+      "release": 3,
+      "vibrato": 1,
+      "pwm": "none",
+      "pulse_width": "medium",
+      "onset": "octave",
+      "slide": "short"
+    },
+    "sections": [
+      {
+        "filter": "open",
+        "drums_pattern": "k.h.s.h.k.k.s.h.k.h.s.h.k.T.s.x.",
+        "bass_pattern": "R.R.R.R.R.R.8.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "x.x_x.x_x.x_x.x.",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "fill",
+        "energy_end": 0.65,
+        "type": "intro",
+        "bars": 4,
+        "energy": 0.35,
+        "texture": "staggered",
+        "groove": "rock",
+        "bass": "root_8ths",
+        "feel": "riff",
+        "lead": "custom",
+        "chords": [
+          "I",
+          "bVII",
+          "IV",
+          "I"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "k.h.s.hkk.h.s.h.k.h.s.hkk.hks.so",
+        "bass_pattern": "..R_..R_..R_....",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "stop",
+        "energy_end": 0.7,
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.55,
+        "texture": "full",
+        "groove": "rock",
+        "bass": "root_8ths",
+        "feel": "syncopated",
+        "lead": "custom",
+        "chords": [
+          "I",
+          "I",
+          "bVII",
+          "IV"
+        ]
+      },
+      {
+        "filter": "open",
+        "drums_pattern": "k.o.s.hkk.o.s.hkk.o.s.hkk.kTs.sx",
+        "bass_pattern": "R.R.8.R.5.R.b.A.",
+        "bass_sound": "buzz",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "fill",
+        "energy_end": 0.9,
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.85,
+        "texture": "full",
+        "groove": "rock",
+        "bass": "rocknroll",
+        "feel": "riff",
+        "lead": "sharp",
+        "chords": [
+          "I",
+          "bVII",
+          "IV",
+          "I"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "",
+        "bass_pattern": "R585R585R5858.A.",
+        "bass_sound": "chipbass",
+        "arp_pattern": "x.x.x.x.x.x.x_x_",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "fill",
+        "energy_end": 0.8,
+        "type": "bridge",
+        "bars": 8,
+        "energy": 0.6,
+        "texture": "multiplex",
+        "groove": "sid_drive",
+        "bass": "run16",
+        "feel": "sid",
+        "lead": "ring",
+        "chords": [
+          "ii",
+          "bVII",
+          "IV",
+          "V"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "k.o.s.okk.o.s.o.k.o.s.okkTTsTsx",
+        "bass_pattern": "RR8RRR8RRR8R8R8A",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "fill",
+        "energy_end": 0.95,
+        "type": "solo",
+        "bars": 8,
+        "energy": 0.85,
+        "texture": "counter",
+        "groove": "grunge",
+        "bass": "octave_roll",
+        "feel": "running",
+        "lead": "custom",
+        "chords": [
+          "I",
+          "bVII",
+          "IV",
+          "IV"
+        ]
+      },
+      {
+        "filter": "open",
+        "drums_pattern": "",
+        "bass_pattern": "R.R.R.R.RRRRRRRR",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "stop",
+        "energy_end": 0.95,
+        "type": "build",
+        "bars": 4,
+        "energy": 0.6,
+        "texture": "snare_build",
+        "groove": "rock",
+        "bass": "pedal_16ths",
+        "feel": "riff",
+        "lead": "custom",
+        "chords": [
+          "V",
+          "V",
+          "bVII",
+          "V"
+        ]
+      },
+      {
+        "filter": "open",
+        "drums_pattern": "k.o.s.hkk.o.s.hkk.o.s.hkk.kTs.sx",
+        "bass_pattern": "R.R.8.R.5.R.b.A.",
+        "bass_sound": "buzz",
+        "arp_pattern": "",
+        "transpose": 2,
+        "variation": "answer",
+        "chord_bars": 1,
+        "transition": "none",
+        "energy_end": 1,
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.95,
+        "texture": "full",
+        "groove": "rock",
+        "bass": "rocknroll",
+        "feel": "riff",
+        "lead": "sharp",
+        "chords": [
+          "I",
+          "bVII",
+          "IV",
+          "I"
+        ]
+      },
+      {
+        "filter": "close",
+        "drums_pattern": "",
+        "bass_pattern": "",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "none",
+        "energy_end": 0.4,
+        "type": "outro",
+        "bars": 2,
+        "energy": 0.9,
+        "texture": "final_hit",
+        "groove": "rock",
+        "bass": "root_8ths",
+        "feel": "riff",
+        "lead": "sharp",
+        "chords": [
+          "I"
+        ]
+      }
+    ],
+    "themes": [
+      {
+        "section": "verse",
+        "notes": "8 . 8 7 5 _ 3 . 5 _ . 5 6 5 3 _ 1 . 1 2 3 _ 5 _ 3 _ 1 _ . . . ."
+      },
+      {
+        "section": "chorus",
+        "notes": "5 . 5 6 8 _ . 5 10 _ _ 8 5 _ 3 _ 4 . 4 5 7 _ . 4 9 _ _ 7 4 _ 2 _ 4 _ 6 _ 8 _ 6 _ 8 _ 6 4 . 6 8 _ 8 _ 7 _ 5 _ _ . 3 _ 2 _ 1 _ _ ."
+      }
+    ]
+  }
+}

@@ -1,0 +1,360 @@
+{
+  "prompt": "the last level of a forgotten arcade, eerie then heroic",
+  "constraints": [
+    "Use a stop-time transition right before the last chorus.",
+    "Write the verse theme so it starts on an offbeat.",
+    "Play in the key of C, unless the prompt, a reference song or a melody clearly needs another key.",
+    "Open with an intro of texture cold_start.",
+    "Set the tempo in the upper third of the chosen style's tempo band.",
+    "Form: verse, pre-chorus and chorus; the pre-chorus builds tension.",
+    "Use the texture build_up_band for the first chorus.",
+    "Let the verse chords last two bars each (chord_bars 2).",
+    "Give the chorus the lead sound brass; other sections may use other leads."
+  ],
+  "answer": {
+    "reasoning": "A forgotten arcade calls for C64 demoscene colour, so the song stays in that idiom at 152 bpm in C minor. The verses are eerie: a ghostly triangle lead with slow vibrato hangs on offbeats over i bVI iv V in two-bar chords, with sparse broken drums and a hollow octave bass. A snare-driven pre-chorus on a pedal bass climbs into a brass fanfare on bVI bVII i, the heroic turn, which first assembles itself with build_up_band and finally returns a whole step higher after a stop-time.",
+    "title": "Continue? 9",
+    "imagery": "A dusty cabinet in a dark hall flickers awake on its final stage, and a lone pixel hero marches toward the last boss.",
+    "liner_note": "The ghost of an arcade wakes for one last level: a haunted minor verse that slowly gathers courage until the brass fanfare takes over. Insert one more coin.",
+    "style": "demoscene",
+    "blend_style": "none",
+    "blend_amount": 0,
+    "moods": [
+      {
+        "mood": "mysterious",
+        "weight": 0.45
+      },
+      {
+        "mood": "epic",
+        "weight": 0.35
+      },
+      {
+        "mood": "triumphant",
+        "weight": 0.2
+      }
+    ],
+    "tempo": 152,
+    "meter": "4/4",
+    "key": "C",
+    "mode": "aeolian",
+    "palette": {
+      "bass": "chipbass",
+      "snare": "snare",
+      "chords": "triad"
+    },
+    "sound": {
+      "wave": "triangle",
+      "attack": 2,
+      "decay": 8,
+      "sustain": 10,
+      "release": 8,
+      "vibrato": 2,
+      "pwm": "none",
+      "pulse_width": "medium",
+      "onset": "none",
+      "slide": "short"
+    },
+    "sections": [
+      {
+        "type": "intro",
+        "bars": 4,
+        "energy": 0.35,
+        "energy_end": 0.45,
+        "filter": "close",
+        "texture": "cold_start",
+        "transition": "dropout",
+        "groove": "sid_kss",
+        "drums_pattern": "k...h...s...h...",
+        "bass": "whole_note",
+        "bass_pattern": "R_______________",
+        "bass_sound": "sub",
+        "arp_pattern": "",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "bVI",
+          "bVII",
+          "i",
+          "i"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.45,
+        "energy_end": 0.55,
+        "filter": "wobble",
+        "texture": "multiplex",
+        "transition": "none",
+        "groove": "breakbeat",
+        "drums_pattern": "k..h..s.h.k.s..h",
+        "bass": "octave_16th",
+        "bass_pattern": "R..8..R.5..8.R.A",
+        "bass_sound": "palette",
+        "arp_pattern": "x.x.x.x.x.x.x.x.",
+        "feel": "syncopated",
+        "lead": "custom",
+        "chords": [
+          "i",
+          "bVI",
+          "iv",
+          "V"
+        ],
+        "chord_bars": 2,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "pre",
+        "bars": 4,
+        "energy": 0.6,
+        "energy_end": 0.8,
+        "filter": "open",
+        "texture": "groove_chords",
+        "transition": "fill",
+        "groove": "sid_drive",
+        "drums_pattern": "k.s.k.s.k.s.ksss",
+        "bass": "pedal_16ths",
+        "bass_pattern": "RRRRRRRRRRRRRRRR",
+        "bass_sound": "growl",
+        "arp_pattern": "x_x_x_x_x_x_x_x_",
+        "feel": "straight",
+        "lead": "lead",
+        "chords": [
+          "iv",
+          "iv",
+          "bVII",
+          "V"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.75,
+        "energy_end": 0.9,
+        "filter": "follow",
+        "texture": "build_up_band",
+        "transition": "fill",
+        "groove": "four_floor",
+        "drums_pattern": "k.hhs.hkk.hhs.ho",
+        "bass": "octave_16th",
+        "bass_pattern": "R8R8R8R85858R8A8",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "long",
+        "lead": "brass",
+        "chords": [
+          "bVI",
+          "bVII",
+          "i",
+          "i"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.5,
+        "energy_end": 0.6,
+        "filter": "wobble",
+        "texture": "counter",
+        "transition": "none",
+        "groove": "breakbeat",
+        "drums_pattern": "k..h..s.h.k.s..h",
+        "bass": "octave_16th",
+        "bass_pattern": "R.8.R..8R.5.R.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "syncopated",
+        "lead": "custom",
+        "chords": [
+          "i",
+          "bVI",
+          "iv",
+          "V"
+        ],
+        "chord_bars": 2,
+        "transpose": 0,
+        "variation": "ornament"
+      },
+      {
+        "type": "pre",
+        "bars": 4,
+        "energy": 0.65,
+        "energy_end": 0.85,
+        "filter": "open",
+        "texture": "groove_chords",
+        "transition": "fill",
+        "groove": "sid_drive",
+        "drums_pattern": "k.s.k.s.k.s.ksss",
+        "bass": "pedal_16ths",
+        "bass_pattern": "RRRRRRRRRRRRRRRR",
+        "bass_sound": "growl",
+        "arp_pattern": "x_x_x_x_x_x_x_x_",
+        "feel": "straight",
+        "lead": "lead",
+        "chords": [
+          "iv",
+          "iv",
+          "bVII",
+          "V"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "sequence"
+      },
+      {
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.85,
+        "energy_end": 0.9,
+        "filter": "open",
+        "texture": "counter",
+        "transition": "none",
+        "groove": "four_floor",
+        "drums_pattern": "k.hhs.hkk.hhs.ho",
+        "bass": "octave_16th",
+        "bass_pattern": "R8R8R8R85858R8A8",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "long",
+        "lead": "brass",
+        "chords": [
+          "bVI",
+          "bVII",
+          "i",
+          "i"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "ornament"
+      },
+      {
+        "type": "breakdown",
+        "bars": 4,
+        "energy": 0.3,
+        "energy_end": 0.4,
+        "filter": "close",
+        "texture": "arp_lead",
+        "transition": "none",
+        "groove": "halftime",
+        "drums_pattern": "",
+        "bass": "whole_note",
+        "bass_pattern": "",
+        "bass_sound": "palette",
+        "arp_pattern": "x.xxx.xxx.xxx.xx",
+        "feel": "long",
+        "lead": "warble",
+        "chords": [
+          "i",
+          "bVI",
+          "iv",
+          "V"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "fragment"
+      },
+      {
+        "type": "pre",
+        "bars": 4,
+        "energy": 0.6,
+        "energy_end": 0.9,
+        "filter": "open",
+        "texture": "groove_chords",
+        "transition": "stop",
+        "groove": "sid_drive",
+        "drums_pattern": "k.s.k.s.k.s.ksss",
+        "bass": "pedal_16ths",
+        "bass_pattern": "RRRRRRRRRRRRRRRR",
+        "bass_sound": "growl",
+        "arp_pattern": "x_x_x_x_x_x_x_x_",
+        "feel": "straight",
+        "lead": "lead",
+        "chords": [
+          "iv",
+          "iv",
+          "bVII",
+          "V"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.95,
+        "energy_end": 1,
+        "filter": "open",
+        "texture": "full",
+        "transition": "fill",
+        "groove": "four_floor",
+        "drums_pattern": "k.hhs.hkk.hhs.ho",
+        "bass": "octave_16th",
+        "bass_pattern": "R8R8R8R85858R8A8",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "long",
+        "lead": "brass",
+        "chords": [
+          "bVI",
+          "bVII",
+          "i",
+          "i"
+        ],
+        "chord_bars": 1,
+        "transpose": 2,
+        "variation": "octave"
+      },
+      {
+        "type": "outro",
+        "bars": 4,
+        "energy": 0.6,
+        "energy_end": 0.25,
+        "filter": "close",
+        "texture": "riff_out",
+        "transition": "none",
+        "groove": "four_floor",
+        "drums_pattern": "k.h.s.h.k.h.s.h.",
+        "bass": "octave_8ths",
+        "bass_pattern": "",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "bVI",
+          "bVII",
+          "i",
+          "i"
+        ],
+        "chord_bars": 1,
+        "transpose": 2,
+        "variation": "fragment"
+      }
+    ],
+    "themes": [
+      {
+        "section": "verse",
+        "notes": ". . 5 _ 6 _ 5 _ . . 7 _ 8 _ _ _ . . 8 _ 7 _ 6 _ 5 _ _ _ . . . . . . 6 _ 8 _ 6 _ . . 9 _ 10 _ _ _ . . 9 _ 8 _ 6 _ 5 _ _ _ _ _ . ."
+      },
+      {
+        "section": "pre",
+        "notes": "5 . 5 . 5 _ 6 _ 6 . 6 . 6 _ 7 _ 7 . 7 . 7 _ 8 _ 9 _ _ _ 12 _ _ _"
+      },
+      {
+        "section": "chorus",
+        "notes": "8 _ _ 10 _ _ 8 _ 6 _ _ _ 8 _ 10 _ 11 _ _ _ 9 _ 7 _ 9 _ _ _ . . 9 10 8 _ _ _ 12 _ _ _ 13 _ 12 _ 10 _ _ _ 8 _ _ _ _ _ _ _ 5 _ 8 _ _ _ . ."
+      }
+    ]
+  }
+}

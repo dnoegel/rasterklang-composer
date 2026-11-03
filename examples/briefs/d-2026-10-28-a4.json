@@ -1,0 +1,224 @@
+{
+  "prompt": "doom metal boss fight in a crumbling stone dungeon, crawling then thunderous",
+  "constraints": [
+    "Use a key change up a whole step on the last chorus.",
+    "Let the verse theme be a question and the chorus theme its answer: the same rhythm, a different contour.",
+    "Play in the key of Bb, unless the prompt, a reference song or a melody clearly needs another key.",
+    "Open with an intro of texture riff_solo.",
+    "Set the tempo in the middle of the chosen style's tempo band.",
+    "Form: AABA: the A section carries the hook, B contrasts in harmony and texture.",
+    "Use the texture full for the first chorus.",
+    "Let the verse chords last two bars each (chord_bars 2).",
+    "Give the chorus the lead sound sharp; other sections may use other leads.",
+    "If the song is in 4/4, use this bass figure from real C64 tunes as the verse bass_pattern: \"..R_..R_..8_..8_\"."
+  ],
+  "answer": {
+    "reasoning": "Doom metal at 70 bpm, the middle of its band, in Bb phrygian so the bII chord grinds like stone on stone; the verse crawls in a halftime beat over the syncopated C64 octave figure, then the chorus turns thunderous with a rolling double kick, half-note growl bass and the sharp lead answering the verse question with a falling contour on the same rhythm. sid_idiom sits at 0.55: the genre stays slow and heavy, but the boss-fight framing pulls in C64 colour, the native bass figure, an echoing ring lead in the bridge and a pulse-swept custom lead. The AABA form keeps the hook in the A sections, the bridge drops into an echoing chamber over iv and bII, and the last chorus climbs a whole step as the ceiling caves in.",
+    "title": "Warden of the Sunken Keep",
+    "imagery": "A giant armoured shape drags itself out of the dark while dust and loose stones rain from a cracking vault.",
+    "liner_note": "The boss takes its time to wake up. Once it is on its feet, every blow shakes the dungeon a little more apart.",
+    "style": "doom",
+    "blend_style": "none",
+    "blend_amount": 0,
+    "sid_idiom": 0.55,
+    "moods": [
+      {
+        "mood": "menacing",
+        "weight": 0.5
+      },
+      {
+        "mood": "epic",
+        "weight": 0.3
+      },
+      {
+        "mood": "aggressive",
+        "weight": 0.2
+      }
+    ],
+    "tempo": 70,
+    "meter": "4/4",
+    "key": "Bb",
+    "mode": "phrygian",
+    "palette": {
+      "bass": "growl",
+      "snare": "snare2",
+      "chords": "power",
+      "kit": "boom"
+    },
+    "sound": {
+      "wave": "saw",
+      "attack": 2,
+      "decay": 9,
+      "sustain": 11,
+      "release": 6,
+      "vibrato": 2,
+      "pwm": "none",
+      "pulse_width": "medium",
+      "onset": "noise",
+      "slide": "long"
+    },
+    "sections": [
+      {
+        "filter": "open",
+        "drums_pattern": "",
+        "bass_pattern": "",
+        "bass_sound": "drone",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 2,
+        "transition": "fill",
+        "type": "intro",
+        "bars": 4,
+        "energy": 0.2,
+        "energy_end": 0.35,
+        "texture": "riff_solo",
+        "groove": "halftime",
+        "bass": "whole_note",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "i",
+          "bII"
+        ]
+      },
+      {
+        "filter": "close",
+        "drums_pattern": "k.......s.......k.....k.s.......",
+        "bass_pattern": "..R_..R_..8_..8_",
+        "bass_sound": "sub",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 2,
+        "transition": "stop",
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.4,
+        "energy_end": 0.55,
+        "texture": "full",
+        "groove": "halftime",
+        "bass": "half_note",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "i",
+          "bII",
+          "bVII",
+          "i"
+        ]
+      },
+      {
+        "filter": "open",
+        "drums_pattern": "xkkkkkkkskkkkkkkkkkkkkkkskkkTTtt",
+        "bass_pattern": "R___R_8_R___5_A_",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "dropout",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.85,
+        "energy_end": 0.9,
+        "texture": "full",
+        "groove": "double_kick",
+        "bass": "half_note",
+        "feel": "riff",
+        "lead": "sharp",
+        "chords": [
+          "i",
+          "bVI",
+          "bII",
+          "i"
+        ]
+      },
+      {
+        "filter": "wobble",
+        "drums_pattern": "k...h...s...h...k.k.h...s...T.t.",
+        "bass_pattern": "R_______R___A___",
+        "bass_sound": "buzz",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "fill",
+        "type": "bridge",
+        "bars": 8,
+        "energy": 0.45,
+        "energy_end": 0.6,
+        "texture": "echo_lead",
+        "groove": "halftime",
+        "bass": "whole_note",
+        "feel": "long",
+        "lead": "ring",
+        "chords": [
+          "iv",
+          "bVI",
+          "bII",
+          "bII"
+        ]
+      },
+      {
+        "filter": "open",
+        "drums_pattern": "xkkkkkkkskkkkkkkkkkkskkkskkkTTtt",
+        "bass_pattern": "R_R_R_8_R___5_A_",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 2,
+        "variation": "octave",
+        "chord_bars": 1,
+        "transition": "none",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.95,
+        "energy_end": 1,
+        "texture": "full",
+        "groove": "double_kick",
+        "bass": "half_note",
+        "feel": "riff",
+        "lead": "sharp",
+        "chords": [
+          "i",
+          "bVI",
+          "bII",
+          "i"
+        ]
+      },
+      {
+        "filter": "close",
+        "drums_pattern": "",
+        "bass_pattern": "",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "none",
+        "type": "outro",
+        "bars": 2,
+        "energy": 0.7,
+        "energy_end": 0.2,
+        "texture": "fade_layers",
+        "groove": "halftime",
+        "bass": "whole_note",
+        "feel": "long",
+        "lead": "sharp",
+        "chords": [
+          "i"
+        ]
+      }
+    ],
+    "themes": [
+      {
+        "section": "verse",
+        "notes": "1 _ _ _ _ _ 2 _ 1 _ _ _ 3 _ _ _ 4 _ _ _ 3 _ 2 _ 5 _ _ _ _ _ _ _"
+      },
+      {
+        "section": "chorus",
+        "notes": "8 _ _ _ _ _ 7 _ 5 _ _ _ 6 _ _ _ 5 _ _ _ 3 _ 2 _ 1 _ _ _ _ _ _ _"
+      }
+    ]
+  }
+}

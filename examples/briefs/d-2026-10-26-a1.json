@@ -1,0 +1,250 @@
+{
+  "prompt": "a ghost ship drifting into a warm harbour at dawn",
+  "constraints": [
+    "Keep the verse sparse and let the chorus explode in energy.",
+    "Write a theme of four bars for the chorus.",
+    "Play in the key of C#, unless the prompt, a reference song or a melody clearly needs another key.",
+    "Start directly with the first verse or the chorus: no intro section.",
+    "Set the tempo in the upper third of the chosen style's tempo band.",
+    "Form: verse and chorus with a breakdown (drums out) before the last chorus.",
+    "Use the texture full for the first chorus.",
+    "Give the chorus the lead sound fiddle; other sections may use other leads."
+  ],
+  "answer": {
+    "reasoning": "A 6/8 jig lilt at a brisk tempo gives the ship its rolling swell, and C# dorian keeps it misty in the verse while the raised sixth over the IV chord lets warm light in. The verse is a ghostly soft triangle with a long slide and an echo over a drone and a lone kick, then the chorus bursts open on a fiddle with full bodhran and a bouncing bass as the harbour wakes. A drumless echo breakdown lets the ship glide in before the last chorus lifts a whole step into the sunrise.",
+    "title": "Dawnlight Over the Drowned Mast",
+    "imagery": "A pale, sail-torn ship slides out of the fog as the sun turns the harbour water gold.",
+    "liner_note": "A spectral jig that drifts in on the tide and wakes up in the warmth of the morning. Listen for the fiddle hook climbing like the sun over the masts.",
+    "style": "jig",
+    "blend_style": "none",
+    "blend_amount": 0,
+    "moods": [
+      {
+        "mood": "mysterious",
+        "weight": 0.45
+      },
+      {
+        "mood": "hopeful",
+        "weight": 0.4
+      },
+      {
+        "mood": "nostalgic",
+        "weight": 0.15
+      }
+    ],
+    "tempo": 120,
+    "meter": "6/8",
+    "key": "C#",
+    "mode": "dorian",
+    "palette": {
+      "bass": "sub",
+      "snare": "snare",
+      "chords": "triad",
+      "kit": "round"
+    },
+    "sound": {
+      "wave": "triangle",
+      "attack": 6,
+      "decay": 9,
+      "sustain": 12,
+      "release": 9,
+      "vibrato": 2,
+      "pwm": "none",
+      "pulse_width": "medium",
+      "onset": "none",
+      "slide": "long"
+    },
+    "sections": [
+      {
+        "type": "verse",
+        "bars": 16,
+        "energy": 0.22,
+        "energy_end": 0.4,
+        "filter": "steady",
+        "texture": "echo_lead",
+        "transition": "fill",
+        "groove": "bodhran",
+        "drums_pattern": "k...........k.....h.....",
+        "bass": "drone",
+        "bass_pattern": "R_______5___R_________A_",
+        "bass_sound": "sub",
+        "arp_pattern": "",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "i",
+          "IV",
+          "i",
+          "bVII"
+        ],
+        "chord_bars": 2,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.88,
+        "energy_end": 0.92,
+        "filter": "open",
+        "texture": "full",
+        "transition": "fill",
+        "groove": "bodhran",
+        "drums_pattern": "k.hs.hk.hs.hk.hs.hk.TtTt",
+        "bass": "oom_pah6",
+        "bass_pattern": "R_58_5R_58_5R_58_5R_5R_A",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "running",
+        "lead": "fiddle",
+        "chords": [
+          "bIII",
+          "bVII",
+          "IV",
+          "i"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.28,
+        "energy_end": 0.45,
+        "filter": "close",
+        "texture": "echo_lead",
+        "transition": "stop",
+        "groove": "bodhran",
+        "drums_pattern": "k...........k.....h.....",
+        "bass": "drone",
+        "bass_pattern": "R_______5___R_________A_",
+        "bass_sound": "sub",
+        "arp_pattern": "",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "i",
+          "IV",
+          "i",
+          "bVII"
+        ],
+        "chord_bars": 2,
+        "transpose": 0,
+        "variation": "ornament"
+      },
+      {
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.9,
+        "energy_end": 0.95,
+        "filter": "open",
+        "texture": "counter",
+        "transition": "dropout",
+        "groove": "bodhran",
+        "drums_pattern": "k.hs.hk.hs.hk.hs.hk.TtTt",
+        "bass": "oom_pah6",
+        "bass_pattern": "R_58_5R_58_5R_58_5R_5R_A",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "running",
+        "lead": "fiddle",
+        "chords": [
+          "bIII",
+          "bVII",
+          "IV",
+          "i"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "ornament"
+      },
+      {
+        "type": "breakdown",
+        "bars": 8,
+        "energy": 0.3,
+        "energy_end": 0.6,
+        "filter": "open",
+        "texture": "echo_break",
+        "transition": "fill",
+        "groove": "bodhran",
+        "drums_pattern": "",
+        "bass": "drone",
+        "bass_pattern": "R___________R_______5_A_",
+        "bass_sound": "sub",
+        "arp_pattern": "",
+        "feel": "long",
+        "lead": "whistle",
+        "chords": [
+          "IV",
+          "bIII",
+          "bVII",
+          "IV"
+        ],
+        "chord_bars": 2,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.95,
+        "energy_end": 1,
+        "filter": "open",
+        "texture": "full",
+        "transition": "stop",
+        "groove": "bodhran",
+        "drums_pattern": "k.hs.hk.hs.hk.hs.hk.TtTt",
+        "bass": "oom_pah6",
+        "bass_pattern": "R_58_5R_58_5R_58_5R_5R_A",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "running",
+        "lead": "fiddle",
+        "chords": [
+          "bIII",
+          "bVII",
+          "IV",
+          "i"
+        ],
+        "chord_bars": 1,
+        "transpose": 2,
+        "variation": "answer"
+      },
+      {
+        "type": "outro",
+        "bars": 4,
+        "energy": 0.4,
+        "energy_end": 0.1,
+        "filter": "close",
+        "texture": "fade_layers",
+        "transition": "none",
+        "groove": "bodhran",
+        "drums_pattern": "k...........k.....h.....",
+        "bass": "drone",
+        "bass_pattern": "R___________",
+        "bass_sound": "sub",
+        "arp_pattern": "",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "IV",
+          "i"
+        ],
+        "chord_bars": 2,
+        "transpose": 2,
+        "variation": "fragment"
+      }
+    ],
+    "themes": [
+      {
+        "section": "verse",
+        "notes": "5 _ _ _ _ _ 3 _ 4 5 _ _ 1 _ _ _ _ _ . . . . . . 6 _ _ _ _ _ 4 _ 5 6 _ _ 8 _ _ _ _ _ . . . . . ."
+      },
+      {
+        "section": "chorus",
+        "notes": "5 _ _ _ 6 _ 7 _ _ _ 5 _ 9 _ _ _ 8 _ 7 _ _ _ . . 4 _ 6 _ 8 _ 11 _ _ _ 10 _ 9 _ _ 10 9 _ 8 _ _ _ _ _"
+      }
+    ]
+  }
+}

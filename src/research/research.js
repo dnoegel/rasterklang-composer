@@ -3,10 +3,10 @@
 // search) and ends by submitting material. Runs at most RESEARCH_MAX_CALLS
 // tool calls and a time budget; then it must submit.
 
-import { chatStep, webSearch } from './tools/openrouter.mjs';
-import { searchScores, loadScore } from './scores.mjs';
-import { overviewText, barsText, extractMaterial } from './src/score/reduce.js';
-import { researchSystemPrompt, researchUserPrompt, researchTools, buildMaterial, RESEARCH_MAX_CALLS } from './src/gen/interpret.js';
+import { chatStep, webSearch } from '../llm/openrouter.js';
+import { searchScores, loadScore } from './scores.js';
+import { overviewText, barsText, extractMaterial } from '../score/reduce.js';
+import { researchSystemPrompt, researchUserPrompt, researchTools, buildMaterial, RESEARCH_MAX_CALLS } from '../gen/interpret.js';
 
 const BUDGET_MS = 100000;
 

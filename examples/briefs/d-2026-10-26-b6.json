@@ -1,0 +1,282 @@
+{
+  "prompt": "drum and bass escape from a collapsing space station",
+  "constraints": [
+    "Use a stop-time transition right before the last chorus.",
+    "Give the chorus a different groove than the verse.",
+    "Play in the key of D, unless the prompt, a reference song or a melody clearly needs another key.",
+    "Open with an intro of texture drone_lead.",
+    "Set the tempo in the middle of the chosen style's tempo band.",
+    "Form: verse and chorus with a contrasting bridge before the last chorus.",
+    "Use the texture multiplex for the first chorus.",
+    "Let the verse chords last two bars each (chord_bars 2).",
+    "Give the chorus the lead sound lead; other sections may use other leads."
+  ],
+  "answer": {
+    "reasoning": "Drum and bass lives at 168 bpm on a two-step break with long rolling bass, so the verse rides a sparse two-step under a sub bass while the chorus switches to a busier chopped breakbeat with a growling reese-style bass. D aeolian keeps it dark and urgent, and a sliding, wailing custom pulse lead over a drone opens the piece like a station alarm. A halftime bridge slows the floor out from under you, then a stop-time gap launches the last chorus a whole step higher as the final sprint to the escape pod.",
+    "title": "Hull Breach Sprint",
+    "imagery": "Red warning lights strobe down a buckling corridor as a lone runner races the decompression toward the last open airlock.",
+    "liner_note": "A klaxon drone, a rolling break and a sprinting hook. Hold your breath through the halftime bridge, the final chorus is the door slamming shut behind you.",
+    "style": "dnb",
+    "blend_style": "none",
+    "blend_amount": 0,
+    "moods": [
+      {
+        "mood": "tense",
+        "weight": 0.5
+      },
+      {
+        "mood": "aggressive",
+        "weight": 0.3
+      },
+      {
+        "mood": "epic",
+        "weight": 0.2
+      }
+    ],
+    "tempo": 168,
+    "meter": "4/4",
+    "key": "D",
+    "mode": "aeolian",
+    "palette": {
+      "bass": "growl",
+      "snare": "snare",
+      "chords": "power"
+    },
+    "sound": {
+      "wave": "pulse",
+      "attack": 0,
+      "decay": 6,
+      "sustain": 10,
+      "release": 6,
+      "vibrato": 2,
+      "pwm": "fast",
+      "pulse_width": "narrow",
+      "onset": "none",
+      "slide": "long"
+    },
+    "sections": [
+      {
+        "type": "intro",
+        "bars": 8,
+        "energy": 0.2,
+        "energy_end": 0.4,
+        "filter": "open",
+        "texture": "drone_lead",
+        "transition": "fill",
+        "groove": "dnb",
+        "drums_pattern": "",
+        "bass": "whole_note",
+        "bass_pattern": "",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "i",
+          "bVI"
+        ],
+        "chord_bars": 2,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "verse",
+        "bars": 16,
+        "energy": 0.5,
+        "energy_end": 0.65,
+        "filter": "follow",
+        "texture": "build_up_band",
+        "transition": "fill",
+        "groove": "dnb",
+        "drums_pattern": "k.h.s.h..hk.s.hh",
+        "bass": "sustained",
+        "bass_pattern": "R_______..R_b___",
+        "bass_sound": "sub",
+        "arp_pattern": "",
+        "feel": "long",
+        "lead": "glide",
+        "chords": [
+          "i",
+          "bVI",
+          "bIII",
+          "bVII"
+        ],
+        "chord_bars": 2,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.85,
+        "energy_end": 0.9,
+        "filter": "follow",
+        "texture": "multiplex",
+        "transition": "fill",
+        "groove": "breakbeat",
+        "drums_pattern": "k.h.s.hs.hk.s.hhk.k.s.hs..kks.T.",
+        "bass": "half_note",
+        "bass_pattern": "R__8..R_5_.R__A_",
+        "bass_sound": "palette",
+        "arp_pattern": "x.xx.x_x.xx.x_x.",
+        "feel": "syncopated",
+        "lead": "lead",
+        "chords": [
+          "i",
+          "bVII",
+          "bVI",
+          "bVII"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.55,
+        "energy_end": 0.7,
+        "filter": "follow",
+        "texture": "full",
+        "transition": "fill",
+        "groove": "dnb",
+        "drums_pattern": "k.h.s.h..hk.s.hh",
+        "bass": "sustained",
+        "bass_pattern": "R_______..R_b___",
+        "bass_sound": "sub",
+        "arp_pattern": "",
+        "feel": "long",
+        "lead": "glide",
+        "chords": [
+          "i",
+          "bVI",
+          "bIII",
+          "bVII"
+        ],
+        "chord_bars": 2,
+        "transpose": 0,
+        "variation": "sequence"
+      },
+      {
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.85,
+        "energy_end": 0.9,
+        "filter": "follow",
+        "texture": "counter",
+        "transition": "dropout",
+        "groove": "breakbeat",
+        "drums_pattern": "k.h.s.hs.hk.s.hhk.k.s.hs..kks.T.",
+        "bass": "half_note",
+        "bass_pattern": "R__8..R_5_.R__A_",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "syncopated",
+        "lead": "lead",
+        "chords": [
+          "i",
+          "bVII",
+          "bVI",
+          "bVII"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "ornament"
+      },
+      {
+        "type": "bridge",
+        "bars": 8,
+        "energy": 0.45,
+        "energy_end": 0.8,
+        "filter": "open",
+        "texture": "counter_nodrums",
+        "transition": "stop",
+        "groove": "halftime",
+        "drums_pattern": "k.h.h.h.s.h.h.hT",
+        "bass": "half_note",
+        "bass_pattern": "R_______5_______",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "iv",
+          "bVI",
+          "bVII",
+          "bVII"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.95,
+        "energy_end": 1,
+        "filter": "open",
+        "texture": "full",
+        "transition": "none",
+        "groove": "breakbeat",
+        "drums_pattern": "k.h.s.hs.hk.s.hhk.k.s.hs..kks.T.",
+        "bass": "half_note",
+        "bass_pattern": "R__8..R_5_.R__A_",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "syncopated",
+        "lead": "lead",
+        "chords": [
+          "i",
+          "bVII",
+          "bVI",
+          "bVII"
+        ],
+        "chord_bars": 1,
+        "transpose": 2,
+        "variation": "octave"
+      },
+      {
+        "type": "outro",
+        "bars": 4,
+        "energy": 0.6,
+        "energy_end": 0.1,
+        "filter": "close",
+        "texture": "fade_layers",
+        "transition": "none",
+        "groove": "dnb",
+        "drums_pattern": "",
+        "bass": "sustained",
+        "bass_pattern": "",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "i",
+          "bVI"
+        ],
+        "chord_bars": 2,
+        "transpose": 0,
+        "variation": "auto"
+      }
+    ],
+    "themes": [
+      {
+        "section": "intro",
+        "notes": "8 _ _ _ 7 _ _ _ 6 _ _ _ 5 _ _ _ 6 _ _ _ _ _ _ _ 5 _ _ _ _ _ _ _"
+      },
+      {
+        "section": "verse",
+        "notes": "1 _ _ _ _ _ 2 _ 3 _ _ _ _ _ . . 5 _ _ _ 4 _ 3 _ 2 _ _ _ . . . . 3 _ _ _ _ _ 4 _ 6 _ _ _ _ _ . . 8 _ _ _ 6 _ 5 _ 3 _ _ _ _ _ . ."
+      },
+      {
+        "section": "chorus",
+        "notes": "5 . 5 8 _ 7 _ 5 . 5 8 _ 9 _ 10 _ _ _ 9 _ 8 _ 7 _ 5 _ _ _ . . . . 3 . 3 6 _ 5 _ 3 . 3 6 _ 8 _ 10 _ _ _ 9 _ 7 _ 5 _ 8 _ _ _ . . . ."
+      },
+      {
+        "section": "bridge",
+        "notes": "6 _ _ _ 5 _ 4 _ 5 _ _ _ _ _ . . 8 _ _ _ 10 _ 8 _ 6 _ _ _ _ _ . ."
+      }
+    ]
+  }
+}

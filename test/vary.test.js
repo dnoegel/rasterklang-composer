@@ -6,7 +6,7 @@ import { composeBrief, compose } from '../src/gen/compose.js';
 import { renderFrames } from '../src/gen/frames.js';
 import { buildSid } from '../src/export/sid.js';
 
-const DIR = join(import.meta.dirname, '..', 'data', 'daily-briefs');
+const DIR = join(import.meta.dirname, '..', 'examples', 'briefs');
 const briefs = readdirSync(DIR).filter((f) => f.endsWith('.json')).sort()
   .map((f) => JSON.parse(readFileSync(join(DIR, f), 'utf8'))).filter((x) => x.answer).slice(0, 6);
 

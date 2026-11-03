@@ -1,0 +1,324 @@
+{
+  "prompt": "neon samurai duel in the rain, slow build to a frenzy",
+  "constraints": [
+    "Let the chorus theme open with a leap of a fourth or more, then fall back by steps.",
+    "Use call and response between lead and chords in at least one section.",
+    "Play in the key of B, unless the prompt, a reference song or a melody clearly needs another key.",
+    "Open with an intro of texture arp_swell.",
+    "Set the tempo in the middle of the chosen style's tempo band.",
+    "Form: verse and chorus with a breakdown (drums out) before the last chorus.",
+    "Use the texture full for the first chorus.",
+    "Let the verse chords last two bars each (chord_bars 2).",
+    "Give the chorus the lead sound brass; other sections may use other leads."
+  ],
+  "answer": {
+    "reasoning": "Neon and rain point to synthwave, the samurai to B phrygian, whose flat second (C over B) gives the duel its Japanese steel edge. A koto-like plucked pulse with a noise click circles in the verse, then the brass chorus leaps a fifth and falls like a drawn blade. The energy climbs from a filtered arp swell through two pre-choruses and a drumless standoff to a whole-step lifted final chorus with 16th-note kick and octave bass for the frenzy.",
+    "title": "Blade Under Neon Rain",
+    "imagery": "Two figures face each other on a flooded rooftop, pink signs flickering in the puddles, until the first strike breaks the stillness.",
+    "liner_note": "It starts as rain on chrome and a single plucked string, and ends in a storm of steel. Listen for the brass hook that leaps up like a drawn sword and comes back faster every time.",
+    "style": "synthwave",
+    "blend_style": "none",
+    "blend_amount": 0,
+    "moods": [
+      {
+        "mood": "tense",
+        "weight": 0.5
+      },
+      {
+        "mood": "mysterious",
+        "weight": 0.25
+      },
+      {
+        "mood": "aggressive",
+        "weight": 0.25
+      }
+    ],
+    "tempo": 104,
+    "meter": "4/4",
+    "key": "B",
+    "mode": "phrygian",
+    "palette": {
+      "bass": "bass",
+      "snare": "snare",
+      "chords": "triad"
+    },
+    "sound": {
+      "wave": "pulse",
+      "attack": 0,
+      "decay": 6,
+      "sustain": 2,
+      "release": 3,
+      "vibrato": 1,
+      "pwm": "none",
+      "pulse_width": "narrow",
+      "onset": "noise",
+      "slide": "short"
+    },
+    "sections": [
+      {
+        "filter": "open",
+        "transition": "none",
+        "drums_pattern": "",
+        "bass_pattern": "",
+        "bass_sound": "sub",
+        "arp_pattern": "x.x_x.x_x.x_x.xx",
+        "feel": "long",
+        "lead": "custom",
+        "chord_bars": 2,
+        "transpose": 0,
+        "variation": "auto",
+        "type": "intro",
+        "bars": 4,
+        "energy": 0.15,
+        "energy_end": 0.35,
+        "texture": "arp_swell",
+        "groove": "synth_gated",
+        "bass": "whole_note",
+        "chords": [
+          "i",
+          "bII"
+        ]
+      },
+      {
+        "filter": "follow",
+        "transition": "none",
+        "drums_pattern": "k.h.s..hk.hks.h.",
+        "bass_pattern": "R_..R.8.R_..5.A.",
+        "bass_sound": "sub",
+        "arp_pattern": "",
+        "feel": "dotted",
+        "lead": "custom",
+        "chord_bars": 2,
+        "transpose": 0,
+        "variation": "auto",
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.38,
+        "energy_end": 0.48,
+        "texture": "full",
+        "groove": "synth_gated",
+        "bass": "octave_8ths",
+        "chords": [
+          "i",
+          "bII",
+          "bVI",
+          "bII"
+        ]
+      },
+      {
+        "filter": "open",
+        "transition": "fill",
+        "drums_pattern": "k.h.s.hkk.h.s.ss",
+        "bass_pattern": "R8R.R8R.R8R.5.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "straight",
+        "lead": "custom",
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto",
+        "type": "pre",
+        "bars": 4,
+        "energy": 0.5,
+        "energy_end": 0.72,
+        "texture": "build_up_band",
+        "groove": "synth_gated",
+        "bass": "octave_16th",
+        "chords": [
+          "iv",
+          "iv",
+          "bVI",
+          "bII"
+        ]
+      },
+      {
+        "filter": "follow",
+        "transition": "fill",
+        "drums_pattern": "k.hks.hkk.hks.hh",
+        "bass_pattern": "R.8R.8R.R.8R5.A.",
+        "bass_sound": "growl",
+        "arp_pattern": "",
+        "feel": "straight",
+        "lead": "brass",
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.78,
+        "energy_end": 0.84,
+        "texture": "full",
+        "groove": "four_floor",
+        "bass": "octave_8ths",
+        "chords": [
+          "i",
+          "bVI",
+          "bII",
+          "i"
+        ]
+      },
+      {
+        "filter": "follow",
+        "transition": "none",
+        "drums_pattern": "k.h.s..hk.hks.hh",
+        "bass_pattern": "R_.8R.8.R_.85.A.",
+        "bass_sound": "sub",
+        "arp_pattern": "",
+        "feel": "dotted",
+        "lead": "custom",
+        "chord_bars": 2,
+        "transpose": 0,
+        "variation": "ornament",
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.48,
+        "energy_end": 0.56,
+        "texture": "counter",
+        "groove": "synth_gated",
+        "bass": "octave_8ths",
+        "chords": [
+          "i",
+          "bII",
+          "bVI",
+          "bII"
+        ]
+      },
+      {
+        "filter": "open",
+        "transition": "stop",
+        "drums_pattern": "k.s.s.sks.s.ssss",
+        "bass_pattern": "R8R8R8R8R8R85.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "straight",
+        "lead": "custom",
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "sequence",
+        "type": "pre",
+        "bars": 4,
+        "energy": 0.62,
+        "energy_end": 0.85,
+        "texture": "snare_build",
+        "groove": "synth_gated",
+        "bass": "octave_16th",
+        "chords": [
+          "iv",
+          "iv",
+          "bVI",
+          "bII"
+        ]
+      },
+      {
+        "filter": "follow",
+        "transition": "dropout",
+        "drums_pattern": "k.hks.hkk.hks.hh",
+        "bass_pattern": "R8R8R.8R.R8R5.A.",
+        "bass_sound": "growl",
+        "arp_pattern": "x.xxx.xxx.xxx.xx",
+        "feel": "straight",
+        "lead": "brass",
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "answer",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.85,
+        "energy_end": 0.9,
+        "texture": "call_response",
+        "groove": "four_floor",
+        "bass": "octave_16th",
+        "chords": [
+          "i",
+          "bVI",
+          "bII",
+          "i"
+        ]
+      },
+      {
+        "filter": "open",
+        "transition": "fill",
+        "drums_pattern": "",
+        "bass_pattern": "",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "long",
+        "lead": "whistle",
+        "chord_bars": 2,
+        "transpose": 0,
+        "variation": "fragment",
+        "type": "breakdown",
+        "bars": 4,
+        "energy": 0.28,
+        "energy_end": 0.6,
+        "texture": "duet",
+        "groove": "halftime",
+        "bass": "whole_note",
+        "chords": [
+          "bVI",
+          "bII"
+        ]
+      },
+      {
+        "filter": "open",
+        "transition": "stop",
+        "drums_pattern": "kkhks.hkkkhks.ss",
+        "bass_pattern": "R8R8R8R8R8R8R8A8",
+        "bass_sound": "growl",
+        "arp_pattern": "",
+        "feel": "running",
+        "lead": "brass",
+        "chord_bars": 1,
+        "transpose": 2,
+        "variation": "octave",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.95,
+        "energy_end": 1,
+        "texture": "full",
+        "groove": "four_floor",
+        "bass": "octave_16th",
+        "chords": [
+          "i",
+          "bVI",
+          "bII",
+          "i"
+        ]
+      },
+      {
+        "filter": "close",
+        "transition": "none",
+        "drums_pattern": "",
+        "bass_pattern": "",
+        "bass_sound": "growl",
+        "arp_pattern": "",
+        "feel": "long",
+        "lead": "brass",
+        "chord_bars": 2,
+        "transpose": 2,
+        "variation": "auto",
+        "type": "outro",
+        "bars": 4,
+        "energy": 0.7,
+        "energy_end": 0.2,
+        "texture": "final_hit",
+        "groove": "four_floor",
+        "bass": "whole_note",
+        "chords": [
+          "bII",
+          "i"
+        ]
+      }
+    ],
+    "themes": [
+      {
+        "section": "verse",
+        "notes": "1 _ _ _ . -7 1 2 3 _ _ _ 2 _ 1 _ . . . . 5 _ 4 3 4 _ _ _ 3 _ _ _ 2 _ _ _ . 1 2 3 4 _ _ _ 3 _ 2 _ . . . . 6 _ 5 4 2 _ _ _ 1 _ _ _"
+      },
+      {
+        "section": "chorus",
+        "notes": "1 . 5 _ _ 4 3 _ 2 _ 3 4 5 _ . . 1 . 6 _ _ 5 4 _ 3 _ 2 _ 1 _ . . 2 . 6 _ _ 5 4 _ 3 _ 4 _ 6 _ 9 _ 8 _ _ 7 6 _ 5 _ 4 _ 2 _ 1 _ _ _"
+      }
+    ]
+  }
+}

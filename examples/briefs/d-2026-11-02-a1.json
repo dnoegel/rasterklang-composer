@@ -1,0 +1,304 @@
+{
+  "prompt": "demo party end part at sunrise, sine scrollers waving goodbye, proud and bright",
+  "constraints": [
+    "Write the verse theme so it starts on an offbeat.",
+    "Include a breakdown where the drums drop out.",
+    "Play in the key of Ab, unless the prompt, a reference song or a melody clearly needs another key.",
+    "Open with an intro of texture arp_swell.",
+    "Set the tempo in the lower third of the chosen style's tempo band.",
+    "Form: verse, pre-chorus and chorus; the pre-chorus builds tension.",
+    "Use the texture full for the first chorus.",
+    "Give the chorus the lead sound ring; other sections may use other leads.",
+    "If the song is in 4/4, use this bass figure from real C64 tunes as the verse bass_pattern: \"R_8_R_8_R_8_3_A_\".",
+    "Sounds: palette.arp wide, palette.bass slidebass, palette.kit tight.",
+    "Custom lead (sound): a swelling sound, wave pulse, attack 10, decay 9, sustain 13, release 9, vibrato 1, pulse_width medium, pwm none, onset none, slide none.",
+    "If the song is in 4/4, give the chorus the melody feel riff and, where the chord arpeggio plays, the arp_pattern \"x_x_x_x_x_x_x_x_\"."
+  ],
+  "answer": {
+    "reasoning": "A demoscene end part in bright Ab ionian at 124 bpm, the lower end of the scene band, so it feels like a proud, unhurried farewell rather than a party peak. sid_idiom sits at 0.85 because a demo party is the C64's home turf: wide pulse arps open the sun, the verse rides the drawn octave figure with a third and an approach note, the chorus swaps to a ring-modulated lead over octave 16ths in chipbass and a four-on-the-floor with open hats. The chorus hook is a riff that leaps by sequence from the tonic to a high seventh over IV I V vi and settles home, and the drumless breakdown with a decaying chime over the arps is the moment the scroller waves goodbye before the last, octave-lifted chorus. The drawn arrangement is kept; the swelling custom lead carries the verse, pre and outro.",
+    "title": "Scroller at Sunrise",
+    "imagery": "The party hall doors open on a pink dawn while the last sine scroller ripples greetings across the big screen and the crowd raises their hands one more time.",
+    "liner_note": "The compo is over, the coffee is cold and the sun is coming up over the hall. One last end part, with greetings to everyone who stayed awake.",
+    "style": "demoscene",
+    "blend_style": "none",
+    "blend_amount": 0,
+    "sid_idiom": 0.85,
+    "moods": [
+      {
+        "mood": "triumphant",
+        "weight": 0.45
+      },
+      {
+        "mood": "hopeful",
+        "weight": 0.35
+      },
+      {
+        "mood": "nostalgic",
+        "weight": 0.2
+      }
+    ],
+    "tempo": 124,
+    "meter": "4/4",
+    "key": "Ab",
+    "mode": "ionian",
+    "palette": {
+      "bass": "slidebass",
+      "snare": "snare",
+      "chords": "triad",
+      "kit": "tight",
+      "arp": "wide"
+    },
+    "sound": {
+      "wave": "pulse",
+      "attack": 10,
+      "decay": 9,
+      "sustain": 13,
+      "release": 9,
+      "vibrato": 1,
+      "pwm": "none",
+      "pulse_width": "medium",
+      "onset": "none",
+      "slide": "none"
+    },
+    "sections": [
+      {
+        "filter": "open",
+        "drums_pattern": "",
+        "bass_pattern": "",
+        "bass_sound": "palette",
+        "arp_pattern": "x_x_x_x_x_x_x_x_",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "none",
+        "mode": "song",
+        "type": "intro",
+        "bars": 4,
+        "energy": 0.25,
+        "energy_end": 0.45,
+        "texture": "arp_swell",
+        "groove": "four_floor",
+        "bass": "sustained",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "I",
+          "iii",
+          "IV",
+          "V"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "k.h.s.hkh.k.s.h.",
+        "bass_pattern": "R_8_R_8_R_8_3_A_",
+        "bass_sound": "palette",
+        "arp_pattern": "x.x.x_x.x.x.x_x.",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "none",
+        "mode": "song",
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.55,
+        "energy_end": 0.6,
+        "texture": "multiplex",
+        "groove": "breakbeat",
+        "bass": "octave_legato",
+        "feel": "syncopated",
+        "lead": "custom",
+        "chords": [
+          "I",
+          "iii",
+          "vi",
+          "IV"
+        ]
+      },
+      {
+        "filter": "open",
+        "drums_pattern": "k.h.s.h.k.h.s.h.k.h.s.h.s.s.ssss",
+        "bass_pattern": "RRR8RRR8RRR8R8R8",
+        "bass_sound": "palette",
+        "arp_pattern": "x_x_x_x_x_x_x_x_",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "fill",
+        "mode": "song",
+        "type": "pre",
+        "bars": 4,
+        "energy": 0.6,
+        "energy_end": 0.8,
+        "texture": "multiplex",
+        "groove": "four_floor",
+        "bass": "pedal_16ths",
+        "feel": "straight",
+        "lead": "custom",
+        "chords": [
+          "ii",
+          "IV",
+          "Vsus4",
+          "V"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "k.hos.hok.hos.hkk.hos.hok.hos.ss",
+        "bass_pattern": "R8R8R8R8R8R85858",
+        "bass_sound": "chipbass",
+        "arp_pattern": "x_x_x_x_x_x_x_x_",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "fill",
+        "mode": "song",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.85,
+        "energy_end": 0.9,
+        "texture": "full",
+        "groove": "four_floor",
+        "bass": "octave_16th",
+        "feel": "riff",
+        "lead": "ring",
+        "chords": [
+          "IV",
+          "I",
+          "V",
+          "vi",
+          "IV",
+          "I",
+          "V",
+          "I"
+        ]
+      },
+      {
+        "filter": "close",
+        "drums_pattern": "",
+        "bass_pattern": "",
+        "bass_sound": "palette",
+        "arp_pattern": "x_x_x_x_x_x_x_x_",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "none",
+        "mode": "song",
+        "type": "breakdown",
+        "bars": 8,
+        "energy": 0.3,
+        "energy_end": 0.45,
+        "texture": "arp_lead",
+        "groove": "four_floor",
+        "bass": "whole_note",
+        "feel": "long",
+        "lead": "chime",
+        "chords": [
+          "vi",
+          "IV",
+          "I",
+          "V"
+        ]
+      },
+      {
+        "filter": "open",
+        "drums_pattern": "k.h.s.h.k.h.s.h.k.s.s.s.ssssssss",
+        "bass_pattern": "RRR8RRR8RRR8R8R8",
+        "bass_sound": "palette",
+        "arp_pattern": "x_x_x_x_x_x_x_x_",
+        "transpose": 0,
+        "variation": "sequence",
+        "chord_bars": 1,
+        "transition": "fill",
+        "mode": "song",
+        "type": "pre",
+        "bars": 4,
+        "energy": 0.6,
+        "energy_end": 0.85,
+        "texture": "snare_build",
+        "groove": "four_floor",
+        "bass": "pedal_16ths",
+        "feel": "straight",
+        "lead": "custom",
+        "chords": [
+          "ii",
+          "IV",
+          "Vsus4",
+          "V"
+        ]
+      },
+      {
+        "filter": "open",
+        "drums_pattern": "k.hos.hok.hos.hkk.hos.hok.hos.ss",
+        "bass_pattern": "R8R8R8R8R8R85858",
+        "bass_sound": "chipbass",
+        "arp_pattern": "x_x_x_x_x_x_x_x_",
+        "transpose": 0,
+        "variation": "octave",
+        "chord_bars": 1,
+        "transition": "none",
+        "mode": "song",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.9,
+        "energy_end": 1,
+        "texture": "counter",
+        "groove": "four_floor",
+        "bass": "octave_16th",
+        "feel": "riff",
+        "lead": "ring",
+        "chords": [
+          "IV",
+          "I",
+          "V",
+          "vi",
+          "IV",
+          "I",
+          "V",
+          "I"
+        ]
+      },
+      {
+        "filter": "close",
+        "drums_pattern": "",
+        "bass_pattern": "R_8_R_8_R_8_3_A_",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "none",
+        "mode": "song",
+        "type": "outro",
+        "bars": 4,
+        "energy": 0.6,
+        "energy_end": 0.2,
+        "texture": "fade_layers",
+        "groove": "four_floor",
+        "bass": "octave_legato",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "IV",
+          "V",
+          "I",
+          "I"
+        ]
+      }
+    ],
+    "themes": [
+      {
+        "section": "verse",
+        "notes": ". . 5 _ 6 _ 5 _ 3 _ _ _ 1 _ 3 _ . . 5 _ 6 _ 7 _ 5 _ _ _ 3 _ _ _ . . 6 _ 8 _ 10 _ 8 _ _ _ 6 _ _ _ 4 _ _ _ 6 _ 4 _ 6 _ _ _ 8 _ _ _"
+      },
+      {
+        "section": "pre",
+        "notes": "2 _ 4 _ 6 _ _ _ 4 _ 6 _ 9 _ _ _ 4 _ 6 _ 8 _ _ _ 6 _ 8 _ 11 _ _ _ 5 _ 8 _ 9 _ _ _ 8 _ 9 _ 12 _ _ _ 12 _ _ _ 11 _ 9 _ 7 _ _ _ 5 _ _ _"
+      },
+      {
+        "section": "chorus",
+        "notes": ". . 8 _ 8 . 6 _ 8 _ _ _ 11 _ _ _ 10 _ _ _ 8 _ 5 _ 8 _ _ _ 10 _ 12 _ . . 12 _ 12 . 14 _ 12 _ _ _ 9 _ _ _ 13 _ _ _ 12 _ 10 _ _ _ 8 _ _ _ . ."
+      }
+    ]
+  }
+}

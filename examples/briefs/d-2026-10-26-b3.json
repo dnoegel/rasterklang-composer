@@ -1,0 +1,283 @@
+{
+  "prompt": "country road trip with a broken radio and a happy dog",
+  "constraints": [
+    "Use a pre-chorus that builds tension before every chorus.",
+    "End the song with layers dropping out one by one.",
+    "Play in the key of B, unless the prompt, a reference song or a melody clearly needs another key.",
+    "Open with an intro of texture countin.",
+    "Set the tempo in the lower third of the chosen style's tempo band.",
+    "Form: short and direct: no intro, verse and chorus twice, a short outro.",
+    "Use the texture multiplex for the first chorus.",
+    "Give the chorus the lead sound brass; other sections may use other leads."
+  ],
+  "answer": {
+    "reasoning": "Country is carried by a chugging train beat at a relaxed 120 bpm in bright B major with an alternating root and fifth bass. The broken radio is a custom narrow pulse lead with fast pulse-width wobble, a noise click and short slides, plus dropouts and a wobbling filter in the verses as the signal cuts in and out. The happy dog is the chorus hook: brass leaps of a fourth up to the tonic like a bark, sequenced higher and peaking before a wagging descent. A rising ii iii IV V pre-chorus builds tension and stops dead before each chorus, and the outro drops layers one by one as the car rolls away.",
+    "title": "Static on Route Nine",
+    "imagery": "A dusty pickup on an empty two-lane road, the radio crackling between stations while a grinning dog leans out the window into the wind.",
+    "liner_note": "A sunny road song where the radio keeps losing the signal and nobody minds. Listen for the barking hook in the chorus.",
+    "style": "country",
+    "blend_style": "none",
+    "blend_amount": 0,
+    "moods": [
+      {
+        "mood": "happy",
+        "weight": 0.6
+      },
+      {
+        "mood": "playful",
+        "weight": 0.4
+      }
+    ],
+    "tempo": 120,
+    "meter": "4/4",
+    "key": "B",
+    "mode": "ionian",
+    "palette": {
+      "bass": "bass",
+      "snare": "snare",
+      "chords": "triad"
+    },
+    "sound": {
+      "wave": "pulse",
+      "attack": 0,
+      "decay": 7,
+      "sustain": 4,
+      "release": 3,
+      "vibrato": 2,
+      "pwm": "fast",
+      "pulse_width": "narrow",
+      "onset": "noise",
+      "slide": "short"
+    },
+    "sections": [
+      {
+        "filter": "follow",
+        "transition": "none",
+        "drums_pattern": "k.hsk.hsk.hsk.hs",
+        "bass_pattern": "",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "straight",
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto",
+        "type": "intro",
+        "bars": 2,
+        "energy": 0.35,
+        "energy_end": 0.5,
+        "texture": "countin",
+        "groove": "train",
+        "bass": "country",
+        "lead": "custom",
+        "chords": [
+          "I",
+          "V"
+        ]
+      },
+      {
+        "filter": "wobble",
+        "transition": "dropout",
+        "drums_pattern": "k.hsk.hsk.hsk.hs",
+        "bass_pattern": "R...5...R...5.3A",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "straight",
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto",
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.5,
+        "energy_end": 0.55,
+        "texture": "call_response",
+        "groove": "train",
+        "bass": "country",
+        "lead": "custom",
+        "chords": [
+          "I",
+          "I",
+          "IV",
+          "I",
+          "V",
+          "IV",
+          "I",
+          "I"
+        ]
+      },
+      {
+        "filter": "open",
+        "transition": "stop",
+        "drums_pattern": "k.ssk.ssk.ssk.sskssskssskssskkss",
+        "bass_pattern": "R.R.R.R.R.R.5.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "straight",
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto",
+        "type": "pre",
+        "bars": 4,
+        "energy": 0.6,
+        "energy_end": 0.8,
+        "texture": "full",
+        "groove": "train",
+        "bass": "driving_8ths",
+        "lead": "fiddle",
+        "chords": [
+          "ii",
+          "iii",
+          "IV",
+          "V"
+        ]
+      },
+      {
+        "filter": "follow",
+        "transition": "fill",
+        "drums_pattern": "k.h.s.h.k.k.s.h.k.h.s.h.k.kks.o.",
+        "bass_pattern": "R.5.8.5.R.3.5.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "x_.xx_.xx_.xx_.x",
+        "feel": "syncopated",
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.85,
+        "energy_end": 0.88,
+        "texture": "multiplex",
+        "groove": "train",
+        "bass": "rocknroll",
+        "lead": "brass",
+        "chords": [
+          "I",
+          "IV",
+          "vi",
+          "V"
+        ]
+      },
+      {
+        "filter": "wobble",
+        "transition": "dropout",
+        "drums_pattern": "k.hsk.hsk.hsk.hs",
+        "bass_pattern": "R..5..R.5...R.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "straight",
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "ornament",
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.55,
+        "energy_end": 0.6,
+        "texture": "counter",
+        "groove": "train",
+        "bass": "country",
+        "lead": "custom",
+        "chords": [
+          "I",
+          "I",
+          "IV",
+          "I",
+          "V",
+          "IV",
+          "I",
+          "I"
+        ]
+      },
+      {
+        "filter": "open",
+        "transition": "stop",
+        "drums_pattern": "k.ssk.ssk.ssk.sskssskssskssskkss",
+        "bass_pattern": "R.R.R.R.R.R.5.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "straight",
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "sequence",
+        "type": "pre",
+        "bars": 4,
+        "energy": 0.65,
+        "energy_end": 0.85,
+        "texture": "full",
+        "groove": "train",
+        "bass": "driving_8ths",
+        "lead": "fiddle",
+        "chords": [
+          "ii",
+          "iii",
+          "IV",
+          "V"
+        ]
+      },
+      {
+        "filter": "open",
+        "transition": "none",
+        "drums_pattern": "k.h.s.h.k.k.s.h.k.h.s.h.k.kks.o.",
+        "bass_pattern": "R.5.8.5.R.3.5.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "syncopated",
+        "chord_bars": 1,
+        "transpose": 2,
+        "variation": "answer",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.9,
+        "energy_end": 0.95,
+        "texture": "counter",
+        "groove": "train",
+        "bass": "rocknroll",
+        "lead": "brass",
+        "chords": [
+          "I",
+          "IV",
+          "vi",
+          "V"
+        ]
+      },
+      {
+        "filter": "close",
+        "transition": "none",
+        "drums_pattern": "k.hsk.hsk.hsk.hs",
+        "bass_pattern": "",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "straight",
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "fragment",
+        "type": "outro",
+        "bars": 4,
+        "energy": 0.5,
+        "energy_end": 0.15,
+        "texture": "fade_layers",
+        "groove": "train",
+        "bass": "country",
+        "lead": "custom",
+        "chords": [
+          "I",
+          "IV",
+          "V",
+          "I"
+        ]
+      }
+    ],
+    "themes": [
+      {
+        "section": "verse",
+        "notes": "3 _ 2 1 . 1 2 3 5 _ 3 _ . . . . 3 _ 2 1 . 1 2 3 2 _ _ _ 1 _ . ."
+      },
+      {
+        "section": "pre",
+        "notes": "4 . 4 . 4 _ 5 _ 6 . 6 . 6 _ 7 _ 8 . 8 . 7 _ 6 _ 5 _ _ _ . . . ."
+      },
+      {
+        "section": "chorus",
+        "notes": "5 . 8 . 8 _ 7 8 10 _ 8 _ 5 _ _ . 6 . 8 . 8 _ 7 8 11 _ 10 _ 6 _ _ . 6 . 10 . 10 _ 9 10 13 _ _ 12 10 _ 8 _ 12 _ _ 11 9 _ 7 _ 5 _ _ . 5 . 5 _"
+      }
+    ]
+  }
+}

@@ -1,0 +1,248 @@
+{
+  "prompt": "grunge band rehearsing in a flooded basement, sludgy then explosive",
+  "constraints": [
+    "Use a stop-time transition right before the last chorus.",
+    "Give the chorus a different groove than the verse.",
+    "Play in the key of Bb, unless the prompt, a reference song or a melody clearly needs another key.",
+    "Open with an intro of texture arp_swell.",
+    "Set the tempo in the upper third of the chosen style's tempo band.",
+    "Form: one long build: start sparse, add a layer every section, peak at the end.",
+    "Use the texture call_response for the first chorus.",
+    "Let the verse chords last two bars each (chord_bars 2).",
+    "Give the chorus the lead sound bell; other sections may use other leads."
+  ],
+  "answer": {
+    "reasoning": "Grunge in Bb aeolian at 156 bpm, near the top of the alternative band, but the verses crawl in a halftime sludge with a slow fuzz riff and chords lasting two bars, like a band wading through ankle-deep water. Every section adds a layer: dripping arps alone, then bass and a murky saw lead, then drums, until the chorus switches to the open-hat grunge beat with driving fuzz 8ths. A snare build and a stop-time halt set up the explosive last chorus, a whole step higher with the full band and a bell hook ringing over the noise.",
+    "title": "Sump Pump Anthem",
+    "imagery": "Amps on milk crates, cables snaking through brown water, and a drummer who finally hits hard enough to shake the dripping pipes.",
+    "liner_note": "It starts as a waterlogged rehearsal that can barely get going. Then the pump kicks in and the whole basement erupts.",
+    "style": "alt",
+    "blend_style": "none",
+    "blend_amount": 0,
+    "moods": [
+      {
+        "mood": "aggressive",
+        "weight": 0.45
+      },
+      {
+        "mood": "melancholic",
+        "weight": 0.35
+      },
+      {
+        "mood": "tense",
+        "weight": 0.2
+      }
+    ],
+    "tempo": 156,
+    "meter": "4/4",
+    "key": "Bb",
+    "mode": "aeolian",
+    "palette": {
+      "bass": "buzz",
+      "snare": "snare2",
+      "chords": "power",
+      "kit": "boom"
+    },
+    "sound": {
+      "wave": "saw",
+      "attack": 0,
+      "decay": 6,
+      "sustain": 10,
+      "release": 4,
+      "vibrato": 1,
+      "pwm": "none",
+      "pulse_width": "medium",
+      "onset": "noise",
+      "slide": "short"
+    },
+    "sections": [
+      {
+        "filter": "open",
+        "drums_pattern": "",
+        "bass_pattern": "",
+        "bass_sound": "sub",
+        "arp_pattern": "x___x___x_x_x___",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 2,
+        "transition": "none",
+        "type": "intro",
+        "bars": 4,
+        "energy": 0.15,
+        "energy_end": 0.3,
+        "texture": "arp_swell",
+        "groove": "halftime",
+        "bass": "whole_note",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "i",
+          "bVI"
+        ]
+      },
+      {
+        "filter": "close",
+        "drums_pattern": "k.......s.....h.k..k....s.......",
+        "bass_pattern": "R_______R___b_5_",
+        "bass_sound": "growl",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 2,
+        "transition": "fill",
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.35,
+        "energy_end": 0.5,
+        "texture": "build_up_band",
+        "groove": "halftime",
+        "bass": "riff_unison",
+        "feel": "riff",
+        "lead": "custom",
+        "chords": [
+          "i",
+          "bVI",
+          "bIII",
+          "bVII"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "k.o.s.o.k.kos.o.",
+        "bass_pattern": "R.R.R.R.8.R.R.5.",
+        "bass_sound": "palette",
+        "arp_pattern": "x.x.x_x.x.x.x___",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "none",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.7,
+        "energy_end": 0.75,
+        "texture": "call_response",
+        "groove": "grunge",
+        "bass": "fuzz_8ths",
+        "feel": "straight",
+        "lead": "bell",
+        "chords": [
+          "bVI",
+          "bIII",
+          "bVII",
+          "i"
+        ]
+      },
+      {
+        "filter": "wobble",
+        "drums_pattern": "k.......s.....h.k..k..k.s...s...",
+        "bass_pattern": "R___R_b_5___4_A_",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "fragment",
+        "chord_bars": 2,
+        "transition": "none",
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.55,
+        "energy_end": 0.62,
+        "texture": "multiplex",
+        "groove": "halftime",
+        "bass": "riff_unison",
+        "feel": "riff",
+        "lead": "fuzz",
+        "chords": [
+          "i",
+          "bVI",
+          "bIII",
+          "bVII"
+        ]
+      },
+      {
+        "filter": "open",
+        "drums_pattern": "k.s.k.s.kss.ssss",
+        "bass_pattern": "R.RRR.RRR.RRR.RA",
+        "bass_sound": "palette",
+        "arp_pattern": "x.x.x.x.x.x.x.x.",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "stop",
+        "type": "build",
+        "bars": 4,
+        "energy": 0.6,
+        "energy_end": 0.92,
+        "texture": "snare_build",
+        "groove": "grunge",
+        "bass": "pedal_16ths",
+        "feel": "running",
+        "lead": "fuzz",
+        "chords": [
+          "iv",
+          "bVI",
+          "bVII",
+          "bVII"
+        ]
+      },
+      {
+        "filter": "open",
+        "drums_pattern": "k.o.s.okk.o.s.o.k.o.s.okk.ossxs.",
+        "bass_pattern": "R.R.R.R.8.R.R.5.R.R.R.8.R.b.5.A.",
+        "bass_sound": "buzz",
+        "arp_pattern": "",
+        "transpose": 2,
+        "variation": "octave",
+        "chord_bars": 1,
+        "transition": "none",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.95,
+        "energy_end": 1,
+        "texture": "full",
+        "groove": "grunge",
+        "bass": "fuzz_8ths",
+        "feel": "straight",
+        "lead": "bell",
+        "chords": [
+          "bVI",
+          "bIII",
+          "bVII",
+          "i"
+        ]
+      },
+      {
+        "filter": "steady",
+        "drums_pattern": "",
+        "bass_pattern": "",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "none",
+        "type": "outro",
+        "bars": 2,
+        "energy": 0.9,
+        "energy_end": 0.8,
+        "texture": "final_hit",
+        "groove": "grunge",
+        "bass": "fuzz_8ths",
+        "feel": "long",
+        "lead": "fuzz",
+        "chords": [
+          "i"
+        ]
+      }
+    ],
+    "themes": [
+      {
+        "section": "verse",
+        "notes": "1 _ _ _ _ _ -7 _ 1 _ _ _ 3 _ _ _ 2 _ _ _ _ _ 1 _ -7 _ _ _ -5 _ _ _"
+      },
+      {
+        "section": "chorus",
+        "notes": "5 _ 5 _ 8 _ _ _ 7 _ 5 _ _ _ . . 5 _ 5 _ 9 _ _ _ 8 _ 7 _ 5 _ _ _"
+      }
+    ]
+  }
+}

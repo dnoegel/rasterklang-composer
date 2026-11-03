@@ -1,0 +1,229 @@
+{
+  "prompt": "midnight march of the tiny tin soldiers",
+  "constraints": [
+    "End the song with layers dropping out one by one.",
+    "Use a key change up a whole step on the last chorus.",
+    "Play in the key of A, unless the prompt, a reference song or a melody clearly needs another key.",
+    "Open with an intro of texture cold_start.",
+    "Set the tempo in the upper third of the chosen style's tempo band.",
+    "Form: short and direct: no intro, verse and chorus twice, a short outro.",
+    "Use the texture multiplex for the first chorus.",
+    "Let the verse chords last two bars each (chord_bars 2).",
+    "Give the chorus the lead sound brass; other sections may use other leads."
+  ],
+  "answer": {
+    "reasoning": "A march in A harmonic minor at a brisk 124 bpm: the snare-heavy march groove and oom-pah bass say parade, while the minor mode with its raised leading tone gives the midnight, wind-up-toy mystery. The verse tiptoes on a dry, chiffing fife-like pulse with sparse drums; the chorus brass hook strides upward in dotted rhythms and a rising sequence, then returns a whole step higher before the soldiers drop out one by one and the clockwork winds down.",
+    "title": "Clockwork Parade at Midnight",
+    "imagery": "A row of tin soldiers springs to life on the nursery shelf at the stroke of twelve and marches across the moonlit floorboards.",
+    "liner_note": "A tiny toy-box march in minor: tiptoeing fife verses, a proud little brass refrain, and a key change as the tin regiment reaches the windowsill. Then, one by one, they freeze again.",
+    "style": "march",
+    "blend_style": "none",
+    "blend_amount": 0,
+    "moods": [
+      {
+        "mood": "playful",
+        "weight": 0.5
+      },
+      {
+        "mood": "mysterious",
+        "weight": 0.35
+      },
+      {
+        "mood": "triumphant",
+        "weight": 0.15
+      }
+    ],
+    "tempo": 124,
+    "meter": "4/4",
+    "key": "A",
+    "mode": "harmonic",
+    "palette": {
+      "bass": "bass",
+      "snare": "snare",
+      "chords": "triad",
+      "kit": "tight"
+    },
+    "sound": {
+      "wave": "pulse",
+      "attack": 0,
+      "decay": 5,
+      "sustain": 3,
+      "release": 2,
+      "vibrato": 0,
+      "pwm": "none",
+      "pulse_width": "narrow",
+      "onset": "noise",
+      "slide": "none"
+    },
+    "sections": [
+      {
+        "type": "intro",
+        "bars": 2,
+        "energy": 0.5,
+        "energy_end": 0.55,
+        "filter": "follow",
+        "texture": "cold_start",
+        "transition": "stop",
+        "groove": "march",
+        "drums_pattern": "k.ssk.s.k.ssssss",
+        "bass": "oom_pah",
+        "bass_pattern": "R.5.R.5.8.5.R.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "dotted",
+        "lead": "brass",
+        "chords": [
+          "i",
+          "V"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "exact"
+      },
+      {
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.4,
+        "energy_end": 0.55,
+        "filter": "close",
+        "texture": "multiplex",
+        "transition": "fill",
+        "groove": "march",
+        "drums_pattern": "k...s.s.k...s..s",
+        "bass": "oom_pah",
+        "bass_pattern": "R.....5.R...5.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "x...x...x...x...",
+        "feel": "dotted",
+        "lead": "custom",
+        "chords": [
+          "i",
+          "iv",
+          "V",
+          "i"
+        ],
+        "chord_bars": 2,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.75,
+        "energy_end": 0.8,
+        "filter": "open",
+        "texture": "multiplex",
+        "transition": "dropout",
+        "groove": "march",
+        "drums_pattern": "k.ssk.s.k.ssk.s.k.ssk.s.k.s.ssss",
+        "bass": "bouncy",
+        "bass_pattern": "R.5.R.5.8.5.R.A.",
+        "bass_sound": "chipbass",
+        "arp_pattern": "x.x.x...x.x.x.x.",
+        "feel": "dotted",
+        "lead": "brass",
+        "chords": [
+          "i",
+          "bIII",
+          "bVI",
+          "V"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.5,
+        "energy_end": 0.65,
+        "filter": "follow",
+        "texture": "counter",
+        "transition": "fill",
+        "groove": "march",
+        "drums_pattern": "k...s.s.k.s.s.ss",
+        "bass": "oom_pah",
+        "bass_pattern": "R...5.R.R...5.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "dotted",
+        "lead": "custom",
+        "chords": [
+          "i",
+          "iv",
+          "V",
+          "i"
+        ],
+        "chord_bars": 2,
+        "transpose": 0,
+        "variation": "ornament"
+      },
+      {
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.9,
+        "energy_end": 0.95,
+        "filter": "follow",
+        "texture": "full",
+        "transition": "none",
+        "groove": "march",
+        "drums_pattern": "k.ssk.s.k.ssk.s.k.ssk.s.k.s.ssss",
+        "bass": "bouncy",
+        "bass_pattern": "R.5.8.5.R.5.8.A.",
+        "bass_sound": "chipbass",
+        "arp_pattern": "",
+        "feel": "dotted",
+        "lead": "brass",
+        "chords": [
+          "i",
+          "bIII",
+          "bVI",
+          "V"
+        ],
+        "chord_bars": 1,
+        "transpose": 2,
+        "variation": "answer"
+      },
+      {
+        "type": "outro",
+        "bars": 4,
+        "energy": 0.5,
+        "energy_end": 0.1,
+        "filter": "close",
+        "texture": "fade_layers",
+        "transition": "none",
+        "groove": "march",
+        "drums_pattern": "k...s.s.k...s...",
+        "bass": "oom_pah",
+        "bass_pattern": "R.....5.R.......",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "dotted",
+        "lead": "square",
+        "chords": [
+          "iv",
+          "V",
+          "i",
+          "i"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "fragment"
+      }
+    ],
+    "themes": [
+      {
+        "section": "verse",
+        "notes": "5 . . 5 1 . 3 . 5 . . . 3 . 1 . 2 . 3 . 4 . 2 . -7 . . . -5 . . . 4 . . 4 6 . 8 . 6 . . . 4 . 6 . 5 . 4 . 3 . 2 . 3 _ _ _ . . . ."
+      },
+      {
+        "section": "chorus",
+        "notes": "8 _ _ 8 8 _ _ 5 3 _ _ 5 8 _ _ _ 10 _ _ 10 10 _ _ 7 5 _ _ 7 10 _ 12 _ 13 _ _ 12 10 _ _ 8 6 _ 8 _ 10 _ 8 _ 7 _ _ 7 9 _ _ 7 5 _ _ _ . . . ."
+      },
+      {
+        "section": "outro",
+        "notes": "8 _ _ 5 3 _ _ 1 3 . 2 . 1 _ _ _"
+      }
+    ]
+  }
+}

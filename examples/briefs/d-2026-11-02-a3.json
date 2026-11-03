@@ -1,0 +1,242 @@
+{
+  "prompt": "boom bap hip hop for an arcade cabinet counting coins at closing time",
+  "constraints": [
+    "Give every repeat of the chorus a different variation, ending with the octave.",
+    "Write a theme of four bars for the chorus.",
+    "Play in the key of E, unless the prompt, a reference song or a melody clearly needs another key.",
+    "Open with an intro of texture twin_lead.",
+    "Set the tempo in the upper third of the chosen style's tempo band.",
+    "Form: short and direct: verse and chorus twice, a short outro.",
+    "Use the texture call_response for the first chorus.",
+    "Give the chorus the lead sound stdlead1; other sections may use other leads.",
+    "If the song is in 4/4, use this bass figure from real C64 tunes as the verse bass_pattern: \"R_8_R_8_........\".",
+    "Sounds: palette.arp thin, palette.bass sub, palette.kit std.",
+    "Custom lead (sound): a dry chip sound, wave pulse, attack 0, decay 6, sustain 8, release 1, vibrato 0, pulse_width square, pwm none, onset none, slide none.",
+    "If the song is in 4/4, give the chorus the melody feel running and, where the chord arpeggio plays, the arp_pattern \"x..x..x.x..x..x.\"."
+  ],
+  "answer": {
+    "reasoning": "Boom bap at 94 bpm in the upper third of the hip-hop band, E aeolian with minor sevenths: a lazy, swung kick-snare loop and a sub bass give the genre, while the minor key and dim register paint the tired arcade after the lights go down. It sits at sid_idiom 0.45 because the arcade cabinet pulls towards the chip: a dry square chip lead in the verse, the real C64 octave-bounce bass figure that stops dead halfway through each bar like a coin dropping, and in the chorus a running 16th hook on stdlead1 whose repeated-note pickups count coins, answered by thin arpeggio stabs in a 3+3+2 rhythm. The chorus is a rising sequence over i7 iv7 bVII bIIIM7 that comes back an octave up the second time, and the outro lets the chords ring out like a cabinet powering down.",
+    "title": "Last Credit Count",
+    "imagery": "Neon fading in an empty arcade while the owner stacks quarters from the cabinet's coin box, one dull clink after another.",
+    "liner_note": "Closing time, attract mode still blinking. A slow-nodding boom bap loop for the last quarters of the night.",
+    "style": "hiphop",
+    "blend_style": "none",
+    "blend_amount": 0,
+    "sid_idiom": 0.45,
+    "moods": [
+      {
+        "mood": "nostalgic",
+        "weight": 0.5
+      },
+      {
+        "mood": "calm",
+        "weight": 0.3
+      },
+      {
+        "mood": "playful",
+        "weight": 0.2
+      }
+    ],
+    "tempo": 94,
+    "meter": "4/4",
+    "key": "E",
+    "mode": "aeolian",
+    "palette": {
+      "bass": "sub",
+      "snare": "snare",
+      "chords": "triad",
+      "kit": "std",
+      "arp": "thin"
+    },
+    "sound": {
+      "wave": "pulse",
+      "attack": 0,
+      "decay": 6,
+      "sustain": 8,
+      "release": 1,
+      "vibrato": 0,
+      "pwm": "none",
+      "pulse_width": "square",
+      "onset": "none",
+      "slide": "none"
+    },
+    "sections": [
+      {
+        "filter": "open",
+        "drums_pattern": "",
+        "bass_pattern": "",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 2,
+        "transition": "fill",
+        "mode": "song",
+        "type": "intro",
+        "bars": 4,
+        "energy": 0.3,
+        "energy_end": 0.38,
+        "texture": "twin_lead",
+        "groove": "boombap",
+        "bass": "sustained",
+        "feel": "syncopated",
+        "lead": "custom",
+        "chords": [
+          "i7",
+          "bVIM7"
+        ]
+      },
+      {
+        "filter": "steady",
+        "drums_pattern": "k..hs..h.kkhs..h",
+        "bass_pattern": "R_8_R_8_........",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "fill",
+        "mode": "song",
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.5,
+        "energy_end": 0.55,
+        "texture": "full",
+        "groove": "boombap",
+        "bass": "sustained",
+        "feel": "syncopated",
+        "lead": "custom",
+        "chords": [
+          "i7",
+          "bVIM7",
+          "i7",
+          "bVIM7",
+          "i7",
+          "bVIM7",
+          "iv7",
+          "bVII"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "k.khs..hk..hs.khk..hs..hk.k.s.oh",
+        "bass_pattern": "R_.R__..R_8_.5A.",
+        "bass_sound": "palette",
+        "arp_pattern": "x..x..x.x..x..x.",
+        "transpose": 0,
+        "variation": "ornament",
+        "chord_bars": 1,
+        "transition": "fill",
+        "mode": "song",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.75,
+        "energy_end": 0.8,
+        "texture": "call_response",
+        "groove": "boombap",
+        "bass": "trap808",
+        "feel": "running",
+        "lead": "stdlead1",
+        "chords": [
+          "i7",
+          "iv7",
+          "bVII",
+          "bIIIM7"
+        ]
+      },
+      {
+        "filter": "steady",
+        "drums_pattern": "k..hs..h.kkhs..h",
+        "bass_pattern": "R_8_R_8_........",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "sequence",
+        "chord_bars": 1,
+        "transition": "stop",
+        "mode": "song",
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.55,
+        "energy_end": 0.62,
+        "texture": "echo_lead",
+        "groove": "boombap",
+        "bass": "sustained",
+        "feel": "syncopated",
+        "lead": "custom",
+        "chords": [
+          "i7",
+          "bVIM7",
+          "i7",
+          "bVIM7",
+          "i7",
+          "bVIM7",
+          "iv7",
+          "bVII"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "k.khs..hk..hs.khk..hs..hk.k.s.oh",
+        "bass_pattern": "R_.R__..R_8_.5A.",
+        "bass_sound": "palette",
+        "arp_pattern": "x..x..x.x..x..x.",
+        "transpose": 0,
+        "variation": "octave",
+        "chord_bars": 1,
+        "transition": "none",
+        "mode": "song",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.85,
+        "energy_end": 0.9,
+        "texture": "multiplex",
+        "groove": "boombap",
+        "bass": "trap808",
+        "feel": "running",
+        "lead": "stdlead1",
+        "chords": [
+          "i7",
+          "iv7",
+          "bVII",
+          "bIIIM7"
+        ]
+      },
+      {
+        "filter": "close",
+        "drums_pattern": "",
+        "bass_pattern": "",
+        "bass_sound": "palette",
+        "arp_pattern": "x..x..x.x_______",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 2,
+        "transition": "none",
+        "mode": "song",
+        "type": "outro",
+        "bars": 4,
+        "energy": 0.4,
+        "energy_end": 0.1,
+        "texture": "arp_out",
+        "groove": "boombap",
+        "bass": "whole_note",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "i7",
+          "bVIM7"
+        ]
+      }
+    ],
+    "themes": [
+      {
+        "section": "chorus",
+        "notes": "5 . 5 8 . 7 5 _ 3 _ . 5 _ 3 1 _ 6 . 6 9 . 8 6 _ 4 _ . 6 _ 4 3 _ 7 . 7 11 . 9 7 _ 11 _ 14 _ _ _ 11 9 10 _ . 8 7 _ 5 _ 3 _ _ _ . . . ."
+      },
+      {
+        "section": "verse",
+        "notes": ". . 1 _ 3 . 5 _ . 3 . 5 7 _ 5 _ . . 6 _ 5 . 3 _ . 1 . 3 5 _ _ _"
+      }
+    ]
+  }
+}

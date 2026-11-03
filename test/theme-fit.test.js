@@ -7,7 +7,7 @@ import { themeFit, themeFitText, themeFollowUp, THEME_FIT_GATE } from '../src/ev
 // A daily brief whose themes clash with their chords (song 61 % chord tones
 // on strong beats; d-2026-10-28-a3 moved to 71 % with the rhythms of the
 // 2026-11-01 corpus run) and the same answer without themes (generated melody).
-const daily = JSON.parse(readFileSync(new URL('../data/daily-briefs/d-2026-10-27-a2.json', import.meta.url), 'utf8'));
+const daily = JSON.parse(readFileSync(new URL('../examples/briefs/d-2026-10-27-a2.json', import.meta.url), 'utf8'));
 const CLASH = daily.answer;
 const PROMPT = daily.prompt;
 const FITS = { ...CLASH, themes: [] };

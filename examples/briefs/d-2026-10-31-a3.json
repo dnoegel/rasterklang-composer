@@ -1,0 +1,319 @@
+{
+  "prompt": "speed metal for a disk drive grinding through midnight, frantic and smoking",
+  "constraints": [
+    "Write a theme of four bars for the chorus.",
+    "Give the second chorus a different texture than the first, for example a counter-melody.",
+    "Play in the key of E, unless the prompt, a reference song or a melody clearly needs another key.",
+    "Start directly with the first verse or the chorus: no intro section.",
+    "Set the tempo in the upper third of the chosen style's tempo band.",
+    "Form: short and direct: verse and chorus twice, a short outro.",
+    "Use the texture full for the first chorus.",
+    "Give the chorus the lead sound square; other sections may use other leads.",
+    "If the song is in 4/4, use this bass figure from real C64 tunes as the verse bass_pattern: \"..R_____R_____8_\".",
+    "Sounds: palette.arp square, palette.bass bass, palette.kit boom.",
+    "Custom lead (sound): a nasal sound, wave pulse, attack 0, decay 9, sustain 10, release 4, vibrato 1, pulse_width narrow, pwm none, onset none, slide short.",
+    "If the song is in 4/4, give the chorus the melody feel long and, where the chord arpeggio plays, the arp_pattern \"..x...x...x...x.\"."
+  ],
+  "answer": {
+    "reasoning": "Speed metal at 170 bpm in E phrygian: the flat second (F) grinds against the open E like a read head stuck on a bad sector, and the bII-i cadence closes every chorus phrase. The verse keeps the C64 offbeat bass figure over a relentless double kick, so the drive seems to stall and lurch while the motor never stops; the chorus switches to a thrash skank and gallop bass with a long, wailing square-wave hook. sid_idiom sits at 0.7 because the subject is a machine: a nasal narrow-pulse verse lead, a hard-synced solo over rolling octaves and square arps, then a breakdown where only the pedalling bass spins like an idle motor before a snare build and a final chorus a whole step up. There is no intro, as the arrangement asks; the extra length comes from the solo, breakdown, build and last chorus.",
+    "title": "Sector Zero at Midnight",
+    "imagery": "A beige disk drive rattles and smokes under a desk lamp at midnight, its head hammering the same cursed track while the red LED never goes out.",
+    "liner_note": "Load at your own risk: this one spins too fast and runs too hot. Keep a fire extinguisher next to the joystick.",
+    "style": "metal",
+    "blend_style": "none",
+    "blend_amount": 0,
+    "sid_idiom": 0.7,
+    "moods": [
+      {
+        "mood": "aggressive",
+        "weight": 0.5
+      },
+      {
+        "mood": "tense",
+        "weight": 0.3
+      },
+      {
+        "mood": "menacing",
+        "weight": 0.2
+      }
+    ],
+    "tempo": 170,
+    "meter": "4/4",
+    "key": "E",
+    "mode": "phrygian",
+    "palette": {
+      "bass": "bass",
+      "snare": "snare2",
+      "chords": "power",
+      "kit": "boom",
+      "arp": "square"
+    },
+    "sound": {
+      "wave": "pulse",
+      "attack": 0,
+      "decay": 9,
+      "sustain": 10,
+      "release": 4,
+      "vibrato": 1,
+      "pwm": "none",
+      "pulse_width": "narrow",
+      "onset": "none",
+      "slide": "short"
+    },
+    "sections": [
+      {
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.7,
+        "energy_end": 0.8,
+        "filter": "wobble",
+        "texture": "full",
+        "transition": "stop",
+        "groove": "double_kick",
+        "drums_pattern": "kkhks.kkkkhks.kk",
+        "bass": "pedal_16ths",
+        "bass_pattern": "..R_____R_____8_",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "riff",
+        "lead": "custom",
+        "chords": [
+          "i",
+          "bII",
+          "i",
+          "bVII"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "mode": "song",
+        "variation": "auto"
+      },
+      {
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.9,
+        "energy_end": 0.95,
+        "filter": "open",
+        "texture": "full",
+        "transition": "fill",
+        "groove": "thrash_skank",
+        "drums_pattern": "x.s.k.s.k.s.k.s.k.s.k.s.k.s.kTsT",
+        "bass": "gallop",
+        "bass_pattern": "R.RRR.RRR.RR8.RA",
+        "bass_sound": "palette",
+        "arp_pattern": "..x...x...x...x.",
+        "feel": "long",
+        "lead": "square",
+        "chords": [
+          "i",
+          "bVI",
+          "bII",
+          "i"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "mode": "song",
+        "variation": "auto"
+      },
+      {
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.75,
+        "energy_end": 0.85,
+        "filter": "wobble",
+        "texture": "full",
+        "transition": "fill",
+        "groove": "double_kick",
+        "drums_pattern": "kkhks.kkkkhks.kk",
+        "bass": "pedal_16ths",
+        "bass_pattern": "..R_____R_____8_",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "riff",
+        "lead": "custom",
+        "chords": [
+          "i",
+          "bII",
+          "i",
+          "bVII"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "mode": "song",
+        "variation": "ornament"
+      },
+      {
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.95,
+        "energy_end": 1,
+        "filter": "open",
+        "texture": "counter",
+        "transition": "fill",
+        "groove": "thrash_skank",
+        "drums_pattern": "x.s.k.s.k.s.k.s.k.s.k.s.k.s.kTsT",
+        "bass": "gallop",
+        "bass_pattern": "R.RRR.RRR.RR8.RA",
+        "bass_sound": "palette",
+        "arp_pattern": "..x...x...x...x.",
+        "feel": "long",
+        "lead": "square",
+        "chords": [
+          "i",
+          "bVI",
+          "bII",
+          "i"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "mode": "song",
+        "variation": "answer"
+      },
+      {
+        "type": "solo",
+        "bars": 8,
+        "energy": 0.9,
+        "energy_end": 1,
+        "filter": "follow",
+        "texture": "multiplex",
+        "transition": "stop",
+        "groove": "c64_drive",
+        "drums_pattern": "",
+        "bass": "octave_roll",
+        "bass_pattern": "RR8RRR8RRR8R8R8A",
+        "bass_sound": "palette",
+        "arp_pattern": "x.x.x.x.x.x.x_x_",
+        "feel": "running",
+        "lead": "sync",
+        "chords": [
+          "i",
+          "bII",
+          "bVII",
+          "i",
+          "bVI",
+          "bVII",
+          "bII",
+          "bII"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "mode": "song",
+        "variation": "auto"
+      },
+      {
+        "type": "breakdown",
+        "bars": 4,
+        "energy": 0.35,
+        "energy_end": 0.5,
+        "filter": "close",
+        "texture": "bass_alone",
+        "transition": "none",
+        "groove": "halftime",
+        "drums_pattern": "",
+        "bass": "pedal_16ths",
+        "bass_pattern": "RRRR2RRRRRRR2R8R",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "riff",
+        "lead": "custom",
+        "chords": [
+          "i",
+          "bII"
+        ],
+        "chord_bars": 2,
+        "transpose": 0,
+        "mode": "song",
+        "variation": "auto"
+      },
+      {
+        "type": "build",
+        "bars": 4,
+        "energy": 0.55,
+        "energy_end": 0.95,
+        "filter": "open",
+        "texture": "snare_build",
+        "transition": "stop",
+        "groove": "double_kick",
+        "drums_pattern": "",
+        "bass": "pedal_16ths",
+        "bass_pattern": "RRRRRRRRRRRRRRRR",
+        "bass_sound": "palette",
+        "arp_pattern": "x.x.x.x.x.x.x.x.",
+        "feel": "riff",
+        "lead": "custom",
+        "chords": [
+          "bVI",
+          "bVII",
+          "bII",
+          "bII"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "mode": "song",
+        "variation": "auto"
+      },
+      {
+        "type": "chorus",
+        "bars": 8,
+        "energy": 1,
+        "energy_end": 1,
+        "filter": "open",
+        "texture": "full",
+        "transition": "none",
+        "groove": "thrash_skank",
+        "drums_pattern": "x.s.k.s.k.s.k.s.k.s.k.s.k.s.kTsT",
+        "bass": "gallop",
+        "bass_pattern": "R.RRR.RRR.RR8.RA",
+        "bass_sound": "palette",
+        "arp_pattern": "..x...x...x...x.",
+        "feel": "long",
+        "lead": "square",
+        "chords": [
+          "i",
+          "bVI",
+          "bII",
+          "i"
+        ],
+        "chord_bars": 1,
+        "transpose": 2,
+        "mode": "song",
+        "variation": "octave"
+      },
+      {
+        "type": "outro",
+        "bars": 4,
+        "energy": 0.9,
+        "energy_end": 0.4,
+        "filter": "close",
+        "texture": "final_hit",
+        "transition": "none",
+        "groove": "double_kick",
+        "drums_pattern": "",
+        "bass": "pedal_16ths",
+        "bass_pattern": "",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "riff",
+        "lead": "square",
+        "chords": [
+          "bII",
+          "i"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "mode": "song",
+        "variation": "auto"
+      }
+    ],
+    "themes": [
+      {
+        "section": "verse",
+        "notes": "1 . 1 2 1 . 5 _ 3 . 1 2 1 . 8 . 9 . 9 8 6 _ 4 . 2 _ 1 . . . . ."
+      },
+      {
+        "section": "chorus",
+        "notes": "8 _ _ _ _ _ 7 _ 8 _ 10 _ _ _ 8 _ 6 _ _ _ _ _ 5 _ 6 _ 8 _ _ _ 6 _ 9 _ _ _ _ _ 11 _ 13 _ _ _ 11 _ 9 _ 10 _ _ _ 9 _ _ _ 8 _ _ _ _ _ . ."
+      }
+    ]
+  }
+}

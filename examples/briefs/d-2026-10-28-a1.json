@@ -1,0 +1,276 @@
+{
+  "prompt": "lazy reggae afternoon on a rooftop garden, sunburnt and smiling",
+  "constraints": [
+    "Design a custom lead sound that fits the imagery and use it for the main theme.",
+    "Use a stop-time transition right before the last chorus.",
+    "Play in the key of Eb, unless the prompt, a reference song or a melody clearly needs another key.",
+    "Open with an intro of texture drum_groove.",
+    "Set the tempo in the middle of the chosen style's tempo band.",
+    "Form: verse and chorus with a breakdown (drums out) before the last chorus.",
+    "Use the texture multiplex for the first chorus.",
+    "Give the chorus the lead sound sharp; other sections may use other leads.",
+    "If the song is in 4/4, use this bass figure from real C64 tunes as the verse bass_pattern: \"....R_R_....R___\"."
+  ],
+  "answer": {
+    "reasoning": "Reggae in Eb major at 109 bpm, the middle of the band, with a one drop that leaves the downbeat empty so the whole song seems to lean back in a deck chair. The verse uses the given C64 bass figure, rests on the one and pushes on the offbeats, under a warm, slow-sweeping custom pulse lead that slides lazily between notes; the chorus switches to a bright sharp lead over offbeat skank arps and a bouncier bass. sid_idiom sits low at 0.25: the reggae groove and bass come first, and the chip adds colour through multiplexed voices and a dub-style echo breakdown with the drums out, which stops dead before the last chorus.",
+    "title": "Tomato Vines and Tan Lines",
+    "imagery": "Sunlight on terracotta pots, a cracked radio by the watering can, and someone dozing with a grin and pink shoulders.",
+    "liner_note": "A slow, sun-drunk groove for a rooftop where nobody is in a hurry. The echo in the middle is the heat haze talking.",
+    "style": "reggae",
+    "blend_style": "none",
+    "blend_amount": 0,
+    "sid_idiom": 0.25,
+    "moods": [
+      {
+        "mood": "happy",
+        "weight": 0.45
+      },
+      {
+        "mood": "calm",
+        "weight": 0.35
+      },
+      {
+        "mood": "playful",
+        "weight": 0.2
+      }
+    ],
+    "tempo": 109,
+    "meter": "4/4",
+    "key": "Eb",
+    "mode": "ionian",
+    "palette": {
+      "bass": "sub",
+      "snare": "snare2",
+      "chords": "triad",
+      "kit": "round"
+    },
+    "sound": {
+      "wave": "pulse",
+      "attack": 1,
+      "decay": 8,
+      "sustain": 10,
+      "release": 7,
+      "vibrato": 2,
+      "pwm": "slow",
+      "pulse_width": "square",
+      "onset": "none",
+      "slide": "short"
+    },
+    "sections": [
+      {
+        "filter": "follow",
+        "drums_pattern": "h...h...k...h...h...h...k...h.ho",
+        "bass_pattern": "....R..5..R.8...",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 2,
+        "transition": "none",
+        "type": "intro",
+        "bars": 4,
+        "energy": 0.25,
+        "energy_end": 0.4,
+        "texture": "drum_groove",
+        "groove": "one_drop",
+        "bass": "reggae",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "I",
+          "IV"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "h...h...k...h...h...h.h.k...h..h",
+        "bass_pattern": "....R_R_....R___",
+        "bass_sound": "palette",
+        "arp_pattern": "..x...x...x...x.",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "none",
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.45,
+        "energy_end": 0.52,
+        "texture": "full",
+        "groove": "one_drop",
+        "bass": "reggae",
+        "feel": "dotted",
+        "lead": "custom",
+        "chords": [
+          "I",
+          "IV",
+          "I",
+          "V"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "h.h.h.h.k.h.h.ho",
+        "bass_pattern": "..R_5.R...8_5.A.",
+        "bass_sound": "slap",
+        "arp_pattern": "..x_..x_..x_..x_",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "fill",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.65,
+        "energy_end": 0.7,
+        "texture": "multiplex",
+        "groove": "one_drop",
+        "bass": "reggae",
+        "feel": "syncopated",
+        "lead": "sharp",
+        "chords": [
+          "IV",
+          "V",
+          "I",
+          "vi"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "h...h...k...h...h...h.h.k...h..h",
+        "bass_pattern": "....R_R_....R___",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "ornament",
+        "chord_bars": 1,
+        "transition": "none",
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.5,
+        "energy_end": 0.55,
+        "texture": "echo_lead",
+        "groove": "one_drop",
+        "bass": "reggae",
+        "feel": "dotted",
+        "lead": "custom",
+        "chords": [
+          "I",
+          "IV",
+          "I",
+          "V"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "h.h.h.h.k.h.h.ho",
+        "bass_pattern": "..R_5.R...8_5.A.",
+        "bass_sound": "slap",
+        "arp_pattern": "..x_..x_..x_..x_",
+        "transpose": 0,
+        "variation": "answer",
+        "chord_bars": 1,
+        "transition": "none",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.7,
+        "energy_end": 0.72,
+        "texture": "full",
+        "groove": "one_drop",
+        "bass": "reggae",
+        "feel": "syncopated",
+        "lead": "sharp",
+        "chords": [
+          "IV",
+          "V",
+          "I",
+          "vi"
+        ]
+      },
+      {
+        "filter": "wobble",
+        "drums_pattern": "",
+        "bass_pattern": "....R___....R_5_",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "stop",
+        "type": "breakdown",
+        "bars": 4,
+        "energy": 0.3,
+        "energy_end": 0.4,
+        "texture": "echo_break",
+        "groove": "one_drop",
+        "bass": "reggae",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "vi",
+          "IV",
+          "ii7",
+          "V"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "h.h.h.h.k.h.h.hoh.h.h.h.k.h.hTt.",
+        "bass_pattern": "..R_5.R...8_5.A.",
+        "bass_sound": "slap",
+        "arp_pattern": "..x_..x_..x_..x_",
+        "transpose": 0,
+        "variation": "octave",
+        "chord_bars": 1,
+        "transition": "none",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.75,
+        "energy_end": 0.78,
+        "texture": "counter",
+        "groove": "one_drop",
+        "bass": "reggae",
+        "feel": "syncopated",
+        "lead": "sharp",
+        "chords": [
+          "IV",
+          "V",
+          "I",
+          "vi"
+        ]
+      },
+      {
+        "filter": "close",
+        "drums_pattern": "",
+        "bass_pattern": "....R_R_....R___",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 2,
+        "transition": "none",
+        "type": "outro",
+        "bars": 4,
+        "energy": 0.4,
+        "energy_end": 0.15,
+        "texture": "fade_layers",
+        "groove": "one_drop",
+        "bass": "reggae",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "IV",
+          "I"
+        ]
+      }
+    ],
+    "themes": [
+      {
+        "section": "verse",
+        "notes": "3 _ _ _ . . 2 1 2 _ _ _ . . . . 3 _ _ 5 _ _ 6 _ 5 _ _ _ 3 _ _ _"
+      },
+      {
+        "section": "chorus",
+        "notes": "5 _ . 5 6 _ 8 _ _ _ 6 _ 5 _ _ _ 5 _ . 5 6 _ 9 _ _ _ 8 _ 5 _ _ _"
+      }
+    ]
+  }
+}

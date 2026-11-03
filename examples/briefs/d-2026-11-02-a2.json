@@ -1,0 +1,238 @@
+{
+  "prompt": "ambient drift through a misty pine forest at first light, still and wide",
+  "constraints": [
+    "Write the verse theme so it starts on an offbeat.",
+    "Give the second chorus a different texture than the first, for example a counter-melody.",
+    "Play in the key of Ab, unless the prompt, a reference song or a melody clearly needs another key.",
+    "Open with an intro of texture cold_start.",
+    "Set the tempo in the upper third of the chosen style's tempo band.",
+    "Form: a through-composed journey: every section new, only the chorus hook returns.",
+    "Use the texture counter for the first chorus.",
+    "Give the chorus the lead sound vibra; other sections may use other leads.",
+    "If the song is in 4/4, use this bass figure from real C64 tunes as the verse bass_pattern: \"R___R_R___A_A___\".",
+    "Sounds: palette.arp tri, palette.bass sub, palette.kit std.",
+    "Custom lead (sound): a breathy sound, wave pulse, attack 3, decay 9, sustain 9, release 8, vibrato 1, pulse_width medium, pwm none, onset noise, slide none.",
+    "If the song is in 4/4, give the chorus the melody feel sid and, where the chord arpeggio plays, the arp_pattern \"xxxxxxxxxxxxxxxx\"."
+  ],
+  "answer": {
+    "reasoning": "Ambient in Ab lydian at 92 bpm, the upper third of the band as drawn: the raised fourth (D natural) over the tonic gives the cool, suspended brightness of first light, and the I to II shuttle never quite lands, like mist that will not lift. Drums are reduced to a far kick and a soft snare in halftime, the sub bass holds long roots with the drawn C64 figure R___R_R___A_A___ in the verse, and soft triangle arpeggios ripple like light through needles; the chorus hook climbs in thirds on the vibra lead over a counter-melody, then returns with an echo lead for width. sid_idiom sits low at 0.25: the picture is still and acoustic, the SID colours it only with the breathy noise-onset lead, the shimmering arp and the echo. Arrangement kept as drawn; the bridge adds a glassy bell as the third colour.",
+    "title": "Pinelight Before the Thaw",
+    "imagery": "Grey-blue mist hangs between tall pines on a wide hillside, and the first pale sun slowly turns the drifting fog to gold without a sound.",
+    "liner_note": "A slow walk into a forest that has not woken yet. Nothing hurries; the light just keeps arriving.",
+    "style": "ambient",
+    "blend_style": "none",
+    "blend_amount": 0,
+    "sid_idiom": 0.25,
+    "moods": [
+      {
+        "mood": "calm",
+        "weight": 0.45
+      },
+      {
+        "mood": "dreamy",
+        "weight": 0.35
+      },
+      {
+        "mood": "mysterious",
+        "weight": 0.2
+      }
+    ],
+    "tempo": 92,
+    "meter": "4/4",
+    "key": "Ab",
+    "mode": "lydian",
+    "palette": {
+      "bass": "sub",
+      "snare": "snare",
+      "chords": "triad",
+      "kit": "std",
+      "arp": "tri"
+    },
+    "sound": {
+      "wave": "pulse",
+      "attack": 3,
+      "decay": 9,
+      "sustain": 9,
+      "release": 8,
+      "vibrato": 1,
+      "pwm": "none",
+      "pulse_width": "medium",
+      "onset": "noise",
+      "slide": "none"
+    },
+    "sections": [
+      {
+        "filter": "open",
+        "transition": "none",
+        "groove": "halftime",
+        "drums_pattern": "k...............",
+        "bass": "whole_note",
+        "bass_pattern": "R_______________",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "long",
+        "lead": "custom",
+        "chord_bars": 2,
+        "transpose": 0,
+        "mode": "song",
+        "variation": "auto",
+        "type": "intro",
+        "bars": 4,
+        "energy": 0.18,
+        "energy_end": 0.25,
+        "texture": "cold_start",
+        "chords": [
+          "IM7",
+          "II"
+        ]
+      },
+      {
+        "filter": "follow",
+        "transition": "none",
+        "groove": "halftime",
+        "drums_pattern": "",
+        "bass": "whole_note",
+        "bass_pattern": "R___R_R___A_A___",
+        "bass_sound": "palette",
+        "arp_pattern": "x_______x___x___",
+        "feel": "long",
+        "lead": "custom",
+        "chord_bars": 2,
+        "transpose": 0,
+        "mode": "song",
+        "variation": "auto",
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.3,
+        "energy_end": 0.4,
+        "texture": "no_drums",
+        "chords": [
+          "IM7",
+          "II",
+          "vi7",
+          "IM7"
+        ]
+      },
+      {
+        "filter": "follow",
+        "transition": "dropout",
+        "groove": "halftime",
+        "drums_pattern": "k.......s.......",
+        "bass": "sustained",
+        "bass_pattern": "R_______5___8___",
+        "bass_sound": "palette",
+        "arp_pattern": "xxxxxxxxxxxxxxxx",
+        "feel": "sid",
+        "lead": "vibra",
+        "chord_bars": 1,
+        "transpose": 0,
+        "mode": "song",
+        "variation": "auto",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.5,
+        "energy_end": 0.58,
+        "texture": "counter",
+        "chords": [
+          "IM7",
+          "II",
+          "vi7",
+          "V"
+        ]
+      },
+      {
+        "filter": "open",
+        "transition": "none",
+        "groove": "halftime",
+        "drums_pattern": "",
+        "bass": "half_note",
+        "bass_pattern": "R_______R___5___",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "long",
+        "lead": "bell",
+        "chord_bars": 2,
+        "transpose": 0,
+        "mode": "song",
+        "variation": "auto",
+        "type": "bridge",
+        "bars": 8,
+        "energy": 0.32,
+        "energy_end": 0.45,
+        "texture": "echo_break",
+        "chords": [
+          "vi",
+          "iii",
+          "vi",
+          "II"
+        ]
+      },
+      {
+        "filter": "follow",
+        "transition": "none",
+        "groove": "halftime",
+        "drums_pattern": "k.......s.....h.",
+        "bass": "sustained",
+        "bass_pattern": "R_______5___8___",
+        "bass_sound": "palette",
+        "arp_pattern": "xxxxxxxxxxxxxxxx",
+        "feel": "sid",
+        "lead": "vibra",
+        "chord_bars": 1,
+        "transpose": 0,
+        "mode": "song",
+        "variation": "ornament",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.55,
+        "energy_end": 0.6,
+        "texture": "echo_lead",
+        "chords": [
+          "IM7",
+          "II",
+          "vi7",
+          "V"
+        ]
+      },
+      {
+        "filter": "close",
+        "transition": "none",
+        "groove": "halftime",
+        "drums_pattern": "",
+        "bass": "whole_note",
+        "bass_pattern": "R_______________",
+        "bass_sound": "palette",
+        "arp_pattern": "x_______x_______",
+        "feel": "long",
+        "lead": "custom",
+        "chord_bars": 2,
+        "transpose": 0,
+        "mode": "song",
+        "variation": "auto",
+        "type": "outro",
+        "bars": 4,
+        "energy": 0.3,
+        "energy_end": 0.08,
+        "texture": "arp_out",
+        "chords": [
+          "II",
+          "IM7"
+        ]
+      }
+    ],
+    "themes": [
+      {
+        "section": "verse",
+        "notes": ". . 5 _ _ _ _ _ 7 _ _ _ 8 _ _ _ _ _ _ _ 7 _ 5 _ 3 _ _ _ _ _ _ _ . . 6 _ _ _ _ _ 9 _ _ _ 11 _ _ _ _ _ _ _ 10 _ 9 _ 6 _ _ _ _ _ _ _"
+      },
+      {
+        "section": "chorus",
+        "notes": "3 _ _ _ 5 _ _ 7 _ _ 8 _ _ _ _ _ 9 _ _ _ 11 _ _ 13 _ _ 9 _ _ _ _ _ 10 _ _ _ 8 _ _ 6 _ _ 8 _ _ _ _ _ 7 _ _ _ 9 _ _ 7 _ _ 5 _ _ _ _ _"
+      },
+      {
+        "section": "bridge",
+        "notes": "10 _ _ _ _ _ _ _ 8 _ _ _ 6 _ _ _ _ _ _ _ _ _ _ _ 5 _ 6 _ 8 _ _ _ 7 _ _ _ _ _ _ _ 5 _ _ _ 3 _ _ _ _ _ _ _ _ _ _ _ . . . . . . . ."
+      }
+    ]
+  }
+}

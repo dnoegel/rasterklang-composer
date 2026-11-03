@@ -1,0 +1,18 @@
+rasterklang-composer
+Copyright (c) 2026 Daniel Nögel. MIT License, see LICENSE.
+
+Third-party material
+
+vendor/rasterklang-wasm/rasterklang.js, rasterklang.wasm
+  The SID engine of rasterklang-wasm (https://github.com/dnoegel/rasterklang-wasm),
+  MIT License, Copyright (c) 2026 Rasterklang contributors. Used for WAV rendering.
+
+vendor/rasterklang-wasm/wasm_exec.js
+  Go WebAssembly runtime support, Copyright The Go Authors, BSD-3-Clause
+  (https://go.dev/LICENSE).
+
+src/gen/library/hvsc*.js, standard*.js, corpus data
+  Statistics, rhythm patterns and short instrument programs derived from the
+  High Voltage SID Collection (https://www.hvsc.c64.org) and its STIL. The
+  SID tunes themselves are not included. Credit to the HVSC team and to the
+  C64 musicians whose work the collection preserves.

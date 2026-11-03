@@ -1,0 +1,217 @@
+{
+  "prompt": "quick Celtic jig at a harvest wedding, fiddles spinning and everyone dancing",
+  "constraints": [
+    "Use call and response between lead and chords in at least one section.",
+    "Use a stop-time transition right before the last chorus.",
+    "Play in the key of C, unless the prompt, a reference song or a melody clearly needs another key.",
+    "Start directly with the first verse or the chorus: no intro section.",
+    "Set the tempo in the middle of the chosen style's tempo band.",
+    "Form: short and direct: verse and chorus twice, a short outro.",
+    "Use the texture counter for the first chorus.",
+    "Give the chorus the lead sound octave; other sections may use other leads.",
+    "If the song is in 4/4, use this bass figure from real C64 tunes as the verse bass_pattern: \"R___R___A_______\".",
+    "Sounds: palette.arp tri, palette.bass drone, palette.kit std.",
+    "Custom lead (sound): a hollow sound, wave pulse, attack 1, decay 9, sustain 11, release 4, vibrato 0, pulse_width square, pwm none, onset octave, slide none.",
+    "If the song is in 4/4, give the chorus the melody feel riff and, where the chord arpeggio plays, the arp_pattern \"x.x.x.x.x.x.x.x.\"."
+  ],
+  "answer": {
+    "reasoning": "A jig in 6/8 at 111 bpm in C major: the dotted bodhran lilt and a root-fifth bass on 1 and 4 say Celtic dance at once, the bright ionian says wedding. sid_idiom sits at 0.3 because the prompt names a traditional genre: the fiddle leads the verse and the octave lead with its blip spins the chorus like a reel of dancers, while only the counter-melody, a buzzing bass drone and the second verse's lead-and-chords call and response add chip colour. The chorus hook climbs by an arpeggio sequence (IV, V, iii) to a high G and tumbles home, and a stop-time bar before the last chorus is the moment the whole barn stamps and shouts. The drawn arrangement is kept; the hollow custom lead is used in the second verse as a tin-whistle answer to the fiddle.",
+    "title": "Sheaves on the Barn Floor",
+    "imagery": "Lanterns swing over a threshing floor, a fiddler stamps on a hay bale and the wedding couple are spun from arm to arm until the whole village is one whirling ring.",
+    "liner_note": "Bring in the last of the wheat, roll back the barrels and let the fiddles go. A harvest wedding that does not stop spinning until the lanterns burn down.",
+    "style": "jig",
+    "blend_style": "none",
+    "blend_amount": 0,
+    "sid_idiom": 0.3,
+    "moods": [
+      {
+        "mood": "happy",
+        "weight": 0.55
+      },
+      {
+        "mood": "playful",
+        "weight": 0.3
+      },
+      {
+        "mood": "triumphant",
+        "weight": 0.15
+      }
+    ],
+    "tempo": 111,
+    "meter": "6/8",
+    "key": "C",
+    "mode": "ionian",
+    "palette": {
+      "bass": "drone",
+      "snare": "snare",
+      "chords": "triad",
+      "kit": "std",
+      "arp": "tri"
+    },
+    "sound": {
+      "wave": "pulse",
+      "attack": 1,
+      "decay": 9,
+      "sustain": 11,
+      "release": 4,
+      "vibrato": 0,
+      "pwm": "none",
+      "pulse_width": "square",
+      "onset": "octave",
+      "slide": "none"
+    },
+    "sections": [
+      {
+        "filter": "follow",
+        "drums_pattern": "k.hkh.s.hkh.",
+        "bass_pattern": "R.....5...A.",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "fill",
+        "mode": "song",
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.55,
+        "energy_end": 0.65,
+        "texture": "full",
+        "groove": "bodhran",
+        "bass": "one_four",
+        "feel": "straight",
+        "lead": "fiddle",
+        "chords": [
+          "I",
+          "IV",
+          "I",
+          "V"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "k.hkh.s.hkh.k.hkh.s.sss.",
+        "bass_pattern": "R...5.8...5.",
+        "bass_sound": "buzz",
+        "arp_pattern": "x_.x.xx_.x.x",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "fill",
+        "mode": "song",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.85,
+        "energy_end": 0.9,
+        "texture": "counter",
+        "groove": "bodhran",
+        "bass": "oom_pah6",
+        "feel": "running",
+        "lead": "octave",
+        "chords": [
+          "IV",
+          "V",
+          "iii",
+          "vi",
+          "IV",
+          "V",
+          "I",
+          "I"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "k.hkh.s.hkh.",
+        "bass_pattern": "R.....5.3.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "x_.x.xx_.x.x",
+        "transpose": 0,
+        "variation": "ornament",
+        "chord_bars": 1,
+        "transition": "stop",
+        "mode": "song",
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.6,
+        "energy_end": 0.75,
+        "texture": "call_response",
+        "groove": "bodhran",
+        "bass": "one_four",
+        "feel": "straight",
+        "lead": "custom",
+        "chords": [
+          "I",
+          "IV",
+          "I",
+          "V"
+        ]
+      },
+      {
+        "filter": "open",
+        "drums_pattern": "k.hkh.s.hkh.k.hkh.s.sss.",
+        "bass_pattern": "R...5.8...5.",
+        "bass_sound": "buzz",
+        "arp_pattern": "x_.x.xx_.x.x",
+        "transpose": 0,
+        "variation": "octave",
+        "chord_bars": 1,
+        "transition": "none",
+        "mode": "song",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.9,
+        "energy_end": 1,
+        "texture": "full",
+        "groove": "bodhran",
+        "bass": "oom_pah6",
+        "feel": "running",
+        "lead": "octave",
+        "chords": [
+          "IV",
+          "V",
+          "iii",
+          "vi",
+          "IV",
+          "V",
+          "I",
+          "I"
+        ]
+      },
+      {
+        "filter": "close",
+        "drums_pattern": "",
+        "bass_pattern": "",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "none",
+        "mode": "song",
+        "type": "outro",
+        "bars": 2,
+        "energy": 0.7,
+        "energy_end": 0.3,
+        "texture": "final_hit",
+        "groove": "bodhran",
+        "bass": "drone",
+        "feel": "long",
+        "lead": "fiddle",
+        "chords": [
+          "V",
+          "I"
+        ]
+      }
+    ],
+    "themes": [
+      {
+        "section": "verse",
+        "notes": "5 _ _ _ 3 _ 1 _ 3 _ 5 _ 6 _ _ _ 4 _ 8 _ 6 _ 4 _ 5 _ 3 _ 5 _ 8 _ 7 _ 8 _ 7 _ 5 _ 2 _ 5 _ _ _ . ."
+      },
+      {
+        "section": "chorus",
+        "notes": "8 _ _ _ 6 _ 4 _ 6 _ 8 _ 9 _ _ _ 7 _ 5 _ 7 _ 9 _ 10 _ 9 _ 10 _ 12 _ 10 _ 7 _ 8 _ 6 _ 5 _ 3 _ _ _ . ."
+      }
+    ]
+  }
+}

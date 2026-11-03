@@ -1,0 +1,282 @@
+{
+  "prompt": "speedrun through a crumbling ice temple",
+  "constraints": [
+    "Write your own drums_pattern and bass_pattern for the chorus.",
+    "Use a pre-chorus that builds tension before every chorus.",
+    "Play in the key of Bb, unless the prompt, a reference song or a melody clearly needs another key.",
+    "Open with an intro of texture twin_lead.",
+    "Set the tempo in the upper third of the chosen style's tempo band.",
+    "Form: short and direct: no intro, verse and chorus twice, a short outro.",
+    "Use the texture build_up_band for the first chorus.",
+    "Give the chorus the lead sound chime; other sections may use other leads."
+  ],
+  "answer": {
+    "reasoning": "A speedrun is game music, so this is a fast platformer at 160 bpm with skipping, bouncing bass and running sixteenth melodies. Bb dorian keeps it minor and tense, but the raised sixth gives a cold, glittering shine. The ice comes from chime and narrow noise-click plucks, and the crumbling comes from pre-choruses where a pedal bass and snare roll speed up until the band stops dead. The chorus hook climbs through the triad in syncopated jumps, like leaping across falling ledges.",
+    "title": "Glacier Sanctum Any%",
+    "imagery": "A tiny figure sprints across cracking ice bridges while frozen pillars shatter and fall into the dark behind it.",
+    "liner_note": "Two frosty bars to get your bearings, then the temple starts falling apart and the clock never stops. Hold right and do not look back.",
+    "style": "platformer",
+    "blend_style": "none",
+    "blend_amount": 0,
+    "moods": [
+      {
+        "mood": "tense",
+        "weight": 0.5
+      },
+      {
+        "mood": "triumphant",
+        "weight": 0.25
+      },
+      {
+        "mood": "mysterious",
+        "weight": 0.25
+      }
+    ],
+    "tempo": 160,
+    "meter": "4/4",
+    "key": "Bb",
+    "mode": "dorian",
+    "palette": {
+      "bass": "gtbass",
+      "snare": "snare",
+      "chords": "triad",
+      "kit": "tight"
+    },
+    "sound": {
+      "wave": "pulse",
+      "attack": 0,
+      "decay": 6,
+      "sustain": 2,
+      "release": 3,
+      "vibrato": 0,
+      "pwm": "fast",
+      "pulse_width": "narrow",
+      "onset": "noise",
+      "slide": "none"
+    },
+    "sections": [
+      {
+        "type": "intro",
+        "bars": 2,
+        "energy": 0.35,
+        "energy_end": 0.5,
+        "filter": "open",
+        "texture": "twin_lead",
+        "transition": "none",
+        "groove": "platform_light",
+        "drums_pattern": "",
+        "bass": "whole_note",
+        "bass_pattern": "",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "long",
+        "lead": "vibra",
+        "chords": [
+          "i",
+          "bVII"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.6,
+        "energy_end": 0.65,
+        "filter": "follow",
+        "texture": "full",
+        "transition": "none",
+        "groove": "platform_light",
+        "drums_pattern": "k.h.s.hkk.h.s.h.k.h.s.hk.kh.s.ss",
+        "bass": "skip",
+        "bass_pattern": "R.R5.R8.R.5.8.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "running",
+        "lead": "custom",
+        "chords": [
+          "i",
+          "bVII",
+          "IV",
+          "i"
+        ],
+        "chord_bars": 2,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "pre",
+        "bars": 4,
+        "energy": 0.65,
+        "energy_end": 0.85,
+        "filter": "open",
+        "texture": "groove_chords",
+        "transition": "fill",
+        "groove": "sid_drive",
+        "drums_pattern": "k.s.k.s.k.s.k.s.ksssksssksssssss",
+        "bass": "pedal_16ths",
+        "bass_pattern": "RRRRRRRRRRRR5.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "x.x.x.x.x.x.x.x.",
+        "feel": "straight",
+        "lead": "sharp",
+        "chords": [
+          "IV",
+          "bVI",
+          "bVIIsus4",
+          "bVII"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.8,
+        "energy_end": 0.9,
+        "filter": "follow",
+        "texture": "build_up_band",
+        "transition": "none",
+        "groove": "platform_light",
+        "drums_pattern": "k.h.s.hkk.hks.h.k.h.s.hkk.hks.TT",
+        "bass": "bouncy",
+        "bass_pattern": "R8.8R.58R8.8b.A.",
+        "bass_sound": "chipbass",
+        "arp_pattern": "x.x.x_x.x.x_x.x.",
+        "feel": "syncopated",
+        "lead": "chime",
+        "chords": [
+          "i",
+          "bVII",
+          "i",
+          "IV"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.65,
+        "energy_end": 0.7,
+        "filter": "follow",
+        "texture": "multiplex",
+        "transition": "none",
+        "groove": "platform_light",
+        "drums_pattern": "k.h.s.hkk.h.s.h.k.h.s.hk.kh.s.ss",
+        "bass": "skip",
+        "bass_pattern": "R.R5.R8.R.5.8.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "running",
+        "lead": "custom",
+        "chords": [
+          "i",
+          "bVII",
+          "IV",
+          "i"
+        ],
+        "chord_bars": 2,
+        "transpose": 0,
+        "variation": "sequence"
+      },
+      {
+        "type": "pre",
+        "bars": 4,
+        "energy": 0.7,
+        "energy_end": 0.92,
+        "filter": "open",
+        "texture": "groove_chords",
+        "transition": "stop",
+        "groove": "sid_drive",
+        "drums_pattern": "k.s.k.s.k.s.k.s.ksssksssksssssss",
+        "bass": "pedal_16ths",
+        "bass_pattern": "RRRRRRRRRRRR5.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "x.x.x.x.x.x.x.x.",
+        "feel": "straight",
+        "lead": "sharp",
+        "chords": [
+          "IV",
+          "bVI",
+          "bVIIsus4",
+          "bVII"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto"
+      },
+      {
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.9,
+        "energy_end": 0.95,
+        "filter": "follow",
+        "texture": "full",
+        "transition": "fill",
+        "groove": "platform_light",
+        "drums_pattern": "k.h.s.hkk.hks.h.k.h.s.hkk.hks.TT",
+        "bass": "bouncy",
+        "bass_pattern": "R8.8R.58R8.8b.A.",
+        "bass_sound": "chipbass",
+        "arp_pattern": "x.x.x_x.x.x_x.x.",
+        "feel": "syncopated",
+        "lead": "chime",
+        "chords": [
+          "i",
+          "bVII",
+          "i",
+          "IV"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "answer"
+      },
+      {
+        "type": "outro",
+        "bars": 2,
+        "energy": 0.7,
+        "energy_end": 0.3,
+        "filter": "close",
+        "texture": "final_hit",
+        "transition": "none",
+        "groove": "platform_light",
+        "drums_pattern": "",
+        "bass": "whole_note",
+        "bass_pattern": "",
+        "bass_sound": "palette",
+        "arp_pattern": "x_______________",
+        "feel": "long",
+        "lead": "chime",
+        "chords": [
+          "IV",
+          "i"
+        ],
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto"
+      }
+    ],
+    "themes": [
+      {
+        "section": "intro",
+        "notes": "8 _ _ _ 12 _ _ _ 11 _ 10 _ 8 _ _ _ 9 _ _ _ 10 _ _ _ 6 _ _ _ 5 _ _ _"
+      },
+      {
+        "section": "verse",
+        "notes": "1 . 3 . 5 . 6 5 . 3 . 5 6 _ 5 . 4 . 3 . 2 . 3 4 . 5 . 3 1 _ _ ."
+      },
+      {
+        "section": "pre",
+        "notes": "5 5 . 5 6 6 . 6 7 7 . 7 8 _ . . 9 9 . 9 8 . 7 . 6 . 5 _ _ _ . ."
+      },
+      {
+        "section": "chorus",
+        "notes": "8 _ . 10 _ . 12 _ _ _ 11 . 10 . 8 . 9 _ . 10 _ . 11 _ _ _ 10 . 9 . 7 . 8 _ . 10 _ . 12 _ _ _ 13 _ 12 . 14 _ 13 . 12 . 11 . 10 . 12 _ _ _ 8 _ _ ."
+      }
+    ]
+  }
+}

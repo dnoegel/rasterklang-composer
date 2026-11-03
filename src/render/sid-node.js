@@ -1,4 +1,5 @@
-// Real SID render in Node: the Go/WASM engine from public/wasm/ (known issue:
+// Real SID render in Node: the Go/WASM engine of rasterklang-wasm, vendored in
+// vendor/rasterklang-wasm/ (known issue:
 // its loader wants `document`, so we load wasm_exec.js ourselves and hand
 // fetch() the wasm file). renderPcm(frames) -> Float32Array, mono.
 //   frames: arrays from renderFrames, flat [addr, value, ...] per frame (50 fps)
@@ -7,7 +8,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-const WASM_DIR = join(import.meta.dirname, '..', 'public', 'wasm');
+const WASM_DIR = join(import.meta.dirname, '..', '..', 'vendor', 'rasterklang-wasm');
 let rkPromise;
 
 function loadRk() {

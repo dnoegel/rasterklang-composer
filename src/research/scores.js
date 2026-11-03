@@ -6,10 +6,10 @@
 
 import { lookup } from 'node:dns/promises';
 import { isIP } from 'node:net';
-import { readScoreFile } from './src/score/read.js';
-import { reduceScore } from './src/score/reduce.js';
+import { readScoreFile } from '../score/read.js';
+import { reduceScore } from '../score/reduce.js';
 
-const UA = 'rasterklang-compose (private C64 music generator)';
+const UA = 'rasterklang-composer (C64 music generator, https://github.com/dnoegel/rasterklang-composer)';
 const MAX_BYTES = 5 * 1024 * 1024;
 
 const privateV4 = (ip) => {

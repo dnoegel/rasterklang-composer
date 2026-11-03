@@ -1,0 +1,244 @@
+{
+  "prompt": "lofi beats for carving pumpkins on a rainy evening, cosy and slow",
+  "constraints": [
+    "Write the verse theme so it starts on an offbeat.",
+    "Use a stop-time transition right before the last chorus.",
+    "Play in the key of C, unless the prompt, a reference song or a melody clearly needs another key.",
+    "Open with an intro of texture cold_start.",
+    "Set the tempo in the upper third of the chosen style's tempo band.",
+    "Form: short and direct: verse and chorus twice, a short outro.",
+    "Use the texture full for the first chorus.",
+    "Give the chorus the lead sound scoop; other sections may use other leads.",
+    "If the song is in 4/4, use this bass figure from real C64 tunes as the verse bass_pattern: \"8_______R___R___\".",
+    "Sounds: palette.arp pad, palette.bass sub, palette.kit round.",
+    "Custom lead (sound): a breathy sound, wave pulse, attack 5, decay 7, sustain 11, release 9, vibrato 2, pulse_width medium, pwm slow, onset noise, slide none.",
+    "If the song is in 4/4, give the chorus the melody feel straight and, where the chord arpeggio plays, the arp_pattern \"x..x..x.x..x..x.\"."
+  ],
+  "answer": {
+    "reasoning": "Lo-fi at 88 bpm in the upper third of its band, in C dorian: the minor seventh chords keep it hushed and rainy while the dorian major sixth over the IV7 lends the warm, candle-lit glow, and the boom-bap kick lags a 16th behind the beat like a slow knife through pumpkin rind. It sits at sid_idiom 0.25: the genre is played faithfully (lazy swung beat, held sub bass, jazzy seventh chords on a soft pad), with only a little C64 colour in the echoing verse lead and the real C64 bass figure that falls from the octave. The intro cold-starts on the chorus hook with the filter half shut, the verse melody always leans in on an offbeat breath, and a stop-time drop hangs in the air before the last chorus, where the pad arpeggio joins in a tresillo-like 3+3+2 drip.",
+    "title": "Lantern Rind",
+    "imagery": "Rain ticks on the window while a knife carves a slow grin into a pumpkin and the first candle flickers inside it.",
+    "liner_note": "Newspaper on the table, seeds in a bowl, rain outside. A slow, warm loop for the last evening of October.",
+    "style": "lofi",
+    "blend_style": "none",
+    "blend_amount": 0,
+    "sid_idiom": 0.25,
+    "moods": [
+      {
+        "mood": "calm",
+        "weight": 0.45
+      },
+      {
+        "mood": "nostalgic",
+        "weight": 0.35
+      },
+      {
+        "mood": "dreamy",
+        "weight": 0.2
+      }
+    ],
+    "tempo": 88,
+    "meter": "4/4",
+    "key": "C",
+    "mode": "dorian",
+    "palette": {
+      "bass": "sub",
+      "snare": "snare",
+      "chords": "triad",
+      "kit": "round",
+      "arp": "pad"
+    },
+    "sound": {
+      "wave": "pulse",
+      "attack": 5,
+      "decay": 7,
+      "sustain": 11,
+      "release": 9,
+      "vibrato": 2,
+      "pwm": "slow",
+      "pulse_width": "medium",
+      "onset": "noise",
+      "slide": "none"
+    },
+    "sections": [
+      {
+        "filter": "open",
+        "drums_pattern": "k......h..s....h",
+        "bass_pattern": "",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "dropout",
+        "mode": "song",
+        "type": "intro",
+        "bars": 4,
+        "energy": 0.25,
+        "energy_end": 0.35,
+        "texture": "cold_start",
+        "groove": "boombap",
+        "bass": "half_note",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "bVIIM7",
+          "bIIIM7",
+          "ii7",
+          "IV7"
+        ]
+      },
+      {
+        "filter": "steady",
+        "drums_pattern": "k..hs..k.kh.s..h",
+        "bass_pattern": "8_______R___R___",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "fill",
+        "mode": "song",
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.4,
+        "energy_end": 0.45,
+        "texture": "echo_lead",
+        "groove": "boombap",
+        "bass": "sustained",
+        "feel": "syncopated",
+        "lead": "custom",
+        "chords": [
+          "i7",
+          "IV7",
+          "i7",
+          "IV7",
+          "bIIIM7",
+          "IV7",
+          "ii7",
+          "IV7"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "k..hs..k.kh.s..hk..hs..kk.h.s.ho",
+        "bass_pattern": "R_____8_..5_R_A_",
+        "bass_sound": "palette",
+        "arp_pattern": "x..x..x.x..x..x.",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "fill",
+        "mode": "song",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.6,
+        "energy_end": 0.65,
+        "texture": "full",
+        "groove": "boombap",
+        "bass": "half_note",
+        "feel": "straight",
+        "lead": "scoop",
+        "chords": [
+          "bVIIM7",
+          "bIIIM7",
+          "ii7",
+          "IV7"
+        ]
+      },
+      {
+        "filter": "steady",
+        "drums_pattern": "k..hs..k.kh.s..h",
+        "bass_pattern": "8_______R___R___",
+        "bass_sound": "palette",
+        "arp_pattern": "x__.x__.x_______",
+        "transpose": 0,
+        "variation": "sequence",
+        "chord_bars": 1,
+        "transition": "stop",
+        "mode": "song",
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.42,
+        "energy_end": 0.5,
+        "texture": "call_response",
+        "groove": "boombap",
+        "bass": "sustained",
+        "feel": "syncopated",
+        "lead": "custom",
+        "chords": [
+          "i7",
+          "IV7",
+          "i7",
+          "IV7",
+          "bIIIM7",
+          "IV7",
+          "ii7",
+          "IV7"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "k..hs..k.kh.s..hk..hs..kk.h.s.ho",
+        "bass_pattern": "R_____8_..5_R_A_",
+        "bass_sound": "palette",
+        "arp_pattern": "x..x..x.x..x..x.",
+        "transpose": 0,
+        "variation": "answer",
+        "chord_bars": 1,
+        "transition": "none",
+        "mode": "song",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.65,
+        "energy_end": 0.7,
+        "texture": "multiplex",
+        "groove": "boombap",
+        "bass": "half_note",
+        "feel": "straight",
+        "lead": "scoop",
+        "chords": [
+          "bVIIM7",
+          "bIIIM7",
+          "ii7",
+          "IV7"
+        ]
+      },
+      {
+        "filter": "close",
+        "drums_pattern": "k......h..s....h",
+        "bass_pattern": "",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 2,
+        "transition": "none",
+        "mode": "song",
+        "type": "outro",
+        "bars": 4,
+        "energy": 0.4,
+        "energy_end": 0.15,
+        "texture": "fade_layers",
+        "groove": "boombap",
+        "bass": "whole_note",
+        "feel": "long",
+        "lead": "custom",
+        "chords": [
+          "bVIIM7",
+          "i7"
+        ]
+      }
+    ],
+    "themes": [
+      {
+        "section": "chorus",
+        "notes": "5 _ _ 3 _ _ 1 _ 2 _ 3 _ 5 _ _ _ 6 _ _ 5 _ _ 3 _ 4 _ 5 _ 10 _ 9 _ 8 _ _ 7 _ _ 5 _ 6 _ 7 _ 5 _ _ _ 4 _ 3 _ 2 _ _ 3 1 _ _ _ . . . ."
+      },
+      {
+        "section": "verse",
+        "notes": ". . 5 _ 7 _ 8 _ _ _ 7 5 _ _ . . . . 5 _ 7 _ 10 _ 9 _ 8 6 5 _ _ _"
+      }
+    ]
+  }
+}

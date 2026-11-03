@@ -1,0 +1,301 @@
+{
+  "prompt": "punk skaters crashing a C64 high score party, sloppy and gleeful",
+  "constraints": [
+    "Let one section build its energy from low to high within itself.",
+    "Design a custom lead sound that fits the imagery and use it for the main theme.",
+    "Play in the key of B, unless the prompt, a reference song or a melody clearly needs another key.",
+    "Open with an intro of texture drum_groove.",
+    "Set the tempo in the upper third of the chosen style's tempo band.",
+    "Form: AABA: the A section carries the hook, B contrasts in harmony and texture.",
+    "Use the texture multiplex for the first chorus.",
+    "Give the chorus the lead sound brass; other sections may use other leads.",
+    "If the song is in 4/4, use this bass figure from real C64 tunes as the verse bass_pattern: \"R___R___R___R__.\"."
+  ],
+  "answer": {
+    "reasoning": "Skate punk at 192 bpm, in the upper third of the band, in bright B major with a thrash skank verse over the stomping C64 quarter-note bass figure and a D-beat chorus with pumping root eighths, shouted brass hook and a falling I V vi IV singalong. sid_idiom sits at 0.5: the genre stays loud and three-chord simple, but the high score party leaks in through a multiplexed first chorus, a 16th root-fifth run, a sid_drive bridge and an octave lead. The AABA form keeps the hook in the A pairs; the bridge moves to vi iii IV V and builds from a lone bass to the whole band, and the custom lead is a scooping, noisy narrow pulse that slides sloppily into every note.",
+    "title": "Board Slide Over the Joystick",
+    "imagery": "Kids with scuffed decks barge into a basement full of beige computers, knock over the tape deck and cheer when the high score table flashes their initials.",
+    "liner_note": "Three chords, one skateboard and a C64 that never saw it coming. Nobody wins, everybody shouts.",
+    "style": "punk",
+    "blend_style": "none",
+    "blend_amount": 0,
+    "sid_idiom": 0.5,
+    "moods": [
+      {
+        "mood": "playful",
+        "weight": 0.5
+      },
+      {
+        "mood": "aggressive",
+        "weight": 0.3
+      },
+      {
+        "mood": "happy",
+        "weight": 0.2
+      }
+    ],
+    "tempo": 192,
+    "meter": "4/4",
+    "key": "B",
+    "mode": "ionian",
+    "palette": {
+      "bass": "bass",
+      "snare": "snare",
+      "chords": "power",
+      "kit": "tight"
+    },
+    "sound": {
+      "wave": "pulse",
+      "attack": 0,
+      "decay": 6,
+      "sustain": 10,
+      "release": 3,
+      "vibrato": 1,
+      "pwm": "fast",
+      "pulse_width": "narrow",
+      "onset": "noise",
+      "slide": "short"
+    },
+    "sections": [
+      {
+        "filter": "follow",
+        "drums_pattern": "k.hks.h.k.hks.h.k.hks.h.kTkTsTx.",
+        "bass_pattern": "R.R.R.R.R.R.8.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "fill",
+        "type": "intro",
+        "bars": 4,
+        "energy": 0.45,
+        "energy_end": 0.6,
+        "texture": "drum_groove",
+        "groove": "d_beat",
+        "bass": "root_8ths",
+        "feel": "riff",
+        "lead": "custom",
+        "chords": [
+          "I",
+          "V"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "k.s.k.s.k.s.k.s.k.s.k.s.kks.sTs.",
+        "bass_pattern": "R___R___R___R__.",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "fill",
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.6,
+        "energy_end": 0.7,
+        "texture": "full",
+        "groove": "thrash_skank",
+        "bass": "root_8ths",
+        "feel": "riff",
+        "lead": "custom",
+        "chords": [
+          "I",
+          "IV",
+          "I",
+          "V"
+        ]
+      },
+      {
+        "filter": "open",
+        "drums_pattern": "k.hks.h.k.hks.hhk.hks.h.k.hkscsx",
+        "bass_pattern": "R.R.R.R.R.R.8.A.",
+        "bass_sound": "chipbass",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "stop",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.85,
+        "energy_end": 0.9,
+        "texture": "multiplex",
+        "groove": "d_beat",
+        "bass": "root_8ths",
+        "feel": "riff",
+        "lead": "brass",
+        "chords": [
+          "I",
+          "V",
+          "vi",
+          "IV"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "k.s.k.s.k.s.k.s.k.s.k.s.kks.sTs.",
+        "bass_pattern": "R___R___R___R__.",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "ornament",
+        "chord_bars": 1,
+        "transition": "fill",
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.6,
+        "energy_end": 0.7,
+        "texture": "full",
+        "groove": "thrash_skank",
+        "bass": "root_8ths",
+        "feel": "riff",
+        "lead": "custom",
+        "chords": [
+          "I",
+          "IV",
+          "I",
+          "V"
+        ]
+      },
+      {
+        "filter": "open",
+        "drums_pattern": "k.hks.h.k.hks.hhk.hks.h.k.hkscsx",
+        "bass_pattern": "R.R.R.R.R.R.8.A.",
+        "bass_sound": "chipbass",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "ornament",
+        "chord_bars": 1,
+        "transition": "stop",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.9,
+        "energy_end": 0.9500000000000001,
+        "texture": "full",
+        "groove": "d_beat",
+        "bass": "root_8ths",
+        "feel": "riff",
+        "lead": "brass",
+        "chords": [
+          "I",
+          "V",
+          "vi",
+          "IV"
+        ]
+      },
+      {
+        "filter": "open",
+        "drums_pattern": "",
+        "bass_pattern": "R585R585R585R5A.",
+        "bass_sound": "buzz",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "fill",
+        "type": "bridge",
+        "bars": 8,
+        "energy": 0.3,
+        "energy_end": 0.95,
+        "texture": "build_up_band",
+        "groove": "sid_drive",
+        "bass": "run16",
+        "feel": "running",
+        "lead": "octave",
+        "chords": [
+          "vi",
+          "iii",
+          "IV",
+          "V"
+        ]
+      },
+      {
+        "filter": "follow",
+        "drums_pattern": "k.s.k.s.k.s.k.s.k.s.k.s.kks.sTs.",
+        "bass_pattern": "R___R___R___R__.",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "sequence",
+        "chord_bars": 1,
+        "transition": "fill",
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.6,
+        "energy_end": 0.7,
+        "texture": "full",
+        "groove": "thrash_skank",
+        "bass": "root_8ths",
+        "feel": "riff",
+        "lead": "custom",
+        "chords": [
+          "I",
+          "IV",
+          "I",
+          "V"
+        ]
+      },
+      {
+        "filter": "open",
+        "drums_pattern": "k.hks.h.k.hks.hhk.hks.h.k.hkscsx",
+        "bass_pattern": "R.R.R.R.R.R.8.A.",
+        "bass_sound": "chipbass",
+        "arp_pattern": "",
+        "transpose": 2,
+        "variation": "answer",
+        "chord_bars": 1,
+        "transition": "none",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.95,
+        "energy_end": 1,
+        "texture": "full",
+        "groove": "d_beat",
+        "bass": "root_8ths",
+        "feel": "riff",
+        "lead": "brass",
+        "chords": [
+          "I",
+          "V",
+          "vi",
+          "IV"
+        ]
+      },
+      {
+        "filter": "close",
+        "drums_pattern": "",
+        "bass_pattern": "",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "transpose": 0,
+        "variation": "auto",
+        "chord_bars": 1,
+        "transition": "none",
+        "type": "outro",
+        "bars": 2,
+        "energy": 0.9,
+        "energy_end": 0.4,
+        "texture": "final_hit",
+        "groove": "d_beat",
+        "bass": "root_8ths",
+        "feel": "riff",
+        "lead": "brass",
+        "chords": [
+          "I"
+        ]
+      }
+    ],
+    "themes": [
+      {
+        "section": "verse",
+        "notes": "5 . 5 . 3 . 5 _ 6 5 . 3 . 1 _ . 6 . 6 . 4 . 6 _ 8 _ . 6 . 5 _ _"
+      },
+      {
+        "section": "chorus",
+        "notes": "8 _ _ . 8 _ . 7 8 _ . 5 _ _ . . 7 _ _ . 7 _ . 6 7 _ . 5 _ _ . . 6 _ _ . 6 _ . 5 6 _ . 3 _ _ . . 4 _ . 6 8 _ . 10 8 _ _ _ _ _ . ."
+      }
+    ]
+  }
+}

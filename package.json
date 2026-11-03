@@ -1,0 +1,65 @@
+{
+  "name": "rasterklang-composer",
+  "version": "0.1.0",
+  "description": "Prompt to Commodore 64 SID music: a model reads the mood and writes a song brief, code built on music theory and the HVSC writes every note.",
+  "license": "MIT",
+  "author": "Daniel Nögel",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dnoegel/rasterklang-composer.git"
+  },
+  "homepage": "https://github.com/dnoegel/rasterklang-composer#readme",
+  "keywords": [
+    "c64",
+    "sid",
+    "chiptune",
+    "music-generation",
+    "llm",
+    "hvsc",
+    "commodore-64"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "rk-composer": "bin/rk-composer.js"
+  },
+  "exports": {
+    ".": "./src/index.js",
+    "./node": "./src/node.js",
+    "./pipeline.js": "./src/pipeline.js",
+    "./generator.js": "./src/generator.js",
+    "./gen/*": "./src/gen/*",
+    "./eval/*": "./src/eval/*",
+    "./export/*": "./src/export/*",
+    "./score/*": "./src/score/*",
+    "./visual/*": "./src/visual/*",
+    "./llm/*": "./src/llm/*",
+    "./research/*": "./src/research/*",
+    "./render/*": "./src/render/*",
+    "./package.json": "./package.json",
+    "./data/*": "./data/*"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "vendor/",
+    "data/",
+    "docs/",
+    "skills/",
+    "examples/"
+  ],
+  "scripts": {
+    "test": "vitest run",
+    "compose": "node bin/rk-composer.js"
+  },
+  "dependencies": {
+    "rasterklang-dsl": "git+https://github.com/dnoegel/rasterklang-dsl.git#v0.2.1",
+    "rasterklang-score": "git+https://github.com/dnoegel/rasterklang-score.git#v0.2.1",
+    "rasterklang-score-v1": "git+https://github.com/dnoegel/rasterklang-score.git#v0.1.3"
+  },
+  "devDependencies": {
+    "vitest": "^3.0.0"
+  }
+}

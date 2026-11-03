@@ -1,0 +1,294 @@
+{
+  "prompt": "ragtime piano chase through a silent film",
+  "constraints": [
+    "Use a pre-chorus that builds tension before every chorus.",
+    "Let one section build its energy from low to high within itself.",
+    "Play in the key of Bb, unless the prompt, a reference song or a melody clearly needs another key.",
+    "Open with an intro of texture cold_start.",
+    "Set the tempo in the upper third of the chosen style's tempo band.",
+    "Form: short and direct: no intro, verse and chorus twice, a short outro.",
+    "Use the texture full for the first chorus.",
+    "Give the chorus the lead sound brass; other sections may use other leads."
+  ],
+  "answer": {
+    "reasoning": "Ragtime in Bb major at a brisk 118 bpm gives the chase: a stride oom-pah bass with offbeat chord stabs, a syncopated right-hand melody and the circle of dominant sevenths (III7 VI7 II7 V7) that ragtime pianists use to wind up tension. Each pre-chorus climbs from a hush to a snare-rolled peak and halts in a stop-time freeze, like a pratfall on screen, before the brass chorus bursts out. The verse uses a honky-tonk pulse piano, the chorus a bright brass hook, and the last chorus jumps a whole step for the final stretch of the chase.",
+    "title": "Two Reels Ahead of the Constable",
+    "imagery": "A flickering black-and-white chase over rooftops and trolley cars, a pianist hammering away under the screen.",
+    "liner_note": "A nickelodeon rag played on three SID voices: stride bass, a jaunty honky-tonk tune and a brass hook that never stops running. Watch for the freeze-frame before every chorus.",
+    "style": "ragtime",
+    "blend_style": "none",
+    "blend_amount": 0,
+    "moods": [
+      {
+        "mood": "playful",
+        "weight": 0.55
+      },
+      {
+        "mood": "tense",
+        "weight": 0.25
+      },
+      {
+        "mood": "happy",
+        "weight": 0.2
+      }
+    ],
+    "tempo": 118,
+    "meter": "4/4",
+    "key": "Bb",
+    "mode": "ionian",
+    "palette": {
+      "bass": "bass",
+      "snare": "snare2",
+      "chords": "triad",
+      "kit": "tight"
+    },
+    "sound": {
+      "wave": "pulse",
+      "attack": 0,
+      "decay": 7,
+      "sustain": 4,
+      "release": 5,
+      "vibrato": 0,
+      "pwm": "slow",
+      "pulse_width": "narrow",
+      "onset": "noise",
+      "slide": "none"
+    },
+    "sections": [
+      {
+        "filter": "follow",
+        "transition": "fill",
+        "groove": "platform_light",
+        "drums_pattern": "k.hks.h.k.hks.hT",
+        "bass": "bouncy",
+        "bass_pattern": "R.8.5.8.R.8.5.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "syncopated",
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto",
+        "type": "intro",
+        "bars": 2,
+        "energy": 0.7,
+        "energy_end": 0.75,
+        "texture": "cold_start",
+        "lead": "brass",
+        "chords": [
+          "I",
+          "V7"
+        ]
+      },
+      {
+        "filter": "follow",
+        "transition": "none",
+        "groove": "platform_light",
+        "drums_pattern": "k.h.s.h.k.h.s.hh",
+        "bass": "oom_pah",
+        "bass_pattern": "R...5...R...3.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "....x_......x_..",
+        "feel": "syncopated",
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto",
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.55,
+        "energy_end": 0.6,
+        "texture": "multiplex",
+        "lead": "custom",
+        "chords": [
+          "I",
+          "I",
+          "VI7",
+          "VI7",
+          "II7",
+          "V7",
+          "I",
+          "V7"
+        ]
+      },
+      {
+        "filter": "open",
+        "transition": "stop",
+        "groove": "march",
+        "drums_pattern": "k.s.k.s.k.s.ssss",
+        "bass": "walk",
+        "bass_pattern": "R.R.3.3.5.5.A.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "x.x.x.x.x.x.x.x.",
+        "feel": "running",
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto",
+        "type": "pre",
+        "bars": 4,
+        "energy": 0.45,
+        "energy_end": 0.85,
+        "texture": "multiplex",
+        "lead": "octave",
+        "chords": [
+          "III7",
+          "VI7",
+          "II7",
+          "V7"
+        ]
+      },
+      {
+        "filter": "follow",
+        "transition": "fill",
+        "groove": "platform_light",
+        "drums_pattern": "k.hks.h.k.hks.hT",
+        "bass": "bouncy",
+        "bass_pattern": "R.8.5.8.R.8.5.A.",
+        "bass_sound": "chipbass",
+        "arp_pattern": "",
+        "feel": "syncopated",
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.85,
+        "energy_end": 0.9,
+        "texture": "full",
+        "lead": "brass",
+        "chords": [
+          "I",
+          "I7",
+          "IV",
+          "iv",
+          "I",
+          "VI7",
+          "II7",
+          "V7"
+        ]
+      },
+      {
+        "filter": "follow",
+        "transition": "none",
+        "groove": "platform_light",
+        "drums_pattern": "k.h.s.h.k.h.s.hh",
+        "bass": "oom_pah",
+        "bass_pattern": "R...5...R...3.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "....x_......x_..",
+        "feel": "syncopated",
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "ornament",
+        "type": "verse",
+        "bars": 8,
+        "energy": 0.6,
+        "energy_end": 0.65,
+        "texture": "echo_lead",
+        "lead": "custom",
+        "chords": [
+          "I",
+          "I",
+          "VI7",
+          "VI7",
+          "II7",
+          "V7",
+          "I",
+          "V7"
+        ]
+      },
+      {
+        "filter": "open",
+        "transition": "stop",
+        "groove": "march",
+        "drums_pattern": "k.s.k.s.k.s.ssss",
+        "bass": "walk",
+        "bass_pattern": "R.R.3.3.5.5.A.A.",
+        "bass_sound": "palette",
+        "arp_pattern": "x.x.x.x.x.x.x.x.",
+        "feel": "running",
+        "chord_bars": 1,
+        "transpose": 0,
+        "variation": "auto",
+        "type": "pre",
+        "bars": 4,
+        "energy": 0.5,
+        "energy_end": 0.9,
+        "texture": "multiplex",
+        "lead": "octave",
+        "chords": [
+          "III7",
+          "VI7",
+          "II7",
+          "V7"
+        ]
+      },
+      {
+        "filter": "follow",
+        "transition": "stop",
+        "groove": "platform_light",
+        "drums_pattern": "k.hks.hhk.hks.TT",
+        "bass": "bouncy",
+        "bass_pattern": "R.8.5.8.R.8.3.A.",
+        "bass_sound": "chipbass",
+        "arp_pattern": "",
+        "feel": "syncopated",
+        "chord_bars": 1,
+        "transpose": 2,
+        "variation": "sequence",
+        "type": "chorus",
+        "bars": 8,
+        "energy": 0.9,
+        "energy_end": 0.95,
+        "texture": "counter",
+        "lead": "brass",
+        "chords": [
+          "I",
+          "I7",
+          "IV",
+          "iv",
+          "I",
+          "VI7",
+          "II7",
+          "V7"
+        ]
+      },
+      {
+        "filter": "follow",
+        "transition": "none",
+        "groove": "platform_light",
+        "drums_pattern": "k.hks.h.x.......",
+        "bass": "oom_pah",
+        "bass_pattern": "R.8.5.A.R.......",
+        "bass_sound": "palette",
+        "arp_pattern": "",
+        "feel": "syncopated",
+        "chord_bars": 1,
+        "transpose": 2,
+        "variation": "auto",
+        "type": "outro",
+        "bars": 2,
+        "energy": 0.6,
+        "energy_end": 0.3,
+        "texture": "final_hit",
+        "lead": "custom",
+        "chords": [
+          "V7",
+          "I"
+        ]
+      }
+    ],
+    "themes": [
+      {
+        "section": "verse",
+        "notes": "3 5 _ 8 . 7 8 _ 6 _ 5 . 3 _ . . 4 6 _ 9 . 8 9 _ 7 _ 6 . 4 _ . . 5 _ 6 5 . 3 _ 2 . 3 _ 5 _ 4 3 2 1 _ . 5 _ 3 _ . 1 _ _ _ . . . ."
+      },
+      {
+        "section": "pre",
+        "notes": "5 5 . 5 6 . 6 7 _ 8 . 8 9 . 10 _ 11 _ 10 9 . 8 _ 7 . 5 _ _ 5 _ _ _"
+      },
+      {
+        "section": "chorus",
+        "notes": ". 5 8 _ 10 _ 8 . 6 _ 5 . 3 _ _ _ . 6 9 _ 11 _ 9 . 7 _ 6 . 4 _ _ _ . 5 8 _ 12 _ _ 10 8 _ 6 _ 5 _ 3 _ 2 _ 3 5 . 2 _ . 1 _ _ _ . . . ."
+      }
+    ]
+  }
+}
