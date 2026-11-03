@@ -9,7 +9,8 @@ git clone https://github.com/dnoegel/rasterklang-composer.git && cd rasterklang-
 npm install && npm link
 
 export OPENROUTER_API_KEY=...
-rk-composer "cracktro for a lost floppy disk, fast and cocky" 
+rk-composer "cracktro for a lost floppy disk, fast and cocky" -d out/my-first-tune
+rk-composer play out/my-first-tune
 ```
 
 Each run writes a song folder: `song.sid` (plays on a real C64 and in any SID
