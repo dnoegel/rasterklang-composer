@@ -21,6 +21,10 @@ import { buildSid } from './export/sid.js';
 import { Rng } from './gen/prng.js';
 import { generator } from './generator.js';
 
+// A brief is about 3,000-4,000 output tokens, reasoning included, and long
+// ones reach 6,000; a cut-off answer is no valid JSON, so leave room.
+export const COMPOSER_MAX_TOKENS = 12000;
+
 export const seededRand = (...labels) => {
   const rng = new Rng('pipeline', ...labels);
   return () => rng.next();
@@ -114,7 +118,7 @@ export function createPipeline({ gen = generator, llm = null, rand = seededRand(
       const b = G.answerToBrief(answer, prompt);
       return G.validateBrief(material ? G.applyMaterial(b, answer, material) : b);
     };
-    const ask = (text, turns = [], s = schema) => llm({ role: 'composer', system: G.systemPrompt(), user: text, turns, schemaName: 'song_brief', schema: s, temperature: 0.9, maxTokens: 6000, timeoutMs: 90000 });
+    const ask = (text, turns = [], s = schema) => llm({ role: 'composer', system: G.systemPrompt(), user: text, turns, schemaName: 'song_brief', schema: s, temperature: 0.9, maxTokens: COMPOSER_MAX_TOKENS, timeoutMs: 120000 });
     for (let attempt = 0; attempt < 2; attempt += 1) {
       const text = errors ? `${user}\n\nYour previous brief had these problems, fix them:\n${errors.map((e) => `- ${e}`).join('\n')}` : user;
       const out = await ask(text);
