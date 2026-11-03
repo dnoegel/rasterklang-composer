@@ -80,6 +80,14 @@ async function chatOnce({ url, key, model, system, user, turns = [], schemaName,
   return { answer, usage: data.usage || null };
 }
 
+// "Provider returned error" alone says nothing; the provider's own reason
+// is in metadata.raw
+function errorText(e) {
+  const raw = e?.metadata?.raw;
+  const detail = raw ? String(typeof raw === 'string' ? raw : JSON.stringify(raw)).replace(/\s+/g, ' ').slice(0, 300) : '';
+  return `${e?.message || 'error'}${e?.metadata?.provider_name ? ` (${e.metadata.provider_name})` : ''}${detail ? `: ${detail}` : ''}`;
+}
+
 // One step of a tool-calling conversation: returns the
 // assistant message (content and/or tool_calls) to append.
 export async function chatStep({ url, key, model, messages, tools, toolChoice = 'auto', temperature = 0.3, maxTokens = 4000, timeoutMs = 60000, plugins = null, reasoning = null }) {
@@ -99,8 +107,8 @@ export async function chatStep({ url, key, model, messages, tools, toolChoice = 
     signal: AbortSignal.timeout(timeoutMs),
   });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(`OpenRouter ${res.status}: ${data?.error?.message || 'error'}`);
-  if (data?.error) throw new Error(`OpenRouter: ${data.error.message || 'error'}`);
+  if (!res.ok) throw new Error(`OpenRouter ${res.status}: ${errorText(data?.error)}`);
+  if (data?.error) throw new Error(`OpenRouter: ${errorText(data.error)}`);
   meter(data.usage);
   const message = data.choices?.[0]?.message;
   if (!message) throw new Error('empty answer');

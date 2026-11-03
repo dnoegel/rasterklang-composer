@@ -66,13 +66,31 @@ export async function research({ prompt, interpretation, url, key, model, search
     if (late && round > 0 && messages[messages.length - 1].role === 'tool') {
       messages.push({ role: 'user', content: 'Time is up: submit material from the scores you loaded, or call no_score_found.' });
     }
-    modelCalls += 1;
-    const { message } = await chatStep({
+    const step = () => chatStep({
       url, key, model, messages, maxTokens: 8000, timeoutMs: 60000,
+      // when late only the ending tools are offered; no forced tool_choice,
+      // since some providers (Bedrock with thinking) reject "required"
       tools: late ? tools.filter((t) => ending.has(t.function.name)) : tools,
-      toolChoice: late ? 'required' : 'auto',
+      toolChoice: 'auto',
     });
-    messages.push({ role: 'assistant', content: message.content ?? (message.tool_calls?.length ? null : ''), ...(message.tool_calls?.length ? { tool_calls: message.tool_calls } : {}) });
+    modelCalls += 1;
+    let message;
+    try {
+      ({ message } = await step());
+    } catch (err) {
+      // a provider failure is often passing; one more try before the
+      // whole research fails
+      if (!/provider returned error|OpenRouter (429|5\d\d)/i.test(err.message)) throw err;
+      log(`research step failed, retrying: ${String(err.message).slice(0, 300)}`);
+      await new Promise((r) => setTimeout(r, 2000));
+      modelCalls += 1;
+      ({ message } = await step());
+    }
+    const hasCalls = message.tool_calls?.length > 0;
+    const text = (Array.isArray(message.content) ? message.content.map((c) => c.text || '').join('') : String(message.content || '')).trim();
+    // Anthropic rejects an assistant turn with empty text, so an empty
+    // answer without tool calls is kept as a placeholder
+    messages.push({ role: 'assistant', content: text || (hasCalls ? null : '(no answer)'), ...(hasCalls ? { tool_calls: message.tool_calls } : {}) });
     const toolCalls = message.tool_calls || [];
     if (!toolCalls.length) {
       messages.push({ role: 'user', content: 'Use the tools, and finish with submit_material or no_score_found.' });
