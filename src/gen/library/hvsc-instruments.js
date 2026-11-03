@@ -83,10 +83,10 @@ export const HVSC_DRUMS = {
   // noise G#7; AD 00 SR 16
   hatTight: `
   adsr 0 0 1 6
-  wave 0 noise
+  wave 0 noise!2
   arp =104!2
-  gate 1 0
-  loop wave 1 arp 1 gate 1
+  gate 1!2 0
+  loop wave 2 arp 2 gate 2
 `,
   // noise G#5, pulse E3-E1 (3 frames); fixed width; AD 00 SR F7
   kickThin: `

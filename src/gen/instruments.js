@@ -396,13 +396,32 @@ function bodyOf(name, sound, speed, arp, tuning = null) {
   return body;
 }
 
+// Hard restart for the accurate SID engine (and real C64s): the SID's
+// envelope waits for its rate counter to wrap (the ADSR delay bug), so an
+// attack or release can start up to about 1.7 frames late, and a short drum
+// hit loses its first frame. Before every note (also after a rest) the
+// envelope goes to 00 00, and a release faster than the decay is preset just
+// before the gate closes (rasterklang-dsl 4.7.0). Gate tables restart in
+// their last frame, `gate -M` instruments in their M frames. Slow attacks
+// keep their envelope, as a restart from silence would change their sound.
+const RESTART_CLAUSES = 'ad 0 0 sr 0 0 afterRests presetRelease';
+const RESTART_MAX_ATTACK = 5;
+function withHardRestart(body) {
+  const attack = /\n {2}adsr (\d+)/.exec(body);
+  if (attack && Number(attack[1]) > RESTART_MAX_ATTACK) return body;
+  if (/\n {2}gate [01](!\d+)?( [01](!\d+)?)+(\n|$)/.test(body)) return `${body}\n  hardRestart 1 ${RESTART_CLAUSES}`;
+  return body.replace(/\n {2}gate -(\d+)(?=\n|$)/, `\n  hardRestart $1 ${RESTART_CLAUSES}`);
+}
+
 // speed: frames per beat of the song (bend variants slide in frames);
-// arp: the song's arp sound (ARP_SOUNDS).
+// arp: the song's arp sound (ARP_SOUNDS). With a tuning (score 0.2) every
+// instrument gets its hard restart (withHardRestart).
 export function instrumentBlocks(names, sound = null, speed = 24, arp = 'pwm', tuning = null) {
   const out = [];
   for (const name of names) {
-    const body = bodyOf(name, sound, speed, arp, tuning);
+    let body = bodyOf(name, sound, speed, arp, tuning);
     if (!body) throw new Error(`unknown instrument ${name}`);
+    if (tuning) body = withHardRestart(body);
     out.push(`instrument ${name}${body}\nend`);
   }
   return out.join('\n\n');
