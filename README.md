@@ -240,12 +240,12 @@ rasterklang-compose, the app this library was extracted from.
 
 - [rasterklang-dsl](https://github.com/dnoegel/rasterklang-dsl): the music language the songs are written in
 - [rasterklang-score](https://github.com/dnoegel/rasterklang-score): compiler from DSL to SID register frames
-- [rasterklang-wasm](https://github.com/dnoegel/rasterklang-wasm): the SID engine in WebAssembly, used for WAV rendering
+- [rasterklang-wasm](https://github.com/dnoegel/rasterklang-wasm): the SID engine in WebAssembly, used for WAV rendering (npm: `rasterklang-wasm`)
 
 ## Credits and license
 
 MIT, see [LICENSE](LICENSE). The pattern, sound and profile tables in
 `src/gen/library/` are statistics and short instrument programs derived from
 the [High Voltage SID Collection](https://www.hvsc.c64.org) and its STIL;
-thanks to the HVSC team and to every musician in it. The vendored SID engine
-is listed in [NOTICE](NOTICE).
+thanks to the HVSC team and to every musician in it. WAV files are rendered
+with [rasterklang-wasm](https://www.npmjs.com/package/rasterklang-wasm) (MIT).

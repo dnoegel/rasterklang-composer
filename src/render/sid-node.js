@@ -1,14 +1,19 @@
-// Real SID render in Node: the Go/WASM engine of rasterklang-wasm, vendored in
-// vendor/rasterklang-wasm/ (known issue:
-// its loader wants `document`, so we load wasm_exec.js ourselves and hand
-// fetch() the wasm file). renderPcm(frames) -> Float32Array, mono.
+// Real SID render in Node: the Go/WASM engine from the rasterklang-wasm
+// package (its loader wants `document`, so we load wasm_exec.js ourselves and
+// hand fetch() the wasm file). renderPcm(frames) -> Float32Array, mono.
 //   frames: arrays from renderFrames, flat [addr, value, ...] per frame (50 fps)
 //   mute:   voices 0-2 to silence (their waveform bits are forced to 0)
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-const WASM_DIR = join(import.meta.dirname, '..', '..', 'vendor', 'rasterklang-wasm');
+// the package's dist/ folder; it exports only its ESM entry, so look it up
+// along Node's module paths
+const WASM_DIR = createRequire(import.meta.url).resolve.paths('rasterklang-wasm')
+  .map((p) => join(p, 'rasterklang-wasm', 'dist'))
+  .find((d) => existsSync(join(d, 'rasterklang.wasm')));
+if (!WASM_DIR) throw new Error('rasterklang-wasm not found: npm install');
 let rkPromise;
 
 function loadRk() {
