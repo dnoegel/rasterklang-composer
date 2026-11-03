@@ -1,8 +1,8 @@
-// Instrument bank as rasterklang-dsl instrument blocks. Ported from
-// an earlier prototype's audio/sounds.js (wavetables, PWM bounds, drum
-// programs) to DSL tables, which run per frame since each note's onset.
+// Instrument bank as rasterklang-dsl instrument blocks: wavetables, PWM
+// bounds and drum programs as DSL tables, which run per frame since each
+// note's onset.
 // Pulse sweeps stay within pw >= 768 and small steps: narrower or faster
-// sweeps alias into hiss in the emulator (launchpad known issue).
+// sweeps alias into hiss in the emulator.
 
 import { customEnvelope, holdEnvelope, bassEnvelope, ECHO_RULE } from './sound/profile.js';
 import { BASSES } from './library/palettes.js';
@@ -71,7 +71,7 @@ const DRUMS = {
   arp =104 =101
   adsr 0 10 0 0
   gate -1`,
-  // kits in C64 style
+  // C64-style drum kits (library/hvsc-instruments.js)
   ...Object.fromEntries(Object.entries(HVSC_DRUMS).map(([id, body]) => [id, body.trimEnd()])),
   // standard library kits; all candidates compile, the palettes hold the passed ones
   ...CANDIDATE_DRUMS,
@@ -133,7 +133,7 @@ const MELODIC = {
   gate -2`,
 
   // ---- lead -------------------------------------------------------------
-  // classic SID tricks (an earlier prototype): ring modulation and hard sync
+  // classic SID tricks: ring modulation and hard sync
   // take the neighbouring voice (usually the bass) as source, so the timbre
   // moves with the bass line. ring/sync are voice fields in the DSL: the
   // emitter switches them on for the steps these leads play (src/gen/emit.js).
@@ -242,7 +242,7 @@ const MELODIC = {
   vibTri 2 s3 12
   gate -2`,
 
-  // ---- in C64 style -------------------------
+  // ---- C64-style basses and leads (library/hvsc-instruments.js) ----
   ...Object.fromEntries(Object.entries({ ...HVSC_BASSES, ...HVSC_LEADS }).map(([id, v]) => [id, v.body.trimEnd()])),
   // ---- standard library of HVSC sounds ----------------------
   ...Object.fromEntries(Object.entries({ ...CANDIDATE_BASSES, ...CANDIDATE_LEADS }).map(([id, v]) => [id, v.body])),
@@ -261,8 +261,7 @@ export const ARP_SHAPES = {
   M7: [0, 4, 7, 11],
   m7: [0, 3, 7, 10],
   7: [0, 4, 7, 10],
-  // inversions (common in real SID music: 0-3-8, 0-5-9, 0-4-9, 0-5-8 in
-  //
+  // inversions (common in real SID music: 0-3-8, 0-5-9, 0-4-9, 0-5-8)
   M1: [0, 3, 8],
   M2: [0, 5, 9],
   m1: [0, 4, 9],
@@ -335,7 +334,7 @@ export function customLeadBody(sound, rule = null) {
 
 // Echo variant of a lead: the SID has no volume per voice, and
 // every attack peaks at full level, so the echo decays fast to a low
-// sustain (tracker echoes sit 3-6 sustain steps below their lead).
+// sustain (C64 echoes typically sit 3-6 sustain steps below their lead).
 // Pulse width stays at its first value and there is no vibrato: an echo
 // needs no movement of its own, and per-frame writes would fill the .sid.
 function echoBody(body, rule = null) {
@@ -348,7 +347,7 @@ function echoBody(body, rule = null) {
 
 // Bend variant of a lead: the same sound gliding into the note
 // from the previous one in about three frames, for the few notes a melody
-// slides into (tracker leads glide on about 5 % of notes, mostly by a
+// slides into (C64 leads glide on a few percent of notes, mostly by a
 // half or whole step).
 function bendBody(body, speed) {
   return /\n {2}slide /.test(body) ? body : body.replace(/\n {2}gate /, `\n  slide ${Math.max(0.02, Math.round((300 / speed)) / 100)}\n  gate `);

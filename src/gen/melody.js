@@ -1,5 +1,4 @@
-// Motif-based melody,
-// "Melodies need motifs"). A section's melody is built from a few one-bar
+// Motif-based melody. A section's melody is built from a few one-bar
 // motifs (rhythm cell + scale-step contour), arranged by a phrase template
 // (period, sentence, riff, sequence, bar form). Templates develop their
 // motifs instead of repeating them: sequence, inversion,
@@ -7,8 +6,8 @@
 // snap to chord tones, the section follows an arch, phrases end on cadence
 // notes, choruses sit higher. Repeated sections reuse their motifs so hooks
 // come back recognisably, each repeat with its own variation, the head of
-// every phrase unchanged (lessons from an earlier experiment: exact repeats sound
-// static, unrelated phrases sound like a medley).
+// every phrase unchanged (exact repeats sound static, unrelated phrases
+// sound like a medley).
 
 import { SCALES, nearestIndex, noteName } from './theory.js';
 import { Rng } from './prng.js';
@@ -120,8 +119,8 @@ function cadenceCell(cell, steps) {
 }
 
 // Lead rhythms of real SID music: the cells of a feel gain the
-// one-bar rhythms several tracker authors used, weighted by the square
-// root of their author count and together HVSC_SHARE times the bank's
+// one-bar rhythms common in C64 music, weighted by the square
+// root of how often they occur and together HVSC_SHARE times the bank's
 // weight, so the rare ones come up too. The "sid" feel draws on all of them.
 const HVSC_SHARE = 3;
 const hvscPool = {};
@@ -151,7 +150,7 @@ function onsetCount(cell) {
 }
 // The pool in order of onset count, ties in pool order: the stable sort by
 // count, as a bucket pass (a cell has at most 16 onsets; the corpus pools
-// of are long, and this runs for every bar).
+// are long, and this runs for every bar).
 function byOnsetCount(pool) {
   const buckets = [];
   for (const e of pool) (buckets[onsetCount(e[0])] ||= []).push(e);

@@ -2,9 +2,8 @@
 // two bass sounds, and a section change that changes too much at once is
 // announced with a fill or keeps the bass sound it had. Runs on every brief
 // (rule-based and model-written) before the plan is made; it draws nothing,
-// so the same brief always gets the same cast. The listener tagged a section
-// change of a model brief "diced (sections don't fit)" in listening session 1;
-// src/eval/cohesion.js measures it.
+// so the same brief always gets the same cast. A section change that swaps
+// too much at once sounds diced; src/eval/cohesion.js measures it.
 import { cohesion, DICED_LOAD } from '../eval/cohesion.js';
 
 export const MAX_LEADS = 3;

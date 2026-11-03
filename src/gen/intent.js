@@ -1,6 +1,5 @@
-// Prompt -> intent. puts a language model here; this first slice
-// uses keyword matching so the pipeline runs without
-// an API key. The intent shape is the contract either way: discrete fields,
+// Prompt -> intent by keyword matching (English and German), so the
+// pipeline also runs without a model and an API key. The intent shape is the contract either way: discrete fields,
 // each may be unspecified (null).
 
 import { MOODS, MOOD_WORDS, SCENES } from './moods.js';

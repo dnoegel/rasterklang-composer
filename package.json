@@ -38,13 +38,11 @@
     "./llm/*": "./src/llm/*",
     "./research/*": "./src/research/*",
     "./render/*": "./src/render/*",
-    "./package.json": "./package.json",
-    "./data/*": "./data/*"
+    "./package.json": "./package.json"
   },
   "files": [
     "bin/",
     "src/",
-    "data/",
     "docs/",
     "skills/",
     "examples/"

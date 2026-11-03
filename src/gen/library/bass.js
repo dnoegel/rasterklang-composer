@@ -11,7 +11,7 @@ export const BASS = {
   whole_note: { meter: '4/4', name: 'sustained root', tags: ['any', 'ambient'], energy: [0, 0.3], row: 'R_______________' },
   octave_8ths: { meter: '4/4', name: 'octave bass in 8ths', tags: ['synth', 'disco', 'dance'], energy: [0.35, 0.8], row: 'R.8.R.8.R.8.R.8.' },
   octave_16th: { meter: '4/4', name: 'octave bass in 16ths', tags: ['c64', 'synth', 'dance'], energy: [0.6, 1], row: 'R8R8R8R8R8R8R8R8' },
-  // bass in constant motion, as in an earlier prototype's C64 kits
+  // bass in constant motion, as in classic C64 tunes
   run16: { meter: '4/4', name: 'root-fifth-octave run in 16ths', tags: ['c64', 'game', 'dance', 'synth'], energy: [0.6, 1], row: 'R585R585R585R585' },
   sync_bass: { meter: '4/4', name: 'syncopated octave-fifth bass', tags: ['c64', 'game', 'synth', 'funk'], energy: [0.4, 0.9], row: 'R..8..R.5..8..5.' },
   acid_line: { meter: '4/4', name: 'acid line jumping octave and fifth', tags: ['c64', 'dance', 'synth'], energy: [0.5, 1], row: 'R.8R.58.R8.5R.85' },
@@ -33,7 +33,7 @@ export const BASS = {
   country: { meter: '4/4', name: 'country bass (alternating root and fifth)', tags: ['country'], energy: [0.3, 1], row: 'R.......5.......' },
   rocknroll: { meter: '4/4', name: "rock'n'roll bass", tags: ['rock', 'rockabilly', 'country'], energy: [0.4, 1], row: 'R.3.5.6.8.6.5.3.' },
   fuzz_8ths: { meter: '4/4', name: 'fuzz bass in 8ths with octave', tags: ['rock', 'alternative'], energy: [0.5, 1], row: 'R.R.R.R.8.R.R.5.' },
-  // common in C64 music
+  // common C64 bass figures
   offbeat_stab: { meter: '4/4', name: 'short offbeat bass', tags: ['sid', 'synth', 'dance', 'game'], energy: [0.4, 1], source: 'hvsc', row: '..R_..R_..R_..R_' },
   eighth_legato: { meter: '4/4', name: 'legato 8ths', tags: ['sid', 'synth', 'rock', 'game'], energy: [0.4, 1], source: 'hvsc', row: 'R_R_R_R_R_R_R_R_' },
   quarter_stab: { meter: '4/4', name: 'short quarters', tags: ['sid', 'game', 'pop'], energy: [0.3, 0.8], source: 'hvsc', row: 'R_..R_..R_..R_..' },

@@ -1,8 +1,7 @@
 // Styles are weights over the shared library plus a signature:
 // entries the main sections must use, so the genre stays recognisable
 // while everything else varies. Research ranks identity: tempo and groove,
-// then bass idiom, then scale and one signature device
-//. Weights are defaults to
+// then bass idiom, then scale and one signature device. Weights are defaults to
 // tune by ear.
 //
 // Fields: meter weights, tempo band (bpm per felt beat), modes, grooves,

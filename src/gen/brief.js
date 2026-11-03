@@ -152,7 +152,7 @@ export function sampleBrief(intent, seedKey, styleId, blend = null, { standard =
       || Object.keys(PROGRESSIONS).find((id) => PROGRESSIONS[id].tonality === tonality);
     const progression = PROGRESSIONS[progressionId].chords.map((s) => colourChord(s, target.sevenths, rng, style.palette.chords === 'power'));
     // groove and bass: the chorus must carry the signature; common SID
-    // idioms derived from HVSC join every 4/4 style's pool with a small weight
+    // idioms common in C64 music join every 4/4 style's pool with a small weight
     const grooveOk = (id) => GROOVES[id]?.meter === meter;
     const sidGrooves = meter === '4/4' ? { sid_drive: 0.5, sid_kss: 0.35 } : {};
     const sidBass = meter === '4/4' ? { offbeat_stab: 0.4, eighth_legato: 0.4, quarter_stab: 0.3, octave_legato: 0.3, syncopated_push: 0.3, offbeat_quarters: 0.2, octave_gallop: 0.2, pickup_whole: 0.2 } : {};
@@ -184,7 +184,7 @@ export function sampleBrief(intent, seedKey, styleId, blend = null, { standard =
     if (type === 'chorus' && !TEXTURES[texture].stages.some(([, r]) => r.includes('L'))) {
       texture = pickWeighted(rng, style.textures.main, (id) => TEXTURES[id]?.stages.some(([, r]) => r.includes('L'))) || 'full';
     }
-    // sounds derived from HVSC join the style's own palette
+    // C64-typical sounds join the style's own palette
     const leadPool = sig.lead ? Object.fromEntries(sig.lead.map((l) => [l, 1]))
       : alongIdiom({ ...hvscPool(style, 'lead'), ...style.palette.lead }, idiom, (l) => C64_LEADS.includes(l), C64_LEADS, 0.8);
     const lead = pickWeighted(rng, leadPool, (l) => LEADS[l]);
@@ -197,8 +197,8 @@ export function sampleBrief(intent, seedKey, styleId, blend = null, { standard =
 
   const sections = [];
   let templ = FORMS[formId].sections;
-  // real SID songs mostly start straight away (59 % with all voices in bar 1,
-  //: drop the intro now and then, or shorten it
+  // most C64 songs start straight away, with all voices in the first bar:
+  // drop the intro now and then, or shorten it
   if (templ[0]?.[0] === 'intro' && intent.form !== 'loop') {
     const r = rng.next();
     if (r < 0.3) templ = templ.slice(1);
@@ -241,7 +241,7 @@ export function sampleBrief(intent, seedKey, styleId, blend = null, { standard =
   trimToLength(sections, (METERS[meter].unit === 8 ? METERS[meter].beats / 3 : METERS[meter].beats) * 60 / target.tempo);
   // Bass figures of real SID music: sections other than the
   // chorus (which carries the genre's signature bass) take a figure several
-  // tracker authors used, fitting the section's energy; a repeated
+  // C64 composers commonly use, fitting the section's energy; a repeated
   // section keeps its figure. Its own random stream leaves the other choices
   // of the song as they were.
   if (meter === '4/4') {
@@ -604,8 +604,8 @@ export function planFromBrief(brief, seedKey) {
     counts[s.type] = (counts[s.type] || 0) + 1;
     const key = (brief.keyRoot + (s.transpose || 0) + 12) % 12;
     const chords = [];
-    // harmonic rhythm: a chord may last two bars (common in SID music:
-    // i-i-bVI-bVI loops in
+    // harmonic rhythm: a chord may last two bars (common in SID music,
+    // i-i-bVI-bVI loops)
     const per = s.chordBars === 2 ? 2 : 1;
     for (let i = 0; i < s.bars; i += 1) chords.push(chordAt(key, s.chords[Math.floor(i / per) % s.chords.length]));
     const texture = TEXTURES[s.texture];

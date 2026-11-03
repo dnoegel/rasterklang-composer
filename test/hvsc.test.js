@@ -59,16 +59,7 @@ describe('HVSC inventory data', () => {
     expect(tunes.some((t) => t.brief.sections.some((s) => s.chordBars === 2))).toBe(true);
   });
 
-  it('C64-style instruments match their data file', () => {
-    const data = JSON.parse(readFileSync(new URL('../', import.meta.url), 'utf8'));
-    expect(Object.keys(HVSC_KITS)).toEqual(data.picked.kits.map((k) => k.id));
-    expect(Object.keys(HVSC_BASSES)).toEqual(data.picked.basses.map((b) => b.id));
-    expect(Object.keys(HVSC_LEADS)).toEqual(data.picked.leads.map((b) => b.id));
-    for (const b of [...data.picked.basses, ...data.picked.leads]) expect(b.authors).toBeGreaterThanOrEqual(4);
-    for (const b of data.picked.leads) expect(b.level).toBeGreaterThanOrEqual(data.picked.minLeadLevel);
-  });
-
-  it('songs use C64-style kits, sounds, echoes and bends, and still fit a .sid', () => {
+  it('songs use library kits, sounds, echoes and bends, and still fit a .sid', () => {
     const tunes = [1, 2, 3, 4, 5, 6].flatMap((s) => ['happy platformer level', 'melancholic rainy night synthwave'].map((p) => compose(p, s)));
     expect(tunes.some((t) => t.plan.palette.kit && t.plan.palette.kit !== 'std')).toBe(true);
     const kitSong = tunes.find((t) => HVSC_KITS[t.plan.palette.kit]);
@@ -83,14 +74,12 @@ describe('HVSC inventory data', () => {
 });
 
 describe('HVSC standard library', () => {
-  it('matches its data file and every sound compiles and sounds', async () => {
+  it('every sound compiles and sounds', async () => {
     const lib = await import('../src/gen/library/hvsc-library.js');
-    const data = JSON.parse(readFileSync('', 'utf8'));
     const roles = ['kick', 'snare', 'hat', 'tom', 'bass', 'lead', 'arp', 'pad'];
     const bodies = [];
     for (const role of roles) {
       const mod = lib[`${role.toUpperCase()}S`];
-      expect(Object.keys(mod).length).toBe(data.library[role].length);
       bodies.push(...Object.values(mod).map((x) => x.body));
     }
     for (const kit of Object.values(lib.KITS)) bodies.push(kit.kick.body, kit.snare.body, kit.hat.body);

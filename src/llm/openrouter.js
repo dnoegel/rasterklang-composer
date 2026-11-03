@@ -3,7 +3,7 @@
 
 import { AsyncLocalStorage } from 'node:async_hooks';
 
-// What the model calls of one request cost (API clients): run the
+// What the model calls of one request cost: run the
 // request inside costMeter.run({ usd: 0, calls: 0 }, ...) and every call
 // below adds OpenRouter's reported cost. Without a reported cost the tokens
 // are priced like Sonnet, so the meter errs on the high side.

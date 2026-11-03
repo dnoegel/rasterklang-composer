@@ -1,10 +1,7 @@
 rasterklang-composer
 Copyright (c) 2026 Daniel Nögel. MIT License, see LICENSE.
 
-Third-party material
-
-src/gen/library/hvsc*.js, standard*.js, corpus data
-  Statistics, rhythm patterns and short instrument programs derived from the
-  High Voltage SID Collection (https://www.hvsc.c64.org) and its STIL. The
-  SID tunes themselves are not included. Credit to the HVSC team and to the
-  C64 musicians whose work the collection preserves.
+The tables in src/gen/library/ contain statistics about C64 music (common
+rhythms, drum lines, bass figures and sound shapes) compiled from the High
+Voltage SID Collection (https://www.hvsc.c64.org). No SID tunes are included.
+Thanks to the HVSC team and to the C64 musicians whose work it preserves.

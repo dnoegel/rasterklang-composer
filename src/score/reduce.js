@@ -1,5 +1,5 @@
-// A score (from MIDI, MusicXML or ABC) -> what three SID voices can play
-//: one lead line (the highest voice, or a chosen part), one bass
+// A score (from MIDI, MusicXML or ABC) -> what three SID voices can play:
+// one lead line (the highest voice, or a chosen part), one bass
 // line (the lowest), one chord per bar, on the generator's step grid.
 // Notes are note names ("f5", "c#4"), "_" holds, "." rests, as in the
 // own-melody field.

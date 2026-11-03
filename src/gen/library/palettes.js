@@ -55,7 +55,7 @@ export const ARP_POOLS = {
 
 // Drum kits: which instrument plays kick, snare and closed hat. `std` is
 // the bank's own kit (its snare is the brief's snare choice); the others
-// are kits in C64 style, whose snare replaces
+// are C64-style kits, whose snare replaces
 // snare/snare2 (a clap stays a clap). Toms, open hat and crash are shared.
 export const KITS = {
   std: { name: 'the bank\'s own kit: noise-click kick, noise snare, short hat', kick: 'kick', snare: null, hat: 'hat' },

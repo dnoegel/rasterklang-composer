@@ -1,5 +1,5 @@
 // .sid export: a PSID v2 with a small 6502 register-dump
-// replayer, extended from an earlier prototype's exporter. The frame
+// replayer. The frame
 // stream is split into four streams (voice 1, voice 2, voice 3, filter and
 // volume) and each stream into one block per bar. Identical blocks are
 // stored once and a per-stream orderlist replays them in song order, so

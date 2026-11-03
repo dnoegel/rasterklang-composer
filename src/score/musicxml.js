@@ -1,5 +1,5 @@
-// MusicXML (partwise, uncompressed) -> the score shape reduceScore reads
-//. Pitches, durations, chords, ties, backup/forward between
+// MusicXML (partwise, uncompressed) -> the score shape reduceScore reads.
+// Pitches, durations, chords, ties, backup/forward between
 // voices, time and key signature, tempo; repeats are not played out,
 // grace notes are skipped.
 

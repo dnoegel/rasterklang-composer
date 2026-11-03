@@ -1,7 +1,5 @@
-// Using the HVSC inventory (library/hvsc.js, generated from corpus data):
-// style hints per genre and artist fingerprints, measured from how C64
-// musicians arranged known music. Capture-inferred values: see
-// for their reliability.
+// Style hints per genre and artist fingerprints (library/hvsc.js):
+// statistics on how C64 arrangements of known music are built. Approximate.
 
 import { GENRE_HINTS, ARTISTS } from './library/hvsc.js';
 import { SCALES, MINOR_MODES } from './theory.js';

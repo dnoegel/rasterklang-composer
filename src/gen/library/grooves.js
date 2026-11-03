@@ -50,11 +50,10 @@ export const GROOVES = {
     levels: ['k.......k.......', 'k.s.k.s.k.s.k.s.', 'khshkhshkhshkhsh', 'khshkhshkhshkhss'] },
   grunge: { meter: '4/4', name: 'heavy rock beat with open hi-hats', tags: ['rock', 'alternative'], energy: [0.4, 1],
     levels: ['k.......s.......', 'k.o.s.o.k.o.s.o.', 'k.oks.o.kko.s.o.', 'kooksooxkkooso.o'] },
-  // common in C64 music: the
-  // most common one-voice drum lines of real SID music
+  // the most common one-voice drum lines of C64 music
   sid_drive: { meter: '4/4', name: 'SID drive (alternating kick and snare)', tags: ['sid', 'synth', 'game', 'rock'], energy: [0.3, 1], source: 'hvsc',
     levels: ['k.......k.......', 'k...s...k...s...', 'k.s.k.s.k.s.k.s.', 'ksssksssksssksss'] },
-  // the driving demo-scene beat of an earlier prototype's kits
+  // the driving demo-scene beat
   c64_drive: { meter: '4/4', name: 'C64 drive with ticking hats', tags: ['c64', 'game', 'synth', 'dance'], energy: [0.4, 1],
     levels: ['k...s...k...s...', 'k.h.s.hkk.h.s.hh', 'k.hhs.hhk.hhs.ho', 'khkhshkhkhkhshss'] },
   sid_kss: { meter: '4/4', name: 'SID kick with snare hats', tags: ['sid', 'game', 'synth'], energy: [0.3, 1], source: 'hvsc',

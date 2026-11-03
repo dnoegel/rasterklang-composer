@@ -96,7 +96,7 @@ function stageAt(section, b) {
 const kitOf = (plan) => KITS[plan.palette.kit] || KITS.std;
 // Lead tokens with the section's lead sound. A note reached by a half or
 // whole step straight from the note before may glide into place (its bend
-// variant), as tracker leads do on about 5 % of their notes.
+// variant), as C64 leads do on a few percent of their notes.
 // Leads that glide on every note anyway are left alone.
 const SLIDING = new Set(['glide']);
 function leadBar(mbar, inst, plan, rng, state) {
@@ -328,7 +328,7 @@ function counterBar(section, b, plan, leadNotes, prev, energy) {
 // dense bass figure (half the steps or more, a gallop or 16ths) the kicks no
 // longer fill its rests and only the snare beats and the crash interrupt it:
 // otherwise bass and drums ran together into one stream of 16ths whose
-// figure nobody could follow.
+// figure nobody could follow (heard in a metal chorus at 166 bpm).
 function multiplex(drums, bass, kit) {
   const dense = bass.filter((c) => c.tok !== '~' && c.tok !== '_').length >= bass.length / 2;
   return drums.map((d, i) => {
@@ -477,7 +477,7 @@ export function arrange(plan, rng, melodyRng) {
       // filter routing: the echo (darker, further away), and the bass only
       // when the section sweeps it (open, close, wobble): a routed voice
       // loses about half its level even with the filter open, which left
-      // the low end about 3 dB under the HVSC.
+      // the low end about 3 dB under typical C64 music.
       // Without them the chords; else a silent voice (routing it is
       // harmless), never the lead or drums alone
       const pick = (set) => [...roles].map((r, v) => (set.includes(r) ? v : -1)).filter((v) => v >= 0);

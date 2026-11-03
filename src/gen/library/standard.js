@@ -1,11 +1,11 @@
-// The standard library of HVSC sounds as V2 instruments
-//: basses, leads and drum kits under their own names, `std`
+// The standard library of C64 sounds as instruments: basses, leads and
+// drum kits under their own names, `std`
 // plus role plus a number taken from the program itself (stdlead417,
 // stdkit203 with stdkick203, stdsnare203), so a sound keeps its name when
-// the library is rebuilt from a new corpus run. A program that is already in the C64-style tracker
+// the library is rebuilt. A program that is already in the C64-style
 // palette keeps that name instead of a copy. Every candidate
 // compiles (CANDIDATE_*); only those in STANDARD_PASSED (written by
-// scripts/standard-gate.mjs) join the palettes, the pools and the model's
+// a gate that checks each sound in a mix) join the palettes, the pools and the model's
 // menu. Arps, pads and lone toms of the library do not fit V2's roles
 // (arp sounds are per-chord presets) and are left out.
 
@@ -72,7 +72,7 @@ export const CANDIDATE_BASSES = pitched(BASSS, 'bass');
 export const CANDIDATE_LEADS = pitched(LEADS, 'lead');
 
 // Kits: each drum is a new instrument unless the C64-style palette has its
-// program already; a kit whose three drums all exist as one C64-style kit is left out.
+// program already; a kit whose three drums all exist as one kit there is left out.
 export const CANDIDATE_DRUMS = {};
 export const CANDIDATE_KITS = {};
 const takenKits = new Set();

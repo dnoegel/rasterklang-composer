@@ -10,7 +10,7 @@ const DIR = join(import.meta.dirname, '..', 'examples', 'briefs');
 const briefs = readdirSync(DIR).filter((f) => f.endsWith('.json')).sort()
   .map((f) => JSON.parse(readFileSync(join(DIR, f), 'utf8'))).filter((x) => x.answer).slice(0, 6);
 
-//: "New variant" on an AI song lets code redraw the arrangement
+// "New variant" on a model-written song lets code redraw the arrangement
 describe('code variants of a model brief', () => {
   it('leaves seed 1 as the model wrote it', () => {
     const { prompt, answer } = briefs[0];

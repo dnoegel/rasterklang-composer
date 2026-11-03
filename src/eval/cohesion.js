@@ -1,6 +1,5 @@
-// How well a song's sections fit together (the listener's "diced, sections
-// don't fit" tag, listening session 1): read from the plan, no
-// audio. At each section boundary it counts what changes at once (lead
+// How well a song's sections fit together (songs whose sections change
+// too much at once sound diced): read from the plan, no audio. At each section boundary it counts what changes at once (lead
 // sound, bass sound, groove, melody feel, bass figure, mode, voice roles); a
 // fill, a stop or a dropout before the boundary, or a boundary into or out
 // of an intro, outro or breakdown, announces the change and counts one less.

@@ -71,7 +71,7 @@ export const TRANSITIONS = {
 
 // Echo voice: when a song has one, a voice that is silent while
 // the lead plays carries the lead's echo. Chance per style family; 13 % of
-// tracker songs echo their lead, most in game, demo and synth music.
+// C64 songs echo their lead, most in game, demo and synth music.
 export const ECHO_CHANCE = {
   synth: 0.6, game: 0.5, ambient: 0.6, cinematic: 0.45, pop: 0.35, dance: 0.35, rock: 0.25, metal: 0.2, hiphop: 0.3, funk: 0.2,
 };

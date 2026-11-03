@@ -1,6 +1,6 @@
 // The SID-idiom spectrum. 0: a genre played faithfully on the
 // SID, the chip only the instrument. 1: fully C64-native, as the classic
-// game and demo composers wrote (the world of an earlier prototype): bass
+// game and demo composers wrote: bass
 // in constant motion, chord arpeggios as a main voice, quick runs, echo,
 // octave/ring/sync leads, a driving beat. No modes: the value weights the
 // building blocks tagged c64, so songs move along a spectrum.
