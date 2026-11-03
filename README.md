@@ -2,7 +2,7 @@
 
 **Prompt in, Commodore 64 music out.**
 
-![rk-composer turns "cracktro for a lost floppy disk, fast and cocky" into a song; the C64 screen shows its three SID voices playing](docs/hero.png)
+https://github.com/user-attachments/assets/80d4df37-2e61-4b8b-8eaf-e0d9ff2b4cde
 
 ```sh
 rk-composer "speed metal for a disk drive grinding through midnight, frantic and smoking"
