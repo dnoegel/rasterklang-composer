@@ -417,14 +417,24 @@ function withHardRestart(body) {
 // noise generator from bit 19 of the oscillator, the engine the instruments
 // were tuned on from bit 23, so on a real C64 (and rasterklang-wasm 0.1.1)
 // every noise frame sounded 16 times faster, much brighter. Every arp entry
-// that plays on a noise frame moves down 48 semitones, so the noise sounds as
-// it was tuned. Wave and arp tables are expanded frame by frame with the
+// that plays on a noise frame moves down 48 semitones (from the register a
+// wrapped high note really played), so the noise sounds as it was tuned. Wave and arp tables are expanded frame by frame with the
 // compiler's wrap-and-loop rule and the arp table is written back with their
 // common period. kickThin's noise frame follows a test-bit frame, which
 // resets the noise generator on a real SID; four octaves down it barely moves
-// within the frame and the kick loses 4 dB, so it moves 46 semitones.
+// within the frame and the kick loses 4 dB, so it moves 46 semitones; the
+// tuned hatBoom (also after a test bit) moves 36.
 const NOISE_SHIFT = 48;
-const NOISE_SHIFT_OF = { kickThin: 46 };
+// The note whose frequency register is the one `note` produced (16 bits, so
+// notes above about 107 wrap around) moved down `shift` semitones: a wrapped
+// high hat was a much lower noise than its note name says.
+const SID_FREQ_PER_HZ = 16777216 / 985248;
+function noiseNoteFor(note, shift) {
+  const reg = Math.round(440 * 2 ** ((note - 69) / 12) * SID_FREQ_PER_HZ) & 0xffff;
+  if (reg === Math.round(440 * 2 ** ((note - 69) / 12) * SID_FREQ_PER_HZ)) return note - shift;
+  return Math.round(69 + 12 * Math.log2(reg / SID_FREQ_PER_HZ / 440)) - shift;
+}
+const NOISE_SHIFT_OF = { kickThin: 46, hatBoom: 36 };
 const expandTable = (row) => row.trim().split(/\s+/).flatMap((t) => {
   const m = /^(.*?)(?:!(\d+))?$/.exec(t);
   return Array(Number(m[2] || 1)).fill(m[1]);
@@ -463,7 +473,7 @@ function withOldNoiseClock(body, shift = NOISE_SHIFT) {
     const a = at(A, la, t);
     if (!/noise/.test(at(W, lw, t))) { shifted.push(a); continue; }
     const abs = /^=(-?\d+)$/.exec(a);
-    if (abs) shifted.push(`=${Number(abs[1]) - shift}`);
+    if (abs) shifted.push(`=${noiseNoteFor(Number(abs[1]), shift)}`);
     else if (/^-?\d+$/.test(a)) shifted.push(String(Number(a) - shift));
     else return body; // a note name or another spelling: leave the instrument as it is
   }
