@@ -152,7 +152,7 @@ describe('compose', () => {
     const tune = compose(prompt, 1);
     expect(tune.plan.styleId).toBe(style);
     expect(tune.measure.ok).toBe(true);
-    const { frames, barStarts } = renderFrames(tune.dsl, tune.plan.totalBars);
+    const { frames, barStarts } = renderFrames(tune.dsl, tune.plan.totalBars, { score: tune.score });
     expect(frames.length / 50).toBeLessThanOrEqual(152);
     expect(buildSid(frames, barStarts).complete).toBe(true);
   });

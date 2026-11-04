@@ -14,11 +14,20 @@
 // Orderlist: 2-byte block addresses, $0000 = loop to the first entry.
 // Timing: one play call per PAL video frame (50 Hz).
 
-const LOAD = 0x1000;
-const DATA = 0x1400;
+// The player (about 550 bytes) loads at $0800, the lowest PSID load
+// address, and the data follows it: hard restarts cost register writes, and
+// the 2.4 KB gained over $1000/$1400 keep long songs whole.
+const LOAD = 0x0800;
+const DATA = 0x0a80;
 // The replayer banks the BASIC ROM out ($01 = $36) while it reads, so data
 // may run up to the I/O area at $D000.
 const DATA_END = 0xd000;
+// Songs that do not fit continue in the RAM under the KERNAL ROM. The player
+// then banks the KERNAL out too ($01 = $35) and blocks interrupts while it
+// reads; the CPU vectors at $FFFA-$FFFF point to an RTI in case an NMI comes
+// in that moment. Songs that fit below $D000 keep the player as it was.
+const HIGH = 0xe000;
+const HIGH_END = 0xfffa;
 const END_BLOCK = 0xff;
 const STREAMS = 4;
 const streamOf = (reg) => (reg < 21 ? Math.floor(reg / 7) : 3);
@@ -28,7 +37,7 @@ const streamOf = (reg) => (reg < 21 ? Math.floor(reg / 7) : 3);
 // leaves the low bits at 0.
 const CUTOFF_LO = 21;
 
-function assemblePlayer(orderAddrs) {
+function assemblePlayer(orderAddrs, { kernalOut = false } = {}) {
   const out = [];
   const labels = {};
   const fix = [];
@@ -54,9 +63,10 @@ function assemblePlayer(orderAddrs) {
   // play: one frame of every stream, unrolled. BASIC ROM is banked out
   // so blocks under $A000-$BFFF are readable; $01 is restored after.
   at('play');
+  if (kernalOut) op(0x08, 0x78); //            PHP : SEI   (no IRQ while the KERNAL is out)
   op(0xa5, 0x01); //                           LDA $01
   abs(0x8d, 'save01'); //                      STA save01
-  op(0xa9, 0x36, 0x85, 0x01); //               LDA #$36 : STA $01
+  op(0xa9, kernalOut ? 0x35 : 0x36, 0x85, 0x01); // LDA #$36 (#$35) : STA $01
   for (let s = 0; s < STREAMS; s += 1) {
     const bp = 0xf0 + s * 2; // block pointer
     at(`play${s}`);
@@ -96,7 +106,10 @@ function assemblePlayer(orderAddrs) {
   }
   abs(0xad, 'save01'); //                      LDA save01
   op(0x85, 0x01); //                           STA $01
+  if (kernalOut) op(0x28); //                  PLP
   op(0x60); //                                 RTS
+  at('rti');
+  op(0x40); //                                 RTI   (CPU vectors while the KERNAL is out)
   at('save01');
   op(0x37);
   for (let s = 0; s < STREAMS; s += 1) { at(`skip${s}`); op(0x00); }
@@ -134,7 +147,7 @@ function assemblePlayer(orderAddrs) {
     }
   }
   if (out.length > DATA - LOAD) throw new Error('SID player too large');
-  return { code: out, play: labels.play };
+  return { code: out, play: labels.play, rti: labels.rti };
 }
 
 function header({ init, play, title, author, released, model }) {
@@ -200,18 +213,26 @@ function encodeBlock(frames, from, to, stream, state) {
   return [...out];
 }
 
+// Blocks go below $D000 and, when they do not fit there, on in the RAM
+// under the KERNAL; a block never crosses a region's end. `fits` is false
+// when even that is not enough.
 function layoutFor(streams, bars) {
   let addr = DATA + STREAMS * (bars + 1) * 2;
   const orderAddrs = [];
   for (let s = 0; s < STREAMS; s += 1) orderAddrs.push(DATA + s * (bars + 1) * 2);
   const addrOf = streams.map(() => new Map());
+  let high = false;
+  let fits = addr <= DATA_END;
   streams.forEach((st, s) => {
     for (const u of new Set(st.order.slice(0, bars))) {
+      const len = st.unique[u].length;
+      if (!high && addr + len > DATA_END) { high = true; addr = HIGH; }
+      if (high && addr + len > HIGH_END) fits = false;
       addrOf[s].set(u, addr);
-      addr += st.unique[u].length;
+      addr += len;
     }
   });
-  return { orderAddrs, addrOf, end: addr };
+  return { orderAddrs, addrOf, end: high ? 0x10000 : addr, high, fits };
 }
 
 // frames: per frame a flat [reg, value, ...] array; barStarts: frame index
@@ -236,14 +257,15 @@ export function buildSid(frames, barStarts, { title = 'Rasterklang Compose', aut
   // Fit as many bars as memory allows.
   let bars = totalBars;
   let layout = layoutFor(streams, bars);
-  while (layout.end > DATA_END && bars > 1) {
+  while (!layout.fits && bars > 1) {
     bars -= 1;
     layout = layoutFor(streams, bars);
   }
 
-  const { code, play } = assemblePlayer(layout.orderAddrs);
+  const { code, play, rti } = assemblePlayer(layout.orderAddrs, { kernalOut: layout.high });
   const payload = new Uint8Array(layout.end - LOAD);
   payload.set(code);
+  if (layout.high) for (const v of [0xfffa, 0xfffc, 0xfffe]) { payload[v - LOAD] = rti & 0xff; payload[v + 1 - LOAD] = rti >> 8; }
   streams.forEach((st, s) => {
     let p = layout.orderAddrs[s] - LOAD;
     for (let i = 0; i < bars; i += 1) {
