@@ -413,6 +413,71 @@ function withHardRestart(body) {
   return body.replace(/\n {2}gate -(\d+)(?=\n|$)/, `\n  hardRestart $1 ${RESTART_CLAUSES}`);
 }
 
+// Noise four octaves lower (rasterklang-composer 0.2.1): the SID clocks its
+// noise generator from bit 19 of the oscillator, the engine the instruments
+// were tuned on from bit 23, so on a real C64 (and rasterklang-wasm 0.1.1)
+// every noise frame sounded 16 times faster, much brighter. Every arp entry
+// that plays on a noise frame moves down 48 semitones, so the noise sounds as
+// it was tuned. Wave and arp tables are expanded frame by frame with the
+// compiler's wrap-and-loop rule and the arp table is written back with their
+// common period. kickThin's noise frame follows a test-bit frame, which
+// resets the noise generator on a real SID; four octaves down it barely moves
+// within the frame and the kick loses 4 dB, so it moves 46 semitones.
+const NOISE_SHIFT = 48;
+const NOISE_SHIFT_OF = { kickThin: 46 };
+const expandTable = (row) => row.trim().split(/\s+/).flatMap((t) => {
+  const m = /^(.*?)(?:!(\d+))?$/.exec(t);
+  return Array(Number(m[2] || 1)).fill(m[1]);
+});
+const compressTable = (items) => {
+  const out = [];
+  for (const x of items) {
+    const last = out[out.length - 1];
+    if (last && last[0] === x) last[1] += 1;
+    else out.push([x, 1]);
+  }
+  return out.map(([x, n]) => (n > 1 ? `${x}!${n}` : x)).join(' ');
+};
+const gcd = (a, b) => (b ? gcd(b, a % b) : a);
+function withOldNoiseClock(body, shift = NOISE_SHIFT) {
+  const wave = /\n {2}wave ([^\n]*)/.exec(body);
+  if (!wave || !/noise/.test(wave[1])) return body;
+  const arp = /\n {2}arp ([^\n]*)/.exec(body);
+  const loopLine = /\n {2}loop ([^\n]*)/.exec(body);
+  const loopOf = (kind) => {
+    const m = loopLine && new RegExp(`\\b${kind} (\\d+)`).exec(loopLine[1]);
+    return m ? Number(m[1]) : 0;
+  };
+  const W = expandTable(wave[1]);
+  const A = arp ? expandTable(arp[1]) : ['0'];
+  const lw = Math.min(loopOf('wave'), W.length - 1);
+  const la = arp ? Math.min(loopOf('arp'), A.length - 1) : 0;
+  const at = (T, loop, t) => (t < T.length ? T[t] : T[loop + ((t - loop) % (T.length - loop))]);
+  const start = Math.max(lw, la);
+  const cw = W.length - lw;
+  const ca = A.length - la;
+  const period = (cw * ca) / gcd(cw, ca);
+  const length = Math.max(W.length, A.length, start + period);
+  const shifted = [];
+  for (let t = 0; t < length; t += 1) {
+    const a = at(A, la, t);
+    if (!/noise/.test(at(W, lw, t))) { shifted.push(a); continue; }
+    const abs = /^=(-?\d+)$/.exec(a);
+    if (abs) shifted.push(`=${Number(abs[1]) - shift}`);
+    else if (/^-?\d+$/.test(a)) shifted.push(String(Number(a) - shift));
+    else return body; // a note name or another spelling: leave the instrument as it is
+  }
+  const row = compressTable(shifted);
+  let out = arp ? body.replace(/\n {2}arp [^\n]*/, `\n  arp ${row}`) : body.replace(/(\n {2}wave [^\n]*)/, `$1\n  arp ${row}`);
+  const loopArp = start + (length - start - period);
+  if (loopArp > 0 || (loopLine && /\barp \d+/.test(loopLine[1]))) {
+    out = loopLine
+      ? out.replace(/\n {2}loop ([^\n]*)/, (m, rest) => `\n  loop ${/\barp \d+/.test(rest) ? rest.replace(/\barp \d+/, `arp ${loopArp}`) : `${rest} arp ${loopArp}`}`)
+      : `${out}\n  loop arp ${loopArp}`;
+  }
+  return out;
+}
+
 // speed: frames per beat of the song (bend variants slide in frames);
 // arp: the song's arp sound (ARP_SOUNDS). With a tuning (score 0.2) every
 // instrument gets its hard restart (withHardRestart).
@@ -422,6 +487,7 @@ export function instrumentBlocks(names, sound = null, speed = 24, arp = 'pwm', t
     let body = bodyOf(name, sound, speed, arp, tuning);
     if (!body) throw new Error(`unknown instrument ${name}`);
     if (tuning) body = withHardRestart(body);
+    body = withOldNoiseClock(body, NOISE_SHIFT_OF[name] ?? NOISE_SHIFT);
     out.push(`instrument ${name}${body}\nend`);
   }
   return out.join('\n\n');
