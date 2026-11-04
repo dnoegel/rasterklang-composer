@@ -1,6 +1,6 @@
 {
   "name": "rasterklang-composer",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Prompt to Commodore 64 SID music: a model reads the mood and writes a song brief, code built on music theory and the HVSC writes every note.",
   "license": "MIT",
   "author": "Daniel Nögel",
