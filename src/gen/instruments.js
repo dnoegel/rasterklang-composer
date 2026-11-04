@@ -404,13 +404,36 @@ function bodyOf(name, sound, speed, arp, tuning = null) {
 // before the gate closes (rasterklang-dsl 4.7.0). Gate tables restart in
 // their last frame, `gate -M` instruments in their M frames. Slow attacks
 // keep their envelope, as a restart from silence would change their sound.
-const RESTART_CLAUSES = 'ad 0 0 sr 0 0 afterRests presetRelease';
+//
+// The restart envelope is tuned per instrument by ear and by measurement
+// against the old sound (tick frames above 4 kHz plus frames more than
+// 6 dB off, each instrument alone): SR 00 cuts a tail that still sounds,
+// which clicks on a 6581, so instruments whose tail is still loud at the
+// restart keep their own release (`own`) or a gentle one (`sr 0 1`,
+// `sr 0 2`), and two do best without a restart. Derived variants (echo,
+// hold, bend, top) follow their base instrument.
+const RESTART_CLAUSES = { cur: 'ad 0 0 sr 0 0', own: 'ad 0 0', sr1: 'ad 0 0 sr 0 1', sr2: 'ad 0 0 sr 0 2' };
+const RESTART_OF = {
+  kickBoom: 'own', hatBoom: 'own', snareTight: 'own', snareThin: 'own', hatThin: 'own', stdsnare772: 'own',
+  chipbass: 'own', growl: 'own', saw: 'own', brass: 'own', octave: 'own', square: 'own', thump: 'own',
+  buzz: 'own', vibra: 'own', scoop: 'own', stdbass494: 'own', stdbass399: 'own',
+  clap: 'sr1', snareRound: 'sr1', gtbass: 'sr1',
+  snareBoom: 'sr2', stdsnare422: 'sr2', sharp: 'sr2',
+  stdsnare583: 'none', fuzz: 'none',
+};
+// Arpeggio instruments by the song's arp sound (measured the same way).
+const RESTART_OF_ARP = { pwm: 'none', slow: 'none', wide: 'none', pluck: 'own', pad: 'own' };
 const RESTART_MAX_ATTACK = 5;
-function withHardRestart(body) {
+const baseName = (name) => (/(echo|hold|bend|top)$/.test(name) ? baseName(name.replace(/(echo|hold|bend|top)$/, '')) : name);
+function withHardRestart(body, name, arp) {
+  const base = baseName(name);
+  const kind = (ARP_QUALITY[base] ? RESTART_OF_ARP[arp] : RESTART_OF[base]) || 'cur';
+  if (kind === 'none') return body;
+  const clauses = `${RESTART_CLAUSES[kind]} afterRests presetRelease`;
   const attack = /\n {2}adsr (\d+)/.exec(body);
   if (attack && Number(attack[1]) > RESTART_MAX_ATTACK) return body;
-  if (/\n {2}gate [01](!\d+)?( [01](!\d+)?)+(\n|$)/.test(body)) return `${body}\n  hardRestart 1 ${RESTART_CLAUSES}`;
-  return body.replace(/\n {2}gate -(\d+)(?=\n|$)/, `\n  hardRestart $1 ${RESTART_CLAUSES}`);
+  if (/\n {2}gate [01](!\d+)?( [01](!\d+)?)+(\n|$)/.test(body)) return `${body}\n  hardRestart 1 ${clauses}`;
+  return body.replace(/\n {2}gate -(\d+)(?=\n|$)/, `\n  hardRestart $1 ${clauses}`);
 }
 
 // Noise four octaves lower (rasterklang-composer 0.2.1): the SID clocks its
@@ -496,7 +519,7 @@ export function instrumentBlocks(names, sound = null, speed = 24, arp = 'pwm', t
   for (const name of names) {
     let body = bodyOf(name, sound, speed, arp, tuning);
     if (!body) throw new Error(`unknown instrument ${name}`);
-    if (tuning) body = withHardRestart(body);
+    if (tuning) body = withHardRestart(body, name, arp);
     body = withOldNoiseClock(body, NOISE_SHIFT_OF[name] ?? NOISE_SHIFT);
     out.push(`instrument ${name}${body}\nend`);
   }
